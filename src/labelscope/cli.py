@@ -51,6 +51,12 @@ def cmd_scan(args: argparse.Namespace) -> int:
     if not pairs:
         _log("no volumes found")
         return 2
+    if args.sample and args.sample < len(pairs):
+        import random as _random
+
+        picked = _random.Random(args.seed).sample(range(len(pairs)), args.sample)
+        pairs = [pairs[i] for i in sorted(picked)]
+        _log(f"sampling {len(pairs)} volumes (seed {args.seed})")
     _log(f"scanning {len(pairs)} volumes{' over HTTP' if remote else ''}")
 
     if args.jobs > 1 and not remote:
@@ -929,6 +935,15 @@ def main(argv=None) -> int:
         "--names-file",
         help="newline-separated filenames; required when --labels or --images is a base URL",
     )
+    scan.add_argument(
+        "--sample",
+        type=int,
+        default=0,
+        metavar="N",
+        help="audit a seeded random subsample of N volumes, for the expensive "
+        "per-class metrics that --deep turns on",
+    )
+    scan.add_argument("--seed", type=int, default=0)
     scan.add_argument(
         "--jobs",
         type=int,

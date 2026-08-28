@@ -134,7 +134,7 @@ def thickness_stats(
 def component_stats(
     mask: np.ndarray,
     min_size: int = 64,
-    max_components: int = 40,
+    max_components: int = 16,
     pca_sample: int = 200_000,
     seed: int = 0,
 ) -> Dict:
@@ -248,7 +248,12 @@ def junction_density(
     }
 
 
-def audit_label(label: np.ndarray, deep: bool = False, max_classes: int = 4) -> Dict:
+def audit_label(
+    label: np.ndarray,
+    deep: bool = False,
+    max_classes: int = 4,
+    sheet_fraction_max: float = 0.25,
+) -> Dict:
     """Run every label-only metric on one volume, per class.
 
     Vesuvius surface labels are not binary: the releases seen so far carry a thin
@@ -264,21 +269,26 @@ def audit_label(label: np.ndarray, deep: bool = False, max_classes: int = 4) -> 
     per_class: Dict = {}
     for value in classes:
         mask = label == value
-        entry = {
-            "fraction": float(mask.mean()),
-            "thickness": thickness_stats(mask),
-            "components": component_stats(mask),
-            "border_touch_fraction": _border_touch_fraction(mask),
-        }
-        if deep:
-            entry["junctions"] = junction_density(mask)
+        fraction = float(mask.mean())
+        entry = {"fraction": fraction, "border_touch_fraction": _border_touch_fraction(mask)}
+        # A class occupying a quarter of the patch is a region, not a writing
+        # surface, and every metric below is about sheets.  Skipping it is not a
+        # shortcut: on the Kaggle labels the bulky class costs more to measure
+        # than the sheet, and the answers mean nothing when it is done.
+        if fraction <= sheet_fraction_max:
+            entry["thickness"] = thickness_stats(mask)
+            entry["components"] = component_stats(mask)
+            if deep:
+                entry["junctions"] = junction_density(mask)
+        else:
+            entry["skipped"] = f"fraction {fraction:.2f} exceeds sheet_fraction_max"
         per_class[value] = entry
     result["per_class"] = per_class
 
     # the sheet-like class is the thin one: least median thickness, and not
     # occupying most of the volume
     candidates = [
-        (v, e) for v, e in per_class.items() if e["fraction"] > 1e-5 and e["fraction"] < 0.5
+        (v, e) for v, e in per_class.items() if e["fraction"] > 1e-5 and "thickness" in e
     ]
     if candidates:
         surface_value, surface = min(candidates, key=lambda kv: kv[1]["thickness"]["median"])

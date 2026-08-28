@@ -136,3 +136,26 @@ def test_thickness_reports_saturation_rather_than_a_wrong_number():
     stats = thickness_stats(blob, max_thickness=6)
     assert stats["saturated"] > 0.2
     assert thickness_stats(np.zeros((8, 8, 8), bool))["saturated"] == 0.0
+
+
+def test_a_bulky_class_is_skipped_rather_than_measured():
+    """Sheet metrics on a region that fills a quarter of the patch cost more
+    than the sheet itself and mean nothing.  They are skipped, and the record
+    says so rather than carrying a misleading number."""
+    label = np.zeros((48, 48, 48), dtype=np.uint8)
+    label[:24] = 2  # half the volume
+    label[30:32] = 1  # the sheet
+    result = audit_label(label)
+    assert "skipped" in result["per_class"][2]
+    assert "thickness" not in result["per_class"][2]
+    assert "thickness" in result["per_class"][1]
+    assert result["surface_class"] == 1
+
+
+def test_the_surface_class_is_still_found_when_it_is_not_index_one():
+    label = np.zeros((48, 48, 48), dtype=np.uint8)
+    label[:30] = 1  # bulky, skipped
+    label[36:38] = 2  # the sheet
+    result = audit_label(label)
+    assert result["surface_class"] == 2
+    assert result["surface_thickness_median"] <= 3.0
