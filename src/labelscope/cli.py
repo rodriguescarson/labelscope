@@ -1,4 +1,5 @@
 """Command line interface."""
+
 from __future__ import annotations
 
 import argparse
@@ -8,9 +9,15 @@ import sys
 from typing import Dict, List
 
 from labelscope import __version__
-from labelscope.io import (discover_pairs, discover_pairs_remote, is_remote,
-                          probe_volume, probe_volume_http, read_volume,
-                          read_volume_http)
+from labelscope.io import (
+    discover_pairs,
+    discover_pairs_remote,
+    is_remote,
+    probe_volume,
+    probe_volume_http,
+    read_volume,
+    read_volume_http,
+)
 from labelscope.report import write_csv, write_html, write_json
 
 
@@ -31,8 +38,10 @@ def cmd_scan(args: argparse.Namespace) -> int:
     remote = is_remote(args.labels) or is_remote(args.images)
     if remote:
         if not args.names_file:
-            _log("scanning a remote base URL needs --names-file: hosts do not all "
-                 "offer a directory listing")
+            _log(
+                "scanning a remote base URL needs --names-file: hosts do not all "
+                "offer a directory listing"
+            )
             return 2
         with open(args.names_file) as handle:
             names = [line.strip() for line in handle if line.strip()]
@@ -47,30 +56,38 @@ def cmd_scan(args: argparse.Namespace) -> int:
     records: List[Dict] = []
     failures = 0
     for n, pair in enumerate(pairs, 1):
-        record: Dict = {"name": pair.name, "has_image": pair.image is not None,
-                        "has_label": pair.label is not None}
+        record: Dict = {
+            "name": pair.name,
+            "has_image": pair.image is not None,
+            "has_label": pair.label is not None,
+        }
         if pair.label:
             info = probe_volume_http(pair.label) if remote else probe_volume(pair.label)
-            record.update({
-                "label_shape": info.shape,
-                "label_plane_shape": info.meta.get("plane_shape"),
-                "label_dtype": info.dtype,
-                "label_compression": info.compression, "label_bytes": info.file_size,
-                "label_header_error": info.error,
-            })
+            record.update(
+                {
+                    "label_shape": info.shape,
+                    "label_plane_shape": info.meta.get("plane_shape"),
+                    "label_dtype": info.dtype,
+                    "label_compression": info.compression,
+                    "label_bytes": info.file_size,
+                    "label_header_error": info.error,
+                }
+            )
         if pair.image:
             info = probe_volume_http(pair.image) if remote else probe_volume(pair.image)
-            record.update({
-                "image_shape": info.shape,
-                "image_plane_shape": info.meta.get("plane_shape"),
-                "image_dtype": info.dtype,
-                "image_compression": info.compression, "image_bytes": info.file_size,
-                "image_header_error": info.error,
-            })
+            record.update(
+                {
+                    "image_shape": info.shape,
+                    "image_plane_shape": info.meta.get("plane_shape"),
+                    "image_dtype": info.dtype,
+                    "image_compression": info.compression,
+                    "image_bytes": info.file_size,
+                    "image_header_error": info.error,
+                }
+            )
         if pair.label and not args.headers_only:
             try:
-                volume = (read_volume_http(pair.label)[0] if remote
-                          else read_volume(pair.label))
+                volume = read_volume_http(pair.label)[0] if remote else read_volume(pair.label)
                 record.update(audit_label(volume, deep=args.deep))
             except Exception as exc:
                 record["label_read_error"] = f"{type(exc).__name__}: {exc}"
@@ -80,8 +97,10 @@ def cmd_scan(args: argparse.Namespace) -> int:
         if n % 25 == 0 or n == len(pairs):
             _log(f"  {n}/{len(pairs)}" + (f"  ({failures} unreadable)" if failures else ""))
     if failures:
-        _log(f"WARNING: {failures}/{len(pairs)} volumes could not be read; their rows "
-             f"carry the error and are excluded from the summary counts")
+        _log(
+            f"WARNING: {failures}/{len(pairs)} volumes could not be read; their rows "
+            f"carry the error and are excluded from the summary counts"
+        )
 
     os.makedirs(args.out, exist_ok=True)
     write_csv(records, os.path.join(args.out, "scan.csv"))
@@ -96,8 +115,11 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
 def _summarise_scan(records: List[Dict]) -> Dict:
     total = len(records)
-    unreadable = [r["name"] for r in records
-                  if r.get("label_header_error") or r.get("image_header_error")]
+    unreadable = [
+        r["name"]
+        for r in records
+        if r.get("label_header_error") or r.get("image_header_error")
+    ]
     unpaired = [r["name"] for r in records if not (r["has_image"] and r["has_label"])]
     shapes: Dict = {}
     compressions: Dict = {}
@@ -110,7 +132,9 @@ def _summarise_scan(records: List[Dict]) -> Dict:
         shapes[shape] = shapes.get(shape, 0) + 1
         comp = str(r.get("label_compression"))
         compressions[comp] = compressions.get(comp, 0) + 1
-        bytes_by_compression[comp] = bytes_by_compression.get(comp, 0) + (r.get("label_bytes") or 0)
+        bytes_by_compression[comp] = bytes_by_compression.get(comp, 0) + (
+            r.get("label_bytes") or 0
+        )
         if "values" in r:
             key = str(r["values"])
             schemes[key] = schemes.get(key, 0) + 1
@@ -121,7 +145,9 @@ def _summarise_scan(records: List[Dict]) -> Dict:
             key = str(r["surface_class"])
             surface_classes[key] = surface_classes.get(key, 0) + 1
     modal_scheme = max(schemes, key=schemes.get) if schemes else None
-    off_scheme = [r["name"] for r in records if "values" in r and str(r["values"]) != modal_scheme]
+    off_scheme = [
+        r["name"] for r in records if "values" in r and str(r["values"]) != modal_scheme
+    ]
 
     headline = [
         f"volumes: {total}",
@@ -129,7 +155,9 @@ def _summarise_scan(records: List[Dict]) -> Dict:
         f"label compressions: {compressions}",
     ]
     if modal_scheme:
-        headline.append(f"modal class scheme: {modal_scheme} ({schemes[modal_scheme]}/{total})")
+        headline.append(
+            f"modal class scheme: {modal_scheme} ({schemes[modal_scheme]}/{total})"
+        )
         headline.append(f"volumes off the modal scheme: {len(off_scheme)}")
     if unpaired:
         headline.append(f"unpaired volumes: {len(unpaired)}")
@@ -137,7 +165,8 @@ def _summarise_scan(records: List[Dict]) -> Dict:
         headline.append(f"UNREADABLE volumes (excluded from counts): {len(unreadable)}")
     if len(compressions) > 1:
         headline.append(
-            "mixed compression: " + ", ".join(
+            "mixed compression: "
+            + ", ".join(
                 f"{k}={v} files / {bytes_by_compression[k] / 1e9:.2f} GB"
                 for k, v in compressions.items()
             )
@@ -145,60 +174,112 @@ def _summarise_scan(records: List[Dict]) -> Dict:
     if surface_classes:
         headline.append(f"detected surface class: {surface_classes}")
     return {
-        "n_volumes": total, "shapes": shapes, "compressions": compressions,
+        "n_volumes": total,
+        "shapes": shapes,
+        "compressions": compressions,
         "detected_surface_classes": surface_classes,
-        "bytes_by_compression": bytes_by_compression, "class_schemes": schemes,
-        "modal_scheme": modal_scheme, "off_scheme_volumes": off_scheme,
-        "unpaired_volumes": unpaired, "unreadable_volumes": unreadable,
+        "bytes_by_compression": bytes_by_compression,
+        "class_schemes": schemes,
+        "modal_scheme": modal_scheme,
+        "off_scheme_volumes": off_scheme,
+        "unpaired_volumes": unpaired,
+        "unreadable_volumes": unreadable,
         "headline": headline,
     }
 
 
 def _render_scan_html(records, summary, path) -> None:
-    cards = [("volumes", summary["n_volumes"], ""),
-             ("label shapes", len(summary["shapes"]),
-              "warn" if len(summary["shapes"]) > 1 else "ok"),
-             ("compressions", len(summary["compressions"]),
-              "warn" if len(summary["compressions"]) > 1 else "ok"),
-             ("class schemes", len(summary["class_schemes"]),
-              "warn" if len(summary["class_schemes"]) > 1 else "ok"),
-             ("unpaired", len(summary["unpaired_volumes"]),
-              "warn" if summary["unpaired_volumes"] else "ok")]
+    cards = [
+        ("volumes", summary["n_volumes"], ""),
+        (
+            "label shapes",
+            len(summary["shapes"]),
+            "warn" if len(summary["shapes"]) > 1 else "ok",
+        ),
+        (
+            "compressions",
+            len(summary["compressions"]),
+            "warn" if len(summary["compressions"]) > 1 else "ok",
+        ),
+        (
+            "class schemes",
+            len(summary["class_schemes"]),
+            "warn" if len(summary["class_schemes"]) > 1 else "ok",
+        ),
+        (
+            "unpaired",
+            len(summary["unpaired_volumes"]),
+            "warn" if summary["unpaired_volumes"] else "ok",
+        ),
+    ]
     thick = [r for r in records if r.get("surface_thickness_p95") is not None]
     thick.sort(key=lambda r: -r["surface_thickness_p95"])
-    rows = [{"name": r["name"],
-             "surface class": r.get("surface_class"),
-             "surface fraction": r.get("surface_fraction"),
-             "thickness median": r.get("surface_thickness_median"),
-             "thickness p95": r.get("surface_thickness_p95"),
-             "components": r.get("surface_components"),
-             "fragments": r.get("surface_fragment_fraction"),
-             "worst planarity": r.get("surface_worst_planarity")}
-            for r in thick]
-    sections = [
-        ("Storage and schema", "One row per distinct combination found in the headers.",
-         [{"property": k, "value": str(v)} for k, v in
-          (("shapes", summary["shapes"]), ("compressions", summary["compressions"]),
-           ("class schemes", summary["class_schemes"]))],
-         ["property", "value"]),
-        ("Thickest labels",
-         "Highest 95th-percentile local thickness first — a fat tail is where a label "
-         "has most likely swallowed the gap between two windings.",
-         rows, ["name", "surface class", "surface fraction", "thickness median",
-                "thickness p95", "components", "fragments", "worst planarity"]),
+    rows = [
+        {
+            "name": r["name"],
+            "surface class": r.get("surface_class"),
+            "surface fraction": r.get("surface_fraction"),
+            "thickness median": r.get("surface_thickness_median"),
+            "thickness p95": r.get("surface_thickness_p95"),
+            "components": r.get("surface_components"),
+            "fragments": r.get("surface_fragment_fraction"),
+            "worst planarity": r.get("surface_worst_planarity"),
+        }
+        for r in thick
     ]
-    write_html("labelscope — dataset scan",
-               "Header inventory and label-only quality metrics.",
-               cards, sections, path)
+    sections = [
+        (
+            "Storage and schema",
+            "One row per distinct combination found in the headers.",
+            [
+                {"property": k, "value": str(v)}
+                for k, v in (
+                    ("shapes", summary["shapes"]),
+                    ("compressions", summary["compressions"]),
+                    ("class schemes", summary["class_schemes"]),
+                )
+            ],
+            ["property", "value"],
+        ),
+        (
+            "Thickest labels",
+            "Highest 95th-percentile local thickness first — a fat tail is where a label "
+            "has most likely swallowed the gap between two windings.",
+            rows,
+            [
+                "name",
+                "surface class",
+                "surface fraction",
+                "thickness median",
+                "thickness p95",
+                "components",
+                "fragments",
+                "worst planarity",
+            ],
+        ),
+    ]
+    write_html(
+        "labelscope — dataset scan",
+        "Header inventory and label-only quality metrics.",
+        cards,
+        sections,
+        path,
+    )
 
 
 # --------------------------------------------------------------------------- #
 # leakage
 # --------------------------------------------------------------------------- #
 def cmd_leakage(args: argparse.Namespace) -> int:
-    from labelscope.geometry import (blocked_kfold, measure_split_leakage,
-                                     nnunet_default_split, overlap_graph,
-                                     parse_patch_names, simulate_random_kfold, write_splits)
+    from labelscope.geometry import (
+        blocked_kfold,
+        measure_split_leakage,
+        nnunet_default_split,
+        overlap_graph,
+        parse_patch_names,
+        simulate_random_kfold,
+        write_splits,
+    )
 
     if args.names_file:
         with open(args.names_file) as handle:
@@ -217,17 +298,23 @@ def cmd_leakage(args: argparse.Namespace) -> int:
 
         sizes, unreadable = sizes_from_volumes(names, args.labels)
         if sizes:
-            distinct = sorted({s for s in sizes.values()})
-            size_note = (f"read {len(sizes)} patch shapes from the volumes: "
-                         f"{len(distinct)} distinct — {distinct[:6]}")
+            distinct = sorted(set(sizes.values()))
+            size_note = (
+                f"read {len(sizes)} patch shapes from the volumes: "
+                f"{len(distinct)} distinct — {distinct[:6]}"
+            )
             _log(size_note)
             if unreadable:
-                _log(f"  {len(unreadable)} volumes unreadable; falling back to "
-                     f"--patch-size for those")
+                _log(
+                    f"  {len(unreadable)} volumes unreadable; falling back to "
+                    f"--patch-size for those"
+                )
     patches, unparsed = parse_patch_names(names, size, sizes=sizes)
     if not patches:
-        _log("no volume names carry z/y/x coordinates — nothing to check.\n"
-             "labelscope leakage needs names like s1_z10240_y2560_x2560.")
+        _log(
+            "no volume names carry z/y/x coordinates — nothing to check.\n"
+            "labelscope leakage needs names like s1_z10240_y2560_x2560."
+        )
         return 2
     _log(f"parsed {len(patches)} patch names ({len(unparsed)} without coordinates)")
 
@@ -238,7 +325,8 @@ def cmd_leakage(args: argparse.Namespace) -> int:
 
     random_kfold = simulate_random_kfold(len(patches), graph, k=args.k, trials=args.trials)
     nnunet = measure_split_leakage(
-        patches, nnunet_default_split([p.name for p in patches], k=args.k), graph)
+        patches, nnunet_default_split([p.name for p in patches], k=args.k), graph
+    )
     splits, split_stats = blocked_kfold(patches, k=args.k, buffer=args.buffer, mode=args.mode)
 
     os.makedirs(args.out, exist_ok=True)
@@ -252,15 +340,27 @@ def cmd_leakage(args: argparse.Namespace) -> int:
         if not args.labels or is_remote(args.labels):
             _log("--measure-seen needs --labels pointing at local label volumes")
         else:
+
             def tick(done, total):
                 _log(f"  seen-fraction {done}/{total}")
+
             _log("measuring how much of each validation patch a training patch covers")
             seen["nnunet_default"] = measure_seen_fraction(
-                patches, nnunet_reference_splits([p.name for p in patches], k=args.k),
-                args.labels, surface_class=args.surface_class, graph=graph, progress=tick)
+                patches,
+                nnunet_reference_splits([p.name for p in patches], k=args.k),
+                args.labels,
+                surface_class=args.surface_class,
+                graph=graph,
+                progress=tick,
+            )
             seen["blocked"] = measure_seen_fraction(
-                patches, splits, args.labels, surface_class=args.surface_class,
-                graph=graph, progress=tick)
+                patches,
+                splits,
+                args.labels,
+                surface_class=args.surface_class,
+                graph=graph,
+                progress=tick,
+            )
             for key in seen:
                 seen[key].pop("per_patch", None)
     if args.consistency:
@@ -271,14 +371,18 @@ def cmd_leakage(args: argparse.Namespace) -> int:
         else:
             _log(f"checking label agreement on {args.consistency} overlapping pairs")
             consistency = check_overlap_consistency(
-                patches, args.labels, graph=graph, surface_class=args.surface_class,
+                patches,
+                args.labels,
+                graph=graph,
+                surface_class=args.surface_class,
                 max_pairs=args.consistency,
-                progress=lambda d, t: _log(f"  consistency {d}/{t}"))
+                progress=lambda d, t: _log(f"  consistency {d}/{t}"),
+            )
     summary = {
-        "n_patches": len(patches), "fallback_patch_size": list(size),
+        "n_patches": len(patches),
+        "fallback_patch_size": list(size),
         "patch_shapes_read_from_volumes": len(sizes),
-        "distinct_patch_shapes": sorted({list(v) for v in sizes.values()}, key=list)
-        if False else sorted([list(v) for v in {s for s in sizes.values()}]),
+        "distinct_patch_shapes": sorted(list(v) for v in set(sizes.values())),
         "buffer": args.buffer,
         "overlapping_pairs": n_pairs,
         "patches_with_overlapping_neighbour": len(touched),
@@ -296,13 +400,21 @@ def cmd_leakage(args: argparse.Namespace) -> int:
     cards = [
         ("patches", len(patches), ""),
         ("overlapping pairs", n_pairs, "warn" if n_pairs else "ok"),
-        ("patches touching another",
-         f'{summary["patches_with_overlapping_neighbour_pct"]:.1f}%',
-         "warn" if len(touched) else "ok"),
-        ("nnU-Net default split leaked",
-         f'{nnunet["val_patches_contaminated_pct"]:.1f}%', "warn"),
-        ("after blocked split",
-         f'{split_stats["residual_leaking_val_patches"]} patches', "ok"),
+        (
+            "patches touching another",
+            f"{summary['patches_with_overlapping_neighbour_pct']:.1f}%",
+            "warn" if len(touched) else "ok",
+        ),
+        (
+            "nnU-Net default split leaked",
+            f"{nnunet['val_patches_contaminated_pct']:.1f}%",
+            "warn",
+        ),
+        (
+            "after blocked split",
+            f"{split_stats['residual_leaking_val_patches']} patches",
+            "ok",
+        ),
     ]
     prose = (
         f"The split nnU-Net writes when none is supplied — "
@@ -317,36 +429,59 @@ def cmd_leakage(args: argparse.Namespace) -> int:
         "removes that contact entirely."
     )
     sections = [
-        ("Blocked split", prose,
-         [{"fold": i, "train": t, "val": v, "dropped to buffer": d}
-          for i, (t, v, d) in enumerate(zip(split_stats["train_fold_sizes"],
-                                            split_stats["val_fold_sizes"],
-                                            split_stats["buffer_dropped_per_fold"]))],
-         ["fold", "train", "val", "dropped to buffer"]),
+        (
+            "Blocked split",
+            prose,
+            [
+                {"fold": i, "train": t, "val": v, "dropped to buffer": d}
+                for i, (t, v, d) in enumerate(
+                    zip(
+                        split_stats["train_fold_sizes"],
+                        split_stats["val_fold_sizes"],
+                        split_stats["buffer_dropped_per_fold"],
+                    )
+                )
+            ],
+            ["fold", "train", "val", "dropped to buffer"],
+        ),
     ]
-    write_html("labelscope — split leakage",
-               "Spatial overlap between training patches, and a split that removes it.",
-               cards, sections, os.path.join(args.out, "leakage.html"))
+    write_html(
+        "labelscope — split leakage",
+        "Spatial overlap between training patches, and a split that removes it.",
+        cards,
+        sections,
+        os.path.join(args.out, "leakage.html"),
+    )
     _log(f"wrote {args.out}/splits_final.json, leakage.json, leakage.html")
-    print(f"{len(patches)} patches, {n_pairs} overlapping pairs "
-          f"({summary['patches_with_overlapping_neighbour_pct']:.1f}% of patches)")
-    print(f"nnU-Net default split: {nnunet['val_patches_contaminated_pct']:.1f}% of "
-          f"validation patches leak (random shuffles: "
-          f"{random_kfold['val_patches_contaminated_pct_mean']:.1f}%)")
+    print(
+        f"{len(patches)} patches, {n_pairs} overlapping pairs "
+        f"({summary['patches_with_overlapping_neighbour_pct']:.1f}% of patches)"
+    )
+    print(
+        f"nnU-Net default split: {nnunet['val_patches_contaminated_pct']:.1f}% of "
+        f"validation patches leak (random shuffles: "
+        f"{random_kfold['val_patches_contaminated_pct_mean']:.1f}%)"
+    )
     if seen:
         for key, block in seen.items():
             if block.get("n_patches"):
-                print(f"{key}: validation patches whose labelled surface a training patch "
-                      f"also covers: {block['patches_with_any_seen_pct']:.1f}%; "
-                      f"mean seen fraction {100*block['seen_fraction_mean']:.1f}%, "
-                      f"max {100*block['seen_fraction_max']:.1f}%")
+                print(
+                    f"{key}: validation patches whose labelled surface a training patch "
+                    f"also covers: {block['patches_with_any_seen_pct']:.1f}%; "
+                    f"mean seen fraction {100 * block['seen_fraction_mean']:.1f}%, "
+                    f"max {100 * block['seen_fraction_max']:.1f}%"
+                )
     if consistency.get("n_pairs"):
-        print(f"overlap consistency: {consistency['n_pairs']} pairs, median IoU "
-              f"{consistency['iou_median']:.3f}, min {consistency['iou_min']:.3f}, "
-              f"{consistency['pairs_below_0_9_iou']} pairs below 0.9")
-    print(f"blocked split: val folds {split_stats['val_fold_sizes']}, "
-          f"{split_stats['residual_leaking_val_patches']} residual leaks, "
-          f"{split_stats['buffer_dropped_pct_mean']:.1f}% of training patches dropped to buffer")
+        print(
+            f"overlap consistency: {consistency['n_pairs']} pairs, median IoU "
+            f"{consistency['iou_median']:.3f}, min {consistency['iou_min']:.3f}, "
+            f"{consistency['pairs_below_0_9_iou']} pairs below 0.9"
+        )
+    print(
+        f"blocked split: val folds {split_stats['val_fold_sizes']}, "
+        f"{split_stats['residual_leaking_val_patches']} residual leaks, "
+        f"{split_stats['buffer_dropped_pct_mean']:.1f}% of training patches dropped to buffer"
+    )
     return 0
 
 
@@ -370,17 +505,27 @@ def cmd_align(args: argparse.Namespace) -> int:
             image = read_volume(pair.image)
             label = read_volume(pair.label)
             record = {"name": pair.name}
-            record.update(audit_alignment(
-                image, label,
-                surface_class=args.surface_class if args.surface_class >= 0 else None,
-                orient_class=args.orient_class if args.orient_class >= 0 else None,
-                radius=args.radius, n_samples=args.samples,
-                cell=args.cell, min_per_cell=args.min_per_cell,
-                min_global_snr=args.min_global_snr))
+            record.update(
+                audit_alignment(
+                    image,
+                    label,
+                    surface_class=args.surface_class if args.surface_class >= 0 else None,
+                    orient_class=args.orient_class if args.orient_class >= 0 else None,
+                    radius=args.radius,
+                    n_samples=args.samples,
+                    cell=args.cell,
+                    min_per_cell=args.min_per_cell,
+                    min_global_snr=args.min_global_snr,
+                )
+            )
             records.append(record)
             if args.overlays:
-                cache[pair.name] = (pair.image, pair.label,
-                                    record.get("surface_class"), record.get("orient_class"))
+                cache[pair.name] = (
+                    pair.image,
+                    pair.label,
+                    record.get("surface_class"),
+                    record.get("orient_class"),
+                )
         except Exception as exc:
             records.append({"name": pair.name, "error": f"{type(exc).__name__}: {exc}"})
         _log(f"  {n}/{len(pairs)} {pair.name}")
@@ -393,38 +538,62 @@ def cmd_align(args: argparse.Namespace) -> int:
     good = [r for r in records if r.get("global_peak_offset") is not None]
     measurable = len(good)
     attempted = len([r for r in records if "global_profile_snr" in r])
-    summary: Dict = {"n_pairs": len(records), "n_ok": len(good),
-                     "n_measurable": measurable, "n_attempted": attempted,
-                     "frac_measurable": (measurable / attempted) if attempted else 0.0}
+    summary: Dict = {
+        "n_pairs": len(records),
+        "n_ok": len(good),
+        "n_measurable": measurable,
+        "n_attempted": attempted,
+        "frac_measurable": (measurable / attempted) if attempted else 0.0,
+    }
     if good:
-        for key in ("global_peak_offset", "cell_offset_median", "cell_abs_offset_median",
-                    "cell_abs_offset_p90", "cell_frac_ge_1vx", "cell_frac_ge_2vx",
-                    "global_profile_snr", "cell_snr_median", "hf_energy_norm",
-                    "cell_frac_unresolved", "winding_spacing", "search_radius",
-                    "naive_median_abs_offset"):
+        for key in (
+            "global_peak_offset",
+            "cell_offset_median",
+            "cell_abs_offset_median",
+            "cell_abs_offset_p90",
+            "cell_frac_ge_1vx",
+            "cell_frac_ge_2vx",
+            "global_profile_snr",
+            "cell_snr_median",
+            "hf_energy_norm",
+            "cell_frac_unresolved",
+            "winding_spacing",
+            "search_radius",
+            "naive_median_abs_offset",
+        ):
             values = [r[key] for r in good if r.get(key) is not None]
             if not values:
                 continue
-            summary[key] = {"median": statistics.median(values),
-                            "mean": statistics.fmean(values),
-                            "min": min(values), "max": max(values)}
+            summary[key] = {
+                "median": statistics.median(values),
+                "mean": statistics.fmean(values),
+                "min": min(values),
+                "max": max(values),
+            }
         summary["separability_bins"] = _difficulty_bins(
-            [r for r in records if r.get("cell_abs_offset_median") is not None])
+            [r for r in records if r.get("cell_abs_offset_median") is not None]
+        )
     write_json(summary, os.path.join(args.out, "align_summary.json"))
     _render_align_html(good, summary, os.path.join(args.out, "align.html"))
     _log(f"wrote {args.out}/align.csv, align_summary.json, align.html")
     if good:
-        print(f"measurable patches: {summary['n_measurable']}/{summary['n_attempted']} "
-              f"({_pct(summary['frac_measurable'])}) have sheet contrast above the "
-              f"reliability gate")
-        print(f"global label-to-ridge offset: median "
-              f"{summary['global_peak_offset']['median']:+.2f} vx "
-              f"(across measurable patches: {summary['global_peak_offset']['min']:+.2f} to "
-              f"{summary['global_peak_offset']['max']:+.2f})")
+        print(
+            f"measurable patches: {summary['n_measurable']}/{summary['n_attempted']} "
+            f"({_pct(summary['frac_measurable'])}) have sheet contrast above the "
+            f"reliability gate"
+        )
+        print(
+            f"global label-to-ridge offset: median "
+            f"{summary['global_peak_offset']['median']:+.2f} vx "
+            f"(across measurable patches: {summary['global_peak_offset']['min']:+.2f} to "
+            f"{summary['global_peak_offset']['max']:+.2f})"
+        )
         if "cell_abs_offset_median" in summary:
-            print(f"per-cell |offset|: median "
-                  f"{summary['cell_abs_offset_median']['median']:.2f} vx, "
-                  f"{_pct(summary['cell_frac_ge_1vx']['median'])} of cells >= 1 vx off")
+            print(
+                f"per-cell |offset|: median "
+                f"{summary['cell_abs_offset_median']['median']:.2f} vx, "
+                f"{_pct(summary['cell_frac_ge_1vx']['median'])} of cells >= 1 vx off"
+            )
     return 0
 
 
@@ -433,23 +602,32 @@ def _render_overlays(records, cache, out_dir, count) -> None:
     read a number for it."""
     from labelscope.visualize import render_drift_map, render_overlay
 
-    usable = [r for r in records
-              if r.get("cell_abs_offset_median") is not None and r["name"] in cache]
+    usable = [
+        r
+        for r in records
+        if r.get("cell_abs_offset_median") is not None and r["name"] in cache
+    ]
     usable.sort(key=lambda r: -r["cell_abs_offset_median"])
     directory = os.path.join(out_dir, "overlays")
     for record in usable[:count]:
         image_path, label_path, surface, orient = cache[record["name"]]
         try:
             import numpy as np
+
             image = read_volume(image_path)
             label = read_volume(label_path)
             orient_field = (label == orient).astype(np.float32) if orient is not None else None
             base = os.path.join(directory, record["name"])
             record["overlay_png"] = render_overlay(
-                image, label, base + "_overlay.png", surface_class=surface)
+                image, label, base + "_overlay.png", surface_class=surface
+            )
             record["drift_png"] = render_drift_map(
-                image, label, base + "_drift.png",
-                surface_class=surface, orient_field=orient_field)
+                image,
+                label,
+                base + "_drift.png",
+                surface_class=surface,
+                orient_field=orient_field,
+            )
         except Exception as exc:
             _log(f"  overlay failed for {record['name']}: {type(exc).__name__}: {exc}")
     _log(f"wrote overlays to {directory}")
@@ -464,20 +642,28 @@ def _difficulty_bins(records: List[Dict], bins: int = 4) -> List[Dict]:
     out = []
     size = len(ranked) // bins
     for b in range(bins):
-        chunk = ranked[b * size: (b + 1) * size if b < bins - 1 else len(ranked)]
-        out.append({
-            "bin": b,
-            "label": ["least separable layers", "", "", "most separable layers"][b]
-            if bins == 4 else str(b),
-            "n": len(chunk),
-            "hf_energy_norm": statistics.median(r["hf_energy_norm"] for r in chunk),
-            "layer_separability": statistics.median(r["global_profile_snr"] for r in chunk),
-            "winding_spacing": statistics.median(
-                r.get("winding_spacing") or 0.0 for r in chunk),
-            "cell_abs_offset_median": statistics.median(r["cell_abs_offset_median"] for r in chunk),
-            "cell_frac_ge_1vx": statistics.median(r["cell_frac_ge_1vx"] for r in chunk),
-            "surface_voxels": statistics.median(r["surface_voxels"] for r in chunk),
-        })
+        chunk = ranked[b * size : (b + 1) * size if b < bins - 1 else len(ranked)]
+        out.append(
+            {
+                "bin": b,
+                "label": ["least separable layers", "", "", "most separable layers"][b]
+                if bins == 4
+                else str(b),
+                "n": len(chunk),
+                "hf_energy_norm": statistics.median(r["hf_energy_norm"] for r in chunk),
+                "layer_separability": statistics.median(
+                    r["global_profile_snr"] for r in chunk
+                ),
+                "winding_spacing": statistics.median(
+                    r.get("winding_spacing") or 0.0 for r in chunk
+                ),
+                "cell_abs_offset_median": statistics.median(
+                    r["cell_abs_offset_median"] for r in chunk
+                ),
+                "cell_frac_ge_1vx": statistics.median(r["cell_frac_ge_1vx"] for r in chunk),
+                "surface_voxels": statistics.median(r["surface_voxels"] for r in chunk),
+            }
+        )
     return out
 
 
@@ -488,28 +674,48 @@ def _render_align_html(records, summary, path) -> None:
     peak = summary["global_peak_offset"]
     cards = [
         ("pairs", summary["n_ok"], ""),
-        ("global offset", f'{peak["median"]:+.2f} vx',
-         "warn" if abs(peak["median"]) > 0.5 else "ok"),
-        ("per-cell |offset|",
-         f'{summary["cell_abs_offset_median"]["median"]:.2f} vx'
-         if "cell_abs_offset_median" in summary else "—", ""),
-        ("cells ≥ 1 vx off",
-         _pct(summary["cell_frac_ge_1vx"]["median"])
-         if "cell_frac_ge_1vx" in summary else "—", ""),
-        ("profile SNR",
-         f'{summary["global_profile_snr"]["median"]:.1f}'
-         if "global_profile_snr" in summary else "—", ""),
+        (
+            "global offset",
+            f"{peak['median']:+.2f} vx",
+            "warn" if abs(peak["median"]) > 0.5 else "ok",
+        ),
+        (
+            "per-cell |offset|",
+            f"{summary['cell_abs_offset_median']['median']:.2f} vx"
+            if "cell_abs_offset_median" in summary
+            else "—",
+            "",
+        ),
+        (
+            "cells ≥ 1 vx off",
+            _pct(summary["cell_frac_ge_1vx"]["median"])
+            if "cell_frac_ge_1vx" in summary
+            else "—",
+            "",
+        ),
+        (
+            "profile SNR",
+            f"{summary['global_profile_snr']['median']:.1f}"
+            if "global_profile_snr" in summary
+            else "—",
+            "",
+        ),
     ]
     worst = sorted(records, key=lambda r: -abs(r.get("cell_offset_worst", 0.0)))
-    rows = [{"name": r["name"],
-             "global offset": r["global_peak_offset"],
-             "CI95": f'[{r["global_peak_ci95"][0]:+.2f}, {r["global_peak_ci95"][1]:+.2f}]',
-             "cells": r.get("n_cells"),
-             "|offset| median": r.get("cell_abs_offset_median"),
-             "worst cell": r.get("cell_offset_worst"),
-             "≥1 vx": r.get("cell_frac_ge_1vx"),
-             "SNR": r.get("global_profile_snr"),
-             "hf energy": r.get("hf_energy_norm")} for r in worst]
+    rows = [
+        {
+            "name": r["name"],
+            "global offset": r["global_peak_offset"],
+            "CI95": f"[{r['global_peak_ci95'][0]:+.2f}, {r['global_peak_ci95'][1]:+.2f}]",
+            "cells": r.get("n_cells"),
+            "|offset| median": r.get("cell_abs_offset_median"),
+            "worst cell": r.get("cell_offset_worst"),
+            "≥1 vx": r.get("cell_frac_ge_1vx"),
+            "SNR": r.get("global_profile_snr"),
+            "hf energy": r.get("hf_energy_norm"),
+        }
+        for r in worst
+    ]
     method = (
         "Offset is measured along the surface normal, in voxels, positive outward, "
         "by averaging intensity profiles over a cube of labelled surface and locating "
@@ -520,28 +726,56 @@ def _render_align_html(records, summary, path) -> None:
         "in the CSV keep that measure alongside, for comparison only."
     )
     sections = [
-        ("Patches ranked by their worst-aligned region", method, rows,
-         ["name", "global offset", "CI95", "cells", "|offset| median", "worst cell",
-          "≥1 vx", "SNR", "hf energy"]),
-        ("Does label quality track how separable the layers are?",
-         "Patches binned by sheet contrast over voxel noise. Raw high-frequency "
-         "energy is <em>not</em> a difficulty proxy — it counts noise as readily as "
-         "structure, and across these patches it correlates negatively with actual "
-         "separability (Spearman −0.42).",
-         summary.get("separability_bins", []),
-         ["label", "n", "layer_separability", "winding_spacing", "hf_energy_norm",
-          "cell_abs_offset_median", "cell_frac_ge_1vx", "surface_voxels"]),
+        (
+            "Patches ranked by their worst-aligned region",
+            method,
+            rows,
+            [
+                "name",
+                "global offset",
+                "CI95",
+                "cells",
+                "|offset| median",
+                "worst cell",
+                "≥1 vx",
+                "SNR",
+                "hf energy",
+            ],
+        ),
+        (
+            "Does label quality track how separable the layers are?",
+            "Patches binned by sheet contrast over voxel noise. Raw high-frequency "
+            "energy is <em>not</em> a difficulty proxy — it counts noise as readily as "
+            "structure, and across these patches it correlates negatively with actual "
+            "separability (Spearman −0.42).",
+            summary.get("separability_bins", []),
+            [
+                "label",
+                "n",
+                "layer_separability",
+                "winding_spacing",
+                "hf_energy_norm",
+                "cell_abs_offset_median",
+                "cell_frac_ge_1vx",
+                "surface_voxels",
+            ],
+        ),
     ]
-    write_html("labelscope — CT/label alignment",
-               "How far the labels sit from the ridge the scan actually shows.",
-               cards, sections, path)
+    write_html(
+        "labelscope — CT/label alignment",
+        "How far the labels sit from the ridge the scan actually shows.",
+        cards,
+        sections,
+        path,
+    )
 
 
 # --------------------------------------------------------------------------- #
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         prog="labelscope",
-        description="Diagnostics for Vesuvius Challenge surface-label datasets.")
+        description="Diagnostics for Vesuvius Challenge surface-label datasets.",
+    )
     parser.add_argument("--version", action="version", version=f"labelscope {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -549,41 +783,68 @@ def main(argv=None) -> int:
     scan.add_argument("--labels", required=True)
     scan.add_argument("--images")
     scan.add_argument("--out", default="labelscope_out")
-    scan.add_argument("--names-file",
-                      help="newline-separated filenames; required when --labels or "
-                           "--images is a base URL")
-    scan.add_argument("--headers-only", action="store_true",
-                      help="probe headers only; never decode voxels")
-    scan.add_argument("--deep", action="store_true",
-                      help="also skeletonise each label (slow) to count branch points")
+    scan.add_argument(
+        "--names-file",
+        help="newline-separated filenames; required when --labels or --images is a base URL",
+    )
+    scan.add_argument(
+        "--headers-only", action="store_true", help="probe headers only; never decode voxels"
+    )
+    scan.add_argument(
+        "--deep",
+        action="store_true",
+        help="also skeletonise each label (slow) to count branch points",
+    )
     scan.set_defaults(func=cmd_scan)
 
-    leak = sub.add_parser("leakage",
-                          help="find patches that share voxels and emit a split that does not")
+    leak = sub.add_parser(
+        "leakage", help="find patches that share voxels and emit a split that does not"
+    )
     leak.add_argument("--labels", help="labelsTr directory")
     leak.add_argument("--images")
-    leak.add_argument("--names-file",
-                      help="newline-separated patch names, when the volumes are not "
-                           "on this machine — the check only needs the names")
-    leak.add_argument("--patch-size", type=int, nargs="+", default=[300],
-                      help="fallback size when a volume's own shape cannot be read; "
-                           "one value for a cube, or three as z y x")
-    leak.add_argument("--assume-patch-size", action="store_true",
-                      help="trust --patch-size instead of reading each volume's real "
-                           "shape (faster, and wrong on any release with mixed sizes)")
+    leak.add_argument(
+        "--names-file",
+        help="newline-separated patch names, when the volumes are not "
+        "on this machine — the check only needs the names",
+    )
+    leak.add_argument(
+        "--patch-size",
+        type=int,
+        nargs="+",
+        default=[300],
+        help="fallback size when a volume's own shape cannot be read; "
+        "one value for a cube, or three as z y x",
+    )
+    leak.add_argument(
+        "--assume-patch-size",
+        action="store_true",
+        help="trust --patch-size instead of reading each volume's real "
+        "shape (faster, and wrong on any release with mixed sizes)",
+    )
     leak.add_argument("--k", type=int, default=5)
-    leak.add_argument("--buffer", type=int, default=0,
-                      help="treat patches within this many voxels as neighbours too")
+    leak.add_argument(
+        "--buffer",
+        type=int,
+        default=0,
+        help="treat patches within this many voxels as neighbours too",
+    )
     leak.add_argument("--mode", choices=["block", "component"], default="block")
     leak.add_argument("--trials", type=int, default=200)
     leak.add_argument("--surface-class", type=int, default=1)
-    leak.add_argument("--measure-seen", action="store_true",
-                      help="read the label volumes and measure, per validation patch, "
-                           "the fraction of its labelled surface that a training patch "
-                           "also covers — the leak in voxels rather than in patches")
-    leak.add_argument("--consistency", type=int, default=0, metavar="N",
-                      help="check that N overlapping patch pairs agree about the voxels "
-                           "they share")
+    leak.add_argument(
+        "--measure-seen",
+        action="store_true",
+        help="read the label volumes and measure, per validation patch, "
+        "the fraction of its labelled surface that a training patch "
+        "also covers — the leak in voxels rather than in patches",
+    )
+    leak.add_argument(
+        "--consistency",
+        type=int,
+        default=0,
+        metavar="N",
+        help="check that N overlapping patch pairs agree about the voxels they share",
+    )
     leak.add_argument("--out", default="labelscope_out")
     leak.set_defaults(func=cmd_leakage)
 
@@ -591,27 +852,54 @@ def main(argv=None) -> int:
     align.add_argument("--images", required=True)
     align.add_argument("--labels", required=True)
     align.add_argument("--out", default="labelscope_out")
-    align.add_argument("--surface-class", type=int, default=-1,
-                       help="thin sheet class; -1 (default) detects it")
-    align.add_argument("--orient-class", type=int, default=-1,
-                       help="bulky region class defining 'outward', so the offset "
-                            "sign is meaningful; -1 (default) detects it")
-    align.add_argument("--radius", default="auto",
-                       help="how far along the normal to look, in voxels; 'auto' "
-                            "(default) measures the local winding spacing and uses "
-                            "45%% of it, so the search cannot reach the next wrap")
-    align.add_argument("--cell", type=int, default=64,
-                       help="edge of the cube of surface each offset is measured over")
-    align.add_argument("--min-global-snr", type=float, default=2.0,
-                       help="sheet contrast, in units of voxel noise, below which a "
-                            "patch's global offset is reported as unmeasurable")
-    align.add_argument("--min-per-cell", type=int, default=200,
-                       help="minimum sampled voxels before a cell gets an offset")
+    align.add_argument(
+        "--surface-class",
+        type=int,
+        default=-1,
+        help="thin sheet class; -1 (default) detects it",
+    )
+    align.add_argument(
+        "--orient-class",
+        type=int,
+        default=-1,
+        help="bulky region class defining 'outward', so the offset "
+        "sign is meaningful; -1 (default) detects it",
+    )
+    align.add_argument(
+        "--radius",
+        default="auto",
+        help="how far along the normal to look, in voxels; 'auto' "
+        "(default) measures the local winding spacing and uses "
+        "45%% of it, so the search cannot reach the next wrap",
+    )
+    align.add_argument(
+        "--cell",
+        type=int,
+        default=64,
+        help="edge of the cube of surface each offset is measured over",
+    )
+    align.add_argument(
+        "--min-global-snr",
+        type=float,
+        default=2.0,
+        help="sheet contrast, in units of voxel noise, below which a "
+        "patch's global offset is reported as unmeasurable",
+    )
+    align.add_argument(
+        "--min-per-cell",
+        type=int,
+        default=200,
+        help="minimum sampled voxels before a cell gets an offset",
+    )
     align.add_argument("--samples", type=int, default=40000)
     align.add_argument("--limit", type=int, default=0)
-    align.add_argument("--overlays", type=int, default=0, metavar="N",
-                       help="render CT/label overlay and drift-map PNGs for the N "
-                            "worst-aligned patches")
+    align.add_argument(
+        "--overlays",
+        type=int,
+        default=0,
+        metavar="N",
+        help="render CT/label overlay and drift-map PNGs for the N worst-aligned patches",
+    )
     align.set_defaults(func=cmd_align)
 
     args = parser.parse_args(argv)

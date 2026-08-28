@@ -9,6 +9,7 @@ Supports the two on-disk shapes the Vesuvius community actually ships:
 ``probe_volume`` reads only the header, so a whole dataset can be inventoried
 without downloading or decoding the voxels.
 """
+
 from __future__ import annotations
 
 import os
@@ -267,7 +268,7 @@ class HTTPFile:
         buffer = b"".join(chunks)
         offset = start - first * self.block_size
         self._pos = end
-        return buffer[offset:offset + length]
+        return buffer[offset : offset + length]
 
     def close(self) -> None:
         self._blocks.clear()
@@ -286,8 +287,10 @@ class HTTPFile:
         start = index * self.block_size
         end = min(start + self.block_size, self.size) - 1
         response = self._session.get(
-            self.url, headers={"Range": f"bytes={start}-{end}"},
-            timeout=self.timeout, allow_redirects=True,
+            self.url,
+            headers={"Range": f"bytes={start}-{end}"},
+            timeout=self.timeout,
+            allow_redirects=True,
         )
         response.raise_for_status()
         data = response.content
@@ -318,13 +321,35 @@ def read_volume_http(url: str, z_slice: Optional[slice] = None, block_size: int 
 # --------------------------------------------------------------------------- #
 # probing a remote volume from its header alone
 # --------------------------------------------------------------------------- #
-_TIFF_TAGS = {256: "width", 257: "length", 258: "bits", 259: "compression",
-              277: "samples"}
-_TIFF_COMPRESSION = {1: "NONE", 5: "LZW", 7: "JPEG", 8: "ADOBE_DEFLATE",
-                     32773: "PACKBITS", 32946: "DEFLATE", 34925: "LZMA",
-                     50000: "ZSTD", 50001: "WEBP"}
-_TIFF_TYPE_SIZE = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8,
-                   11: 4, 12: 8, 16: 8, 17: 8, 18: 8}
+_TIFF_TAGS = {256: "width", 257: "length", 258: "bits", 259: "compression", 277: "samples"}
+_TIFF_COMPRESSION = {
+    1: "NONE",
+    5: "LZW",
+    7: "JPEG",
+    8: "ADOBE_DEFLATE",
+    32773: "PACKBITS",
+    32946: "DEFLATE",
+    34925: "LZMA",
+    50000: "ZSTD",
+    50001: "WEBP",
+}
+_TIFF_TYPE_SIZE = {
+    1: 1,
+    2: 1,
+    3: 2,
+    4: 4,
+    5: 8,
+    6: 1,
+    7: 1,
+    8: 2,
+    9: 4,
+    10: 8,
+    11: 4,
+    12: 8,
+    16: 8,
+    17: 8,
+    18: 8,
+}
 
 
 _SESSION = None
@@ -344,9 +369,12 @@ def http_session():
         from urllib3.util.retry import Retry
 
         session = requests.Session()
-        retry = Retry(total=4, backoff_factor=0.5,
-                      status_forcelist=(429, 500, 502, 503, 504),
-                      allowed_methods=frozenset(["GET", "HEAD"]))
+        retry = Retry(
+            total=4,
+            backoff_factor=0.5,
+            status_forcelist=(429, 500, 502, 503, 504),
+            allowed_methods=frozenset(["GET", "HEAD"]),
+        )
         adapter = HTTPAdapter(max_retries=retry, pool_connections=32, pool_maxsize=32)
         session.mount("https://", adapter)
         session.mount("http://", adapter)
@@ -368,15 +396,14 @@ def probe_volume_http(url: str, session=None, timeout: int = 60) -> VolumeInfo:
     """
     import struct
 
-    import requests
-
     session = session or http_session()
     info = VolumeInfo(path=url)
     last = None
     for attempt in range(4):
         try:
-            response = session.get(url, headers={"Range": "bytes=0-2047"},
-                                   timeout=timeout, allow_redirects=True)
+            response = session.get(
+                url, headers={"Range": "bytes=0-2047"}, timeout=timeout, allow_redirects=True
+            )
             response.raise_for_status()
             head = response.content
             total = response.headers.get("content-range", "").split("/")[-1]
@@ -410,32 +437,34 @@ def probe_volume_http(url: str, session=None, timeout: int = 60) -> VolumeInfo:
         info.error = "first image directory lies beyond the fetched header"
         return info
 
-    count = struct.unpack(endian + "H", head[offset:offset + 2])[0]
+    count = struct.unpack(endian + "H", head[offset : offset + 2])[0]
     fields = {}
     for n in range(count):
         entry = offset + 2 + n * 12
         if entry + 12 > len(head):
             break
-        tag, dtype, length = struct.unpack(endian + "HHI", head[entry:entry + 8])
+        tag, dtype, length = struct.unpack(endian + "HHI", head[entry : entry + 8])
         name = _TIFF_TAGS.get(tag)
         if name is None:
             continue
         size = _TIFF_TYPE_SIZE.get(dtype, 4) * length
-        raw = head[entry + 8:entry + 12]
+        raw = head[entry + 8 : entry + 12]
         if size <= 4:
-            fields[name] = struct.unpack(endian + ("I" if dtype == 4 else "H"),
-                                         raw[:4] if dtype == 4 else raw[:2])[0]
+            fields[name] = struct.unpack(
+                endian + ("I" if dtype == 4 else "H"), raw[:4] if dtype == 4 else raw[:2]
+            )[0]
 
     width, length = fields.get("width"), fields.get("length")
     bits = fields.get("bits", 8)
-    info.compression = _TIFF_COMPRESSION.get(fields.get("compression", 1),
-                                             str(fields.get("compression")))
+    info.compression = _TIFF_COMPRESSION.get(
+        fields.get("compression", 1), str(fields.get("compression"))
+    )
     info.dtype = {8: "uint8", 16: "uint16", 32: "float32"}.get(bits, f"{bits}-bit")
     if not (width and length):
         info.error = "first image directory carries no width/length"
         return info
 
-    info.meta["plane_shape"] = (length, width)          # exact, read from the IFD
+    info.meta["plane_shape"] = (length, width)  # exact, read from the IFD
     if info.compression == "NONE" and info.file_size:
         # uncompressed pages have a fixed footprint, so depth follows from size.
         # ~166 bytes of per-page directory overhead is what these writers emit;

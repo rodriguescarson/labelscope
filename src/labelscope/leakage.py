@@ -12,10 +12,10 @@ It also checks the assumption underneath: that two patches covering the same
 scroll voxel agree about what is there.  Where they do not, the disagreement is
 a labelling inconsistency worth reporting in its own right.
 """
+
 from __future__ import annotations
 
 import os
-from collections import defaultdict
 from typing import Callable, Dict, List, Optional, Sequence
 
 import numpy as np
@@ -99,7 +99,7 @@ def measure_seen_fraction(
         for other in graph.get(by_name[patch.name], ()):
             neighbour = patches[other]
             if neighbour.name not in training:
-                continue          # validation, or dropped into the buffer zone
+                continue  # validation, or dropped into the buffer zone
             box = _intersection(patch, neighbour)
             if box is None:
                 continue
@@ -107,15 +107,17 @@ def measure_seen_fraction(
             seen[z0:z1, y0:y1, x0:x1] = True
             n_neighbours += 1
 
-        per_patch.append({
-            "name": patch.name,
-            "fold": my_fold,
-            "labelled_voxels": total,
-            "seen_voxels": int((mask & seen).sum()),
-            "seen_fraction": float((mask & seen).sum() / total),
-            "volume_seen_fraction": float(seen.mean()),
-            "training_neighbours": n_neighbours,
-        })
+        per_patch.append(
+            {
+                "name": patch.name,
+                "fold": my_fold,
+                "labelled_voxels": total,
+                "seen_voxels": int((mask & seen).sum()),
+                "seen_fraction": float((mask & seen).sum() / total),
+                "volume_seen_fraction": float(seen.mean()),
+                "training_neighbours": n_neighbours,
+            }
+        )
         if progress and count % 25 == 0:
             progress(count, len(patches))
 
@@ -190,13 +192,19 @@ def check_overlap_consistency(
             continue
         both = int((va & vb).sum())
         either = int((va | vb).sum())
-        results.append({
-            "a": a.name, "b": b.name, "voxels": int(va.size),
-            "iou": float(both / either) if either else 1.0,
-            "dice": float(2 * both / (va.sum() + vb.sum())) if (va.sum() + vb.sum()) else 1.0,
-            "disagreeing_voxels": int((va ^ vb).sum()),
-            "disagreement_rate": float((va ^ vb).sum() / va.size),
-        })
+        results.append(
+            {
+                "a": a.name,
+                "b": b.name,
+                "voxels": int(va.size),
+                "iou": float(both / either) if either else 1.0,
+                "dice": float(2 * both / (va.sum() + vb.sum()))
+                if (va.sum() + vb.sum())
+                else 1.0,
+                "disagreeing_voxels": int((va ^ vb).sum()),
+                "disagreement_rate": float((va ^ vb).sum() / va.size),
+            }
+        )
         if progress and n % 25 == 0:
             progress(n, len(pairs))
 

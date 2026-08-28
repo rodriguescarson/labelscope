@@ -18,9 +18,10 @@ the main unwrapping bottlenecks.  Those are three measurable claims:
 Put together they answer a question nobody currently measures: *are the labels
 worse exactly where the scroll is hardest?*
 """
+
 from __future__ import annotations
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 import numpy as np
 from scipy import ndimage as ndi
@@ -45,14 +46,14 @@ def point_normals(coords: np.ndarray, neighbours: np.ndarray, k: int = 40) -> np
     _, idx = tree.query(neighbours, k=k, workers=-1)
     if idx.ndim == 1:
         idx = idx[:, None]
-    patch = coords[idx].astype(np.float32)               # (N, k, 3)
+    patch = coords[idx].astype(np.float32)  # (N, k, 3)
     patch -= patch.mean(axis=1, keepdims=True)
     cov = np.einsum("nki,nkj->nij", patch, patch) / max(1, k - 1)
-    _, vectors = np.linalg.eigh(cov)                     # ascending eigenvalues
-    normals = vectors[:, :, 0]                           # least-extent direction
+    _, vectors = np.linalg.eigh(cov)  # ascending eigenvalues
+    normals = vectors[:, :, 0]  # least-extent direction
     norm = np.linalg.norm(normals, axis=1, keepdims=True)
     norm[norm < 1e-8] = 1.0
-    return (normals / norm).T.astype(np.float32)         # (3, N)
+    return (normals / norm).T.astype(np.float32)  # (3, N)
 
 
 def orient_normals(
@@ -75,9 +76,9 @@ def orient_normals(
     """
     field = ndi.gaussian_filter(reference.astype(np.float32), sigma)
     grad = np.stack(np.gradient(field), axis=0)
-    sampled = np.stack([
-        ndi.map_coordinates(grad[a], points, order=1, mode="nearest") for a in range(3)
-    ])
+    sampled = np.stack(
+        [ndi.map_coordinates(grad[a], points, order=1, mode="nearest") for a in range(3)]
+    )
     dots = (normals * sampled).sum(axis=0)
     if pointwise:
         sign = np.sign(dots)
@@ -174,7 +175,8 @@ def propagate_orientation(
             if probe_points.size > 2000:
                 probe_points = rng.choice(member, 2000, replace=False)
             distances, nearest = cKDTree(points[outside]).query(
-                points[probe_points], k=1, workers=-1)
+                points[probe_points], k=1, workers=-1
+            )
             best = int(np.argmin(distances))
             bridges_r.append(int(probe_points[best]))
             bridges_c.append(int(outside[nearest[best]]))
@@ -195,8 +197,9 @@ def propagate_orientation(
     for seed in range(n):
         if visited[seed]:
             continue
-        order, predecessors = breadth_first_order(mst, seed, directed=False,
-                                                  return_predecessors=True)
+        order, predecessors = breadth_first_order(
+            mst, seed, directed=False, return_predecessors=True
+        )
         for node in order:
             visited[node] = True
             components[node] = label
@@ -254,7 +257,9 @@ def _subvoxel_peak(profile: np.ndarray, index: np.ndarray) -> np.ndarray:
     y1 = profile[idx, cols]
     y2 = profile[idx + 1, cols]
     denom = y0 - 2.0 * y1 + y2
-    shift = np.where(np.abs(denom) > 1e-9, 0.5 * (y0 - y2) / np.where(denom == 0, 1, denom), 0.0)
+    shift = np.where(
+        np.abs(denom) > 1e-9, 0.5 * (y0 - y2) / np.where(denom == 0, 1, denom), 0.0
+    )
     return idx + np.clip(shift, -1.0, 1.0)
 
 
@@ -289,15 +294,14 @@ def ridge_alignment(
     image = image.astype(np.float32)
     all_coords = np.argwhere(mask)
     sample_points = coords.astype(np.float32)
-    normals = point_normals(all_coords, sample_points)             # (3, N)
+    normals = point_normals(all_coords, sample_points)  # (3, N)
     normals, components = propagate_orientation(sample_points, normals)
     if orient_field is not None:
-        normals = orient_normals(normals, sample_points.T, orient_field,
-                                 components=components)
+        normals = orient_normals(normals, sample_points.T, orient_field, components=components)
 
     offsets = np.arange(-radius, radius + step / 2, step, dtype=np.float32)
-    base = sample_points.T[:, None, :]                             # (3, 1, N)
-    walk = base + normals[:, None, :] * offsets[None, :, None]     # (3, T, N)
+    base = sample_points.T[:, None, :]  # (3, 1, N)
+    walk = base + normals[:, None, :] * offsets[None, :, None]  # (3, T, N)
     profile = _sample_at(image, walk.reshape(3, -1)).reshape(offsets.size, -1)
 
     if polarity in (None, "auto"):
@@ -320,7 +324,7 @@ def ridge_alignment(
     sigma_noise = noise_sigma(image)
     snr = prominence / sigma_noise
 
-    interior = np.abs(signed_offset) < (radius - step)   # peak not pinned to the window edge
+    interior = np.abs(signed_offset) < (radius - step)  # peak not pinned to the window edge
     valid = signed_offset[interior]
     if valid.size == 0:
         valid = signed_offset
@@ -408,11 +412,16 @@ def audit_alignment(
             orient_class = max(others, key=others.get) if others else None
 
     if surface_class is None:
-        return {"surface_class": None, "surface_voxels": 0,
-                "error": "no sheet-like class found in this label"}
+        return {
+            "surface_class": None,
+            "surface_voxels": 0,
+            "error": "no sheet-like class found in this label",
+        }
 
     mask = label == surface_class
-    orient_field = (label == orient_class).astype(np.float32) if orient_class is not None else None
+    orient_field = (
+        (label == orient_class).astype(np.float32) if orient_class is not None else None
+    )
     result = {
         "surface_class": surface_class,
         "orient_class": orient_class,
@@ -424,21 +433,30 @@ def audit_alignment(
     if naive:
         # kept for comparison only: on scroll CT this is radius-dependent and
         # does not measure displacement.  See aggregate_alignment's docstring.
-        raw = ridge_alignment(image, mask, orient_field=orient_field,
-                              n_samples=kwargs.get("n_samples", 20_000))
-        result.update({f"naive_{k}": v for k, v in raw.items()
-                       if k in ("median_abs_offset", "mean_signed_offset",
-                                "frac_offset_ge_1vx", "frac_flat_support",
-                                "median_prominence_snr")})
+        raw = ridge_alignment(
+            image, mask, orient_field=orient_field, n_samples=kwargs.get("n_samples", 20_000)
+        )
+        result.update(
+            {
+                f"naive_{k}": v
+                for k, v in raw.items()
+                if k
+                in (
+                    "median_abs_offset",
+                    "mean_signed_offset",
+                    "frac_offset_ge_1vx",
+                    "frac_flat_support",
+                    "median_prominence_snr",
+                )
+            }
+        )
     return result
 
 
 # --------------------------------------------------------------------------- #
 # aggregated alignment — the estimator that actually works on scroll CT
 # --------------------------------------------------------------------------- #
-def orientation_reference_quality(
-    profiles: np.ndarray, offsets: np.ndarray
-) -> float:
+def orientation_reference_quality(profiles: np.ndarray, offsets: np.ndarray) -> float:
     """How much a candidate "outward" field actually distinguishes the two sides.
 
     Returned on 0-1 as the normalised difference between the field's mean on the
@@ -463,8 +481,11 @@ def orientation_reference_quality(
 
 
 def orient_by_intensity(
-    image: np.ndarray, points: np.ndarray, normals: np.ndarray,
-    components: Optional[np.ndarray] = None, distance: float = 3.0,
+    image: np.ndarray,
+    points: np.ndarray,
+    normals: np.ndarray,
+    components: Optional[np.ndarray] = None,
+    distance: float = 3.0,
 ) -> np.ndarray:
     """Point every normal toward the denser side of the sheet.
 
@@ -519,7 +540,7 @@ def sample_profiles(
     normals = point_normals(all_coords, points)
     normals, components = propagate_orientation(points, normals)
     if isinstance(orient_field, str):
-        pass                                # explicitly unoriented
+        pass  # explicitly unoriented
     elif orient_field is not None:
         normals = orient_normals(normals, points.T, orient_field, components=components)
     else:
@@ -538,7 +559,12 @@ def sample_profiles(
         inside &= (walk[axis] >= 0).all(axis=0)
         inside &= (walk[axis] <= image.shape[axis] - 1).all(axis=0)
     if not inside.any():
-        return coords[:0], offsets, np.zeros((offsets.size, 0), np.float32), polarity or "bright"
+        return (
+            coords[:0],
+            offsets,
+            np.zeros((offsets.size, 0), np.float32),
+            polarity or "bright",
+        )
     coords = coords[inside]
     walk = walk[:, :, inside]
 
@@ -577,8 +603,11 @@ def _peak_of(
     curve = ndi.gaussian_filter1d(profile, max(smooth / step, 0.5))
     low, high = float(curve.min()), float(curve.max())
     threshold = low + floor * (high - low)
-    peaks = [i for i in range(1, curve.size - 1)
-             if curve[i] >= curve[i - 1] and curve[i] >= curve[i + 1] and curve[i] >= threshold]
+    peaks = [
+        i
+        for i in range(1, curve.size - 1)
+        if curve[i] >= curve[i - 1] and curve[i] >= curve[i + 1] and curve[i] >= threshold
+    ]
     if not peaks:
         peaks = [int(np.argmax(curve))]
     i = min(peaks, key=lambda k: abs(float(offsets[k])))
@@ -616,20 +645,37 @@ def neighbour_ridge_distance(
     # a window wider than the volume can support leaves nothing to average
     max_radius = float(min(max_radius, 0.4 * min(image.shape)))
     _, offsets, profiles, _ = sample_profiles(
-        image, mask, radius=max_radius, step=step, n_samples=n_samples,
-        orient_field=orient_field, polarity=polarity, seed=seed,
+        image,
+        mask,
+        radius=max_radius,
+        step=step,
+        n_samples=n_samples,
+        orient_field=orient_field,
+        polarity=polarity,
+        seed=seed,
     )
     if profiles.size == 0:
-        return {"neighbour_ridge_pos": None, "neighbour_ridge_neg": None,
-                "winding_spacing": None, "recommended_radius": 6.0}
+        return {
+            "neighbour_ridge_pos": None,
+            "neighbour_ridge_neg": None,
+            "winding_spacing": None,
+            "recommended_radius": 6.0,
+        }
 
     curve = ndi.gaussian_filter1d(profiles.mean(axis=1), max(2.0 / step, 1.0))
-    peaks = [i for i in range(2, curve.size - 2)
-             if curve[i] > curve[i - 1] and curve[i] > curve[i + 1]]
+    peaks = [
+        i
+        for i in range(2, curve.size - 2)
+        if curve[i] > curve[i - 1] and curve[i] > curve[i + 1]
+    ]
     if not peaks:
-        return {"neighbour_ridge_pos": None, "neighbour_ridge_neg": None,
-                "winding_spacing": None, "recommended_radius": 6.0,
-                "dominant_ridge_at": None}
+        return {
+            "neighbour_ridge_pos": None,
+            "neighbour_ridge_neg": None,
+            "winding_spacing": None,
+            "recommended_radius": 6.0,
+            "dominant_ridge_at": None,
+        }
 
     # spacing is measured from the sheet the label is actually on, which is the
     # dominant ridge — not from the label's own position.  A displaced label
@@ -639,8 +685,9 @@ def neighbour_ridge_distance(
     # belong to is not "its" sheet
     strongest = max(curve[i] for i in peaks)
     floor = curve.min() + 0.75 * (strongest - curve.min())
-    dominant = min((i for i in peaks if curve[i] >= floor),
-                   key=lambda i: abs(float(offsets[i])))
+    dominant = min(
+        (i for i in peaks if curve[i] >= floor), key=lambda i: abs(float(offsets[i]))
+    )
     centre = float(offsets[dominant])
     guard = 2.0
     positions = [float(offsets[i]) - centre for i in peaks]
@@ -653,10 +700,7 @@ def neighbour_ridge_distance(
     spacing = min(candidates) if candidates else None
     # the window must reach the dominant ridge wherever it sits, and stop short
     # of the next wrap beyond it
-    if spacing:
-        recommended = float(np.clip(abs(centre) + 0.45 * spacing, 3.0, 16.0))
-    else:
-        recommended = 6.0
+    recommended = float(np.clip(abs(centre) + 0.45 * spacing, 3.0, 16.0)) if spacing else 6.0
     return {
         "neighbour_ridge_pos": nearest_pos,
         "neighbour_ridge_neg": nearest_neg,
@@ -716,22 +760,35 @@ def aggregate_alignment(
     ``global_peak_offset_raw``.
     """
     if orient_by == "intensity":
-        orient_field = None                 # the scan orients itself
+        orient_field = None  # the scan orients itself
     elif orient_by == "none":
         orient_field = "unoriented"
     elif orient_by != "field":
-        raise ValueError(f"orient_by must be 'intensity', 'field' or 'none', got {orient_by!r}")
+        raise ValueError(
+            f"orient_by must be 'intensity', 'field' or 'none', got {orient_by!r}"
+        )
     spacing = {}
     if radius == "auto":
-        spacing = neighbour_ridge_distance(image, mask, orient_field=orient_field,
-                                           n_samples=min(n_samples, 12_000),
-                                           polarity=polarity, seed=seed)
+        spacing = neighbour_ridge_distance(
+            image,
+            mask,
+            orient_field=orient_field,
+            n_samples=min(n_samples, 12_000),
+            polarity=polarity,
+            seed=seed,
+        )
         radius = spacing["recommended_radius"]
     radius = float(radius)
 
     coords, offsets, profiles, polarity = sample_profiles(
-        image, mask, radius=radius, step=step, n_samples=n_samples,
-        orient_field=orient_field, polarity=polarity, seed=seed,
+        image,
+        mask,
+        radius=radius,
+        step=step,
+        n_samples=n_samples,
+        orient_field=orient_field,
+        polarity=polarity,
+        seed=seed,
     )
     if coords.shape[0] == 0:
         return {"n_samples": 0, "n_cells": 0}
@@ -801,15 +858,17 @@ def aggregate_alignment(
     result.update(spacing)
     if cell_offsets:
         values = np.asarray(cell_offsets)
-        result.update({
-            "cell_offset_median": float(np.median(values)),
-            "cell_offset_mean": float(values.mean()),
-            "cell_abs_offset_median": float(np.median(np.abs(values))),
-            "cell_abs_offset_p90": float(np.percentile(np.abs(values), 90)),
-            "cell_frac_ge_1vx": float((np.abs(values) >= 1.0).mean()),
-            "cell_frac_ge_2vx": float((np.abs(values) >= 2.0).mean()),
-            "cell_offset_worst": float(values[np.argmax(np.abs(values))]),
-            "cell_snr_median": float(np.median(cell_snr)),
-            "cell_voxels_median": float(np.median(cell_sizes)),
-        })
+        result.update(
+            {
+                "cell_offset_median": float(np.median(values)),
+                "cell_offset_mean": float(values.mean()),
+                "cell_abs_offset_median": float(np.median(np.abs(values))),
+                "cell_abs_offset_p90": float(np.percentile(np.abs(values), 90)),
+                "cell_frac_ge_1vx": float((np.abs(values) >= 1.0).mean()),
+                "cell_frac_ge_2vx": float((np.abs(values) >= 2.0).mean()),
+                "cell_offset_worst": float(values[np.argmax(np.abs(values))]),
+                "cell_snr_median": float(np.median(cell_snr)),
+                "cell_voxels_median": float(np.median(cell_sizes)),
+            }
+        )
     return result

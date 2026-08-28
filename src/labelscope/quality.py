@@ -6,9 +6,10 @@ to catch the failure modes the Vesuvius Challenge Open Problems post describes:
 labels that merge two windings, labels that are blobs rather than sheets, and
 labels whose class scheme silently disagrees with the rest of the dataset.
 """
+
 from __future__ import annotations
 
-from typing import Dict, Optional
+from typing import Dict
 
 import numpy as np
 from scipy import ndimage as ndi
@@ -39,9 +40,12 @@ def _border_touch_fraction(mask: np.ndarray) -> float:
     if not mask.any():
         return 0.0
     faces = (
-        mask[0].sum() + mask[-1].sum()
-        + mask[:, 0].sum() + mask[:, -1].sum()
-        + mask[:, :, 0].sum() + mask[:, :, -1].sum()
+        mask[0].sum()
+        + mask[-1].sum()
+        + mask[:, 0].sum()
+        + mask[:, -1].sum()
+        + mask[:, :, 0].sum()
+        + mask[:, :, -1].sum()
     )
     return float(faces / mask.sum())
 
@@ -107,7 +111,9 @@ def component_stats(
             # just as well and keeps a 24-million-voxel component off the heap
             flat = np.flatnonzero(component.ravel())
             flat = rng.choice(flat, pca_sample, replace=False)
-            coords = np.stack(np.unravel_index(flat, component.shape), axis=1).astype(np.float32)
+            coords = np.stack(np.unravel_index(flat, component.shape), axis=1).astype(
+                np.float32
+            )
         else:
             coords = np.argwhere(component).astype(np.float32)
         if coords.shape[0] < 8:
@@ -158,7 +164,7 @@ def junction_density(
     r = int(radius)
     grid = np.arange(-r, r + 1)
     dz, dy, dx = np.meshgrid(grid, grid, grid, indexing="ij")
-    distance = np.sqrt(dz ** 2 + dy ** 2 + dx ** 2)
+    distance = np.sqrt(dz**2 + dy**2 + dx**2)
     ball = distance <= r + 0.5
     shell = (distance >= r - 0.5) & ball
     centre = (r, r, r)
@@ -167,7 +173,7 @@ def junction_density(
     junctions = 0
     counted = 0
     for z, y, x in coords:
-        window = padded[z:z + 2 * r + 1, y:y + 2 * r + 1, x:x + 2 * r + 1] & ball
+        window = padded[z : z + 2 * r + 1, y : y + 2 * r + 1, x : x + 2 * r + 1] & ball
         blobs, n = ndi.label(window, structure=_CONNECTIVITY)
         home = blobs[centre]
         if home == 0:
@@ -184,9 +190,7 @@ def junction_density(
     }
 
 
-def audit_label(
-    label: np.ndarray, deep: bool = False, max_classes: int = 4
-) -> Dict:
+def audit_label(label: np.ndarray, deep: bool = False, max_classes: int = 4) -> Dict:
     """Run every label-only metric on one volume, per class.
 
     Vesuvius surface labels are not binary: the releases seen so far carry a thin
@@ -216,8 +220,7 @@ def audit_label(
     # the sheet-like class is the thin one: least median thickness, and not
     # occupying most of the volume
     candidates = [
-        (v, e) for v, e in per_class.items()
-        if e["fraction"] > 1e-5 and e["fraction"] < 0.5
+        (v, e) for v, e in per_class.items() if e["fraction"] > 1e-5 and e["fraction"] < 0.5
     ]
     if candidates:
         surface_value, surface = min(candidates, key=lambda kv: kv[1]["thickness"]["median"])

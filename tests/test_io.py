@@ -4,8 +4,14 @@ import struct
 import numpy as np
 import tifffile
 
-from labelscope.io import (VolumeInfo, discover_pairs, discover_pairs_remote,
-                           is_remote, probe_volume, read_volume)
+from labelscope.io import (
+    VolumeInfo,
+    discover_pairs,
+    discover_pairs_remote,
+    is_remote,
+    probe_volume,
+    read_volume,
+)
 
 
 def write_stack(path, shape=(8, 16, 16), value=3, compression=None):
@@ -66,8 +72,9 @@ def test_an_unpaired_volume_is_returned_not_dropped(tmp_path):
 
 
 def test_remote_pairing_builds_urls_and_strips_extensions():
-    pairs = discover_pairs_remote("https://h/img", "https://h/lab",
-                                  ["sample_1", "sample_2.tif", ""])
+    pairs = discover_pairs_remote(
+        "https://h/img", "https://h/lab", ["sample_1", "sample_2.tif", ""]
+    )
     assert [p.name for p in pairs] == ["sample_1", "sample_2"]
     assert pairs[0].image == "https://h/img/sample_1.tif"
     assert pairs[0].label == "https://h/lab/sample_1.tif"

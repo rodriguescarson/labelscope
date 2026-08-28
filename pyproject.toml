@@ -23,7 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 zarr = ["zarr>=2.16"]
-dev = ["pytest>=7"]
+dev = ["pytest>=7", "ruff>=0.6"]
 
 [project.scripts]
 labelscope = "labelscope.cli:main"
@@ -33,3 +33,26 @@ Homepage = "https://github.com/rodriguescarson/labelscope"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+line-length = 95
+target-version = "py39"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+  "E501",    # line length is enforced by the formatter
+  "B905",    # zip(strict=) is not available on 3.9
+  "UP006",   # typing.Tuple etc. are still needed on 3.9
+  "UP035",
+  "UP007",   # X | Y annotations: the package supports 3.9
+  "UP045",   # Optional[X] likewise
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "SIM117"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

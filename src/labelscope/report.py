@@ -1,4 +1,5 @@
 """CSV and single-file HTML reporting."""
+
 from __future__ import annotations
 
 import csv
@@ -14,7 +15,7 @@ def flatten(record: Dict, prefix: str = "") -> Dict:
     for key, value in record.items():
         name = f"{prefix}{key}"
         if isinstance(value, dict):
-            if all(isinstance(k, int) for k in value):     # e.g. value_fractions
+            if all(isinstance(k, int) for k in value):  # e.g. value_fractions
                 for k, v in value.items():
                     flat[f"{name}_{k}"] = v
             else:
@@ -110,9 +111,7 @@ def write_html(
         f"<style>{_CSS}</style>",
         f"<h1>{html.escape(title)}</h1>",
         f"<p class='sub'>{html.escape(subtitle)}</p>",
-        '<div class="cards">'
-        + "".join(_card(k, v, c) for k, v, c in headline)
-        + "</div>",
+        '<div class="cards">' + "".join(_card(k, v, c) for k, v, c in headline) + "</div>",
     ]
     for heading, prose, rows, columns in sections:
         parts.append(f"<h2>{html.escape(heading)}</h2>")

@@ -1,10 +1,10 @@
 """The leak, measured in voxels rather than in patches."""
+
 import numpy as np
 import tifffile
 
 from labelscope.geometry import blocked_kfold, nnunet_default_split, parse_patch_names
-from labelscope.leakage import (_intersection, check_overlap_consistency,
-                                measure_seen_fraction)
+from labelscope.leakage import _intersection, check_overlap_consistency, measure_seen_fraction
 
 
 def build(tmp_path, stride, n=4, size=60, thickness=3):
@@ -85,7 +85,7 @@ def test_a_contradictory_patch_is_caught(tmp_path):
 
     victim = os.path.join(labels, patches[1].name + ".tif")
     volume = tifffile.imread(victim)
-    tifffile.imwrite(victim, np.roll(volume, 8, axis=0))     # shift the sheet
+    tifffile.imwrite(victim, np.roll(volume, 8, axis=0))  # shift the sheet
     result = check_overlap_consistency(patches, labels, max_pairs=40)
     assert result["iou_min"] < 0.9
     assert result["pairs_below_0_9_iou"] >= 1
@@ -106,6 +106,8 @@ def test_buffer_dropped_patches_are_not_counted_as_training_data(tmp_path):
     assert honest["seen_fraction_mean"] == 0.0
 
     # the old behaviour, reconstructed: everything outside the fold counts
-    naive = [{"train": [p.name for p in patches if p.name not in set(s["val"])],
-              "val": s["val"]} for s in splits]
+    naive = [
+        {"train": [p.name for p in patches if p.name not in set(s["val"])], "val": s["val"]}
+        for s in splits
+    ]
     assert measure_seen_fraction(patches, naive, labels)["seen_fraction_mean"] > 0.0

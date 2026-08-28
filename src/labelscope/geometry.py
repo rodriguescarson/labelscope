@@ -11,6 +11,7 @@ comparisons are decided on.
 This module measures that overlap and emits a spatially blocked split that
 removes it.
 """
+
 from __future__ import annotations
 
 import json
@@ -28,23 +29,25 @@ PATCH_NAME_RE = re.compile(r"^(?P<vol>[A-Za-z0-9.]+)_z(?P<z>\d+)_y(?P<y>\d+)_x(?
 class Patch:
     name: str
     volume: str
-    origin: Tuple[int, int, int]   # z, y, x
-    size: Tuple[int, int, int]     # z, y, x
+    origin: Tuple[int, int, int]  # z, y, x
+    size: Tuple[int, int, int]  # z, y, x
 
-    def overlap_fraction(self, other: "Patch") -> float:
+    def overlap_fraction(self, other: Patch) -> float:
         """Shared volume as a fraction of this patch's volume (0 if disjoint)."""
         if self.volume != other.volume:
             return 0.0
         shared = 1
         for axis in range(3):
             lo = max(self.origin[axis], other.origin[axis])
-            hi = min(self.origin[axis] + self.size[axis], other.origin[axis] + other.size[axis])
+            hi = min(
+                self.origin[axis] + self.size[axis], other.origin[axis] + other.size[axis]
+            )
             if hi <= lo:
                 return 0.0
             shared *= hi - lo
         return shared / float(self.size[0] * self.size[1] * self.size[2])
 
-    def gap(self, other: "Patch") -> Optional[int]:
+    def gap(self, other: Patch) -> Optional[int]:
         """Smallest per-axis gap in voxels; 0 when the patches touch or overlap.
 
         ``None`` when the patches are from different volumes and so incomparable.
@@ -135,7 +138,7 @@ def overlap_graph(patches: Sequence[Patch], buffer: int = 0) -> Dict[int, Dict[i
         for a_pos, a in enumerate(indices):
             pa = patches[a]
             z_limit = pa.origin[0] + pa.size[0] + buffer
-            for b in indices[a_pos + 1:]:
+            for b in indices[a_pos + 1 :]:
                 pb = patches[b]
                 if pb.origin[0] >= z_limit:
                     break
@@ -174,7 +177,7 @@ def simulate_random_kfold(
     def _stats(values):
         mean = sum(values) / len(values)
         var = sum((v - mean) ** 2 for v in values) / max(1, len(values) - 1)
-        return mean, var ** 0.5
+        return mean, var**0.5
 
     contaminated_mean, contaminated_sd = _stats(contaminated_pct)
     shared_mean, _ = _stats(shared_pct)
@@ -201,8 +204,10 @@ def nnunet_default_split(names: Sequence[str], k: int = 5, seed: int = 12345) ->
     try:
         from sklearn.model_selection import KFold
 
-        folds = [list(test) for _, test in KFold(k, shuffle=True, random_state=seed).split(ordered)]
-    except ImportError:                                  # sklearn's own algorithm
+        folds = [
+            list(test) for _, test in KFold(k, shuffle=True, random_state=seed).split(ordered)
+        ]
+    except ImportError:  # sklearn's own algorithm
         import numpy as np
 
         indices = np.arange(n)
@@ -211,13 +216,17 @@ def nnunet_default_split(names: Sequence[str], k: int = 5, seed: int = 12345) ->
         sizes[: n % k] += 1
         folds, cursor = [], 0
         for size in sizes:
-            folds.append(list(indices[cursor:cursor + size]))
+            folds.append(list(indices[cursor : cursor + size]))
             cursor += size
     out = []
     for fold in folds:
         val = {ordered[i] for i in fold}
-        out.append({"train": [x for x in ordered if x not in val],
-                    "val": [x for x in ordered if x in val]})
+        out.append(
+            {
+                "train": [x for x in ordered if x not in val],
+                "val": [x for x in ordered if x in val],
+            }
+        )
     return out
 
 
@@ -340,14 +349,12 @@ def blocked_kfold(
             if j in val_set:
                 continue
             if any(nb in val_set for nb in graph.get(j, ())):
-                dropped += 1          # buffer zone: touches validation, so excluded
+                dropped += 1  # buffer zone: touches validation, so excluded
                 continue
             train.append(j)
         dropped_per_fold.append(dropped)
         train_set = set(train)
-        residual += sum(
-            1 for v in val_set if any(nb in train_set for nb in graph.get(v, ()))
-        )
+        residual += sum(1 for v in val_set if any(nb in train_set for nb in graph.get(v, ())))
         splits.append(
             {
                 "train": [patches[j].name for j in sorted(train)],

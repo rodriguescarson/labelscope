@@ -1,12 +1,17 @@
 import numpy as np
 
-from labelscope.quality import (audit_label, component_stats, junction_density,
-                                label_scheme, thickness_stats)
+from labelscope.quality import (
+    audit_label,
+    component_stats,
+    junction_density,
+    label_scheme,
+    thickness_stats,
+)
 
 
 def sheet_label(shape=(48, 48, 48), z=24, thickness=2, value=1):
     label = np.zeros(shape, dtype=np.uint8)
-    label[z:z + thickness] = value
+    label[z : z + thickness] = value
     return label
 
 
@@ -36,7 +41,7 @@ def test_a_flat_sheet_is_planar_and_a_cube_is_not():
 
 def test_fragments_are_counted_separately():
     label = sheet_label()
-    label[2, 2, 2] = 1                 # a one-voxel speck
+    label[2, 2, 2] = 1  # a one-voxel speck
     stats = component_stats(label > 0)
     assert stats["n_components"] == 2
     assert 0.0 < stats["fragment_fraction"] < 0.001
@@ -59,7 +64,7 @@ def test_a_nearby_second_winding_is_not_mistaken_for_a_junction():
 def test_a_bridge_between_two_windings_is_detected():
     bridged = np.zeros((48, 48, 48), bool)
     bridged[16:18], bridged[28:30] = True, True
-    bridged[16:30, 22:26, 22:26] = True          # the merger
+    bridged[16:30, 22:26, 22:26] = True  # the merger
     clean_rate = junction_density(
         np.pad(np.ones((2, 48, 48), bool), ((16, 30), (0, 0), (0, 0))), n_samples=1500
     )["junction_fraction"]
@@ -70,8 +75,8 @@ def test_surface_class_is_detected_not_assumed():
     """Class 2 is the thin sheet here and class 1 is the bulk — the detector
     must not simply take the lowest index."""
     label = np.zeros((48, 48, 48), dtype=np.uint8)
-    label[:20] = 1                                # bulk region
-    label[30:32] = 2                              # thin sheet
+    label[:20] = 1  # bulk region
+    label[30:32] = 2  # thin sheet
     result = audit_label(label)
     assert result["surface_class"] == 2
     assert result["surface_thickness_median"] <= 3.0
@@ -79,7 +84,7 @@ def test_surface_class_is_detected_not_assumed():
 
 def test_a_space_filling_class_is_never_called_the_surface():
     label = np.zeros((32, 32, 32), dtype=np.uint8)
-    label[:] = 1                                  # fills the volume
+    label[:] = 1  # fills the volume
     label[15:17] = 2
     assert audit_label(label)["surface_class"] == 2
 

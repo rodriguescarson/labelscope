@@ -1,12 +1,15 @@
 import json
 
-from labelscope.geometry import (blocked_kfold, overlap_graph, parse_patch_names,
-                                 simulate_random_kfold)
+from labelscope.geometry import (
+    blocked_kfold,
+    overlap_graph,
+    parse_patch_names,
+    simulate_random_kfold,
+)
 
 
 def _grid(stride, n=4, size=300, volume="s1"):
-    names = [f"{volume}_z{z*stride}_y{y*stride}_x0"
-             for z in range(n) for y in range(n)]
+    names = [f"{volume}_z{z * stride}_y{y * stride}_x0" for z in range(n) for y in range(n)]
     patches, unparsed = parse_patch_names(names, (size, size, size))
     assert not unparsed
     return patches
@@ -18,7 +21,7 @@ def test_disjoint_grid_has_no_overlap():
 
 
 def test_sliding_window_overlap_is_detected():
-    patches = _grid(stride=150)          # 50% stride on a 300 patch
+    patches = _grid(stride=150)  # 50% stride on a 300 patch
     graph = overlap_graph(patches)
     assert graph, "overlapping patches must produce edges"
     assert max(max(v.values()) for v in graph.values()) > 0.4
@@ -92,7 +95,7 @@ def test_assuming_one_size_overstates_overlap_on_a_mixed_dataset():
     from labelscope.geometry import overlap_graph, parse_patch_names
 
     names = ["s1_z0_y0_x0", "s1_z200_y0_x0", "s1_z400_y0_x0"]
-    real = {n: (172, 172, 172) for n in names}
+    real = dict.fromkeys(names, (172, 172, 172))
     assumed, _ = parse_patch_names(names, (300, 300, 300))
     actual, _ = parse_patch_names(names, (300, 300, 300), sizes=real)
     assert overlap_graph(assumed), "at 300 these patches overlap"
@@ -106,10 +109,12 @@ def test_sizes_are_read_from_the_volumes(tmp_path):
     from labelscope.geometry import sizes_from_volumes
 
     for name, edge in (("s1_z0_y0_x0", 8), ("s1_z100_y0_x0", 12)):
-        tifffile.imwrite(str(tmp_path / f"{name}.tif"),
-                         np.zeros((edge, edge, edge), dtype=np.uint8))
+        tifffile.imwrite(
+            str(tmp_path / f"{name}.tif"), np.zeros((edge, edge, edge), dtype=np.uint8)
+        )
     sizes, unreadable = sizes_from_volumes(
-        ["s1_z0_y0_x0", "s1_z100_y0_x0", "s1_z999_y0_x0"], str(tmp_path))
+        ["s1_z0_y0_x0", "s1_z100_y0_x0", "s1_z999_y0_x0"], str(tmp_path)
+    )
     assert sizes["s1_z0_y0_x0"] == (8, 8, 8)
     assert sizes["s1_z100_y0_x0"] == (12, 12, 12)
     assert unreadable == ["s1_z999_y0_x0"]

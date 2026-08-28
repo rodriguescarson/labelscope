@@ -8,6 +8,7 @@ Numbers say a dataset has a problem; a picture says *where*.  Two renderers:
                      signed offset from the CT ridge — blue where the label sits
                      inboard of the sheet, red where it sits outboard.
 """
+
 from __future__ import annotations
 
 import os
@@ -84,7 +85,7 @@ def render_drift_map(
     Blue is a label sitting inboard of the sheet the scan shows, red is outboard,
     grey-green is on it.  ``clip`` sets the colour saturation point, in voxels.
     """
-    from labelscope.alignment import orient_normals, point_normals, _sample_at
+    from labelscope.alignment import _sample_at, orient_normals, point_normals
 
     index = image.shape[axis] // 2 if index is None else index
     mask3d = label == surface_class
@@ -104,13 +105,15 @@ def render_drift_map(
     step, radius = 0.25, 6
     offsets = np.arange(-radius, radius + step / 2, step, dtype=np.float32)
     walk = points.T[:, None, :] + normals[:, None, :] * offsets[None, :, None]
-    profile = _sample_at(image.astype(np.float32), walk.reshape(3, -1)).reshape(offsets.size, -1)
+    profile = _sample_at(image.astype(np.float32), walk.reshape(3, -1)).reshape(
+        offsets.size, -1
+    )
     smooth = ndi.gaussian_filter1d(profile, 2.0, axis=0)
     signed = (np.argmax(smooth, axis=0) - (offsets.size - 1) / 2.0) * step
 
     ct = np.take(image, index, axis=axis)
     gray = _to_gray(ct)
-    rgb = np.stack([gray] * 3, axis=-1) // 2 + 40           # dim the background
+    rgb = np.stack([gray] * 3, axis=-1) // 2 + 40  # dim the background
 
     plane_axes = [a for a in range(3) if a != axis]
     rows = on_slice[:, plane_axes[0]]

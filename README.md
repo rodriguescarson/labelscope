@@ -28,11 +28,20 @@ It answers three questions:
 ## Install
 
 ```bash
-pip install -e .            # Python ≥3.9, CPU only, no GPU required
+python -m pip install --upgrade pip     # needs pip >= 21.3 for a pyproject-only install
+pip install -e .                        # Python >= 3.9, CPU only, no GPU required
 labelscope --version
 ```
 
-Optional: `pip install -e '.[zarr]'` to read Zarr and OME-Zarr as well as 3-D TIFF.
+Optional extras: `.[zarr]` to read Zarr and OME-Zarr as well as 3-D TIFF, `.[dev]`
+for the test suite.
+
+```bash
+pytest -q          # 74 tests, ~25 s, no data download required
+```
+
+Every test builds its own synthetic volumes, so the suite runs on a clean clone
+with nothing fetched.
 
 ---
 
