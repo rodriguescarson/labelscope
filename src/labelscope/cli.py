@@ -942,9 +942,17 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
             records.append({"name": name, "error": "no valid vertices"})
             continue
 
-        lo, hi = mesh.bounds(margin=args.margin)
+        if args.decimate > 1:
+            mesh = _decimate(mesh, args.decimate)
         try:
-            volume, origin = _load_window(args.volume, lo, hi)
+            if args.remote:
+                from labelscope.remote_zarr import ChunkedVolume
+
+                volume = ChunkedVolume.from_store(args.volume, cache_dir=args.cache)
+                origin = None
+            else:
+                lo, hi = mesh.bounds(margin=args.margin)
+                volume, origin = _load_window(args.volume, lo, hi)
         except Exception as exc:
             records.append({"name": name, "error": f"volume unreadable: {exc}"})
             continue
@@ -954,6 +962,9 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
         )
         result["name"] = name
         result["valid_fraction"] = float(mesh.valid.mean())
+        if args.remote:
+            result["chunks_fetched"] = getattr(volume, "chunks_fetched", None)
+            result["mb_fetched"] = round(getattr(volume, "bytes_fetched", 0) / 1e6, 1)
         seams = result.pop("seams")
         result["seam_lines"] = ";".join(
             f"{s['axis']}:{s['line']}@{s['z']:.1f}" for s in seams[:8]
@@ -967,9 +978,11 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
     os.makedirs(args.out, exist_ok=True)
     write_csv(records, os.path.join(args.out, "sheetswitch.csv"))
     flagged = [r for r in records if r.get("n_seams")]
+    usable = [r for r in records if r.get("resolution_adequate")]
     summary = {
         "n_meshes": len(records),
         "n_readable": len([r for r in records if "max_z" in r]),
+        "n_resolution_adequate": len(usable),
         "n_flagged": len(flagged),
         "z_threshold": args.z_threshold,
         "flagged": [
@@ -986,6 +999,17 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
     for row in summary["flagged"][:10]:
         print(f"  {row['name']}: max z {row['max_z']:.1f}  [{row['seams']}]")
     return 0
+
+
+def _decimate(mesh, factor: int):
+    from labelscope.mesh import QuadMesh
+
+    return QuadMesh(
+        points=mesh.points[::factor, ::factor],
+        valid=mesh.valid[::factor, ::factor],
+        meta=mesh.meta,
+        path=mesh.path,
+    )
 
 
 def _load_window(volume_path: str, lo, hi):

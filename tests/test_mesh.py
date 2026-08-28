@@ -133,7 +133,7 @@ def test_the_detector_reads_a_chunked_volume_the_same_way():
             lo = np.array(key) * 32
             block = np.zeros((32, 32, 32), np.uint8)
             hi = np.minimum(lo + 32, volume.shape)
-            sub = volume[lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]]
+            sub = volume[lo[0] : hi[0], lo[1] : hi[1], lo[2] : hi[2]]
             block[tuple(slice(0, s) for s in sub.shape)] = sub
 
             class R:
@@ -142,9 +142,12 @@ def test_the_detector_reads_a_chunked_volume_the_same_way():
 
                 def raise_for_status(self):
                     pass
+
             return R()
 
-    remote = ChunkedVolume("http://x/0", volume.shape, (32, 32, 32), "|u1", session=LocalStore())
+    remote = ChunkedVolume(
+        "http://x/0", volume.shape, (32, 32, 32), "|u1", session=LocalStore()
+    )
     mesh = mesh_on_sheet(sheet_z=72.0)
     switched = displace(mesh, 24.0)
 
@@ -153,3 +156,24 @@ def test_the_detector_reads_a_chunked_volume_the_same_way():
     assert abs(local_result["max_z"] - remote_result["max_z"]) < 0.5
     assert local_result["n_seams"] == remote_result["n_seams"]
     assert remote.chunks_fetched > 0
+
+
+def test_the_detector_refuses_to_conclude_at_an_inadequate_resolution():
+    """At 45.5 um on PHercParis4 the mesh grid step is about 18 voxels against a
+    12.5 voxel winding spacing: every edge already crosses a gap, and the
+    statistic is measuring roughness.  The tool has to say so rather than report
+    seams it cannot distinguish."""
+    volume = wrapped_volume(spacing=10.0, sheet_sigma=1.5)  # wraps closer than the grid
+    mesh = mesh_on_sheet(sheet_z=70.0, step=12.0)  # step 12 vs spacing 10
+    result = find_sheet_switches(mesh, volume)
+    assert result["resolution_adequate"] is False
+    assert result["n_seams"] == 0
+    assert "seams_unreliable" in result
+
+
+def test_an_adequate_resolution_is_recognised():
+    volume = wrapped_volume(spacing=24.0)
+    mesh = mesh_on_sheet(sheet_z=72.0, step=3.0)
+    result = find_sheet_switches(mesh, volume)
+    assert result["resolution_adequate"] is True
+    assert result["steps_per_winding"] > 4.0

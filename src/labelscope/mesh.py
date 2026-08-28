@@ -161,12 +161,60 @@ def _line_scores(dip: np.ndarray, along: int) -> np.ndarray:
     return scores
 
 
+def winding_spacing(
+    mesh: QuadMesh,
+    volume,
+    origin=None,
+    reach: float = 6.0,
+    n_samples: int = 2000,
+    seed: int = 0,
+) -> float:
+    """Distance to the next wrap, measured from the scan along the surface normal.
+
+    This is what decides whether the detector can work at all here.  A seam is
+    visible because the edge crossing it dips into the gap between two wraps; if
+    the mesh's own grid step is already comparable to the distance between wraps,
+    every edge crosses gaps and there is no seam to find.
+    """
+    sample, _ = _sampler(volume, origin)
+    idx = np.argwhere(mesh.valid)
+    if len(idx) == 0:
+        return float("nan")
+    rng = np.random.default_rng(seed)
+    if len(idx) > n_samples:
+        idx = idx[rng.choice(len(idx), n_samples, replace=False)]
+    normals = mesh.normals()
+    base = mesh.points[idx[:, 0], idx[:, 1]]
+    nrm = normals[idx[:, 0], idx[:, 1]]
+
+    step = mesh.grid_step()
+    span = max(reach * step, 40.0)
+    offsets = np.arange(-span, span + 1.0, max(span / 120.0, 0.5), dtype=np.float32)
+    walk = base[None] + nrm[None] * offsets[:, None, None]
+    values = sample(walk.reshape(-1, 3)).reshape(offsets.size, -1)
+    profile = ndi.gaussian_filter1d(values.mean(1), 3.0)
+    peaks = [
+        i
+        for i in range(2, profile.size - 2)
+        if profile[i] > profile[i - 1] and profile[i] > profile[i + 1]
+    ]
+    if not peaks:
+        return float("nan")
+    dominant = min(peaks, key=lambda i: abs(float(offsets[i])))
+    centre = float(offsets[dominant])
+    others = [
+        abs(float(offsets[i]) - centre) for i in peaks if abs(float(offsets[i]) - centre) > 2
+    ]
+    return min(others) if others else float("nan")
+
+
 def find_sheet_switches(
     mesh: QuadMesh,
     volume,
     origin=None,
     z_threshold: float = 5.0,
     steps: int = 17,
+    check_resolution: bool = True,
 ) -> Dict:
     """Locate seams where the surface appears to jump to a neighbouring wrap.
 
@@ -174,10 +222,23 @@ def find_sheet_switches(
     darkens together, which is what crossing the gap between two wraps looks
     like, and not where single edges happen to run over damage.
     """
+    step = mesh.grid_step()
+    spacing = (
+        winding_spacing(mesh, volume, origin=origin) if check_resolution else float("nan")
+    )
+    # The seam is only visible if a grid edge normally stays on one wrap.  Once
+    # the grid step approaches the distance between wraps, every edge crosses a
+    # gap and the statistic saturates -- at 45.5 um on PHercParis4 the step is
+    # about 18 voxels against a 12.5 voxel spacing, and the detector there is
+    # measuring the scan's roughness, not sheet switches.
+    adequate = bool(np.isfinite(spacing) and step <= 0.5 * spacing)
     dip = edge_dip(mesh, volume, origin=origin, steps=steps)
     result: Dict = {
         "grid_shape": list(mesh.shape),
-        "grid_step": mesh.grid_step(),
+        "grid_step": step,
+        "winding_spacing": float(spacing),
+        "steps_per_winding": float(spacing / step) if step else float("nan"),
+        "resolution_adequate": adequate,
         "z_threshold": z_threshold,
         "seams": [],
     }
@@ -199,6 +260,10 @@ def find_sheet_switches(
         result[f"axis{axis}_max_z"] = float(scores.max()) if scores.size else 0.0
         result[f"axis{axis}_median_dip"] = float(np.nanmedian(means)) if means.size else 0.0
     result["seams"].sort(key=lambda s: -s["z"])
+    if not adequate:
+        # report the measurement, refuse the conclusion
+        result["seams_unreliable"] = result.pop("seams")
+        result["seams"] = []
     result["n_seams"] = len(result["seams"])
     result["max_z"] = max((result.get("axis0_max_z", 0.0), result.get("axis1_max_z", 0.0)))
     return result
