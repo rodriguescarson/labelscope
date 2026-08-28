@@ -54,8 +54,8 @@ def test_overlapping_patches_leak_labelled_voxels_to_the_random_split(tmp_path):
 
 
 def test_the_blocked_split_leaks_nothing(tmp_path):
-    patches, labels = build(tmp_path, stride=30)
-    splits, stats = blocked_kfold(patches, k=4, mode="block")
+    patches, labels = build(tmp_path, stride=30, n=6)
+    splits, stats = blocked_kfold(patches, k=4, mode="block", block_factor=1)
     assert stats["residual_leaking_val_patches"] == 0
     result = measure_seen_fraction(patches, splits, labels)
     assert result["seen_fraction_mean"] == 0.0
@@ -89,3 +89,23 @@ def test_a_contradictory_patch_is_caught(tmp_path):
     result = check_overlap_consistency(patches, labels, max_pairs=40)
     assert result["iou_min"] < 0.9
     assert result["pairs_below_0_9_iou"] >= 1
+
+
+def test_buffer_dropped_patches_are_not_counted_as_training_data(tmp_path):
+    """A buffered split deliberately withholds the patches that touch
+    validation.  Treating "not in this fold" as training makes the fix look
+    like it still leaks — which is exactly what the first version of this
+    measurement reported on real data."""
+    patches, labels = build(tmp_path, stride=30, n=6)
+    # block_factor 1 makes the blocks patch-sized, so the folds actually split
+    # this small fixture spatially and the buffer zone is exercised
+    splits, stats = blocked_kfold(patches, k=4, mode="block", block_factor=1)
+    assert any(stats["buffer_dropped_per_fold"]), "this fixture must exercise the buffer"
+
+    honest = measure_seen_fraction(patches, splits, labels)
+    assert honest["seen_fraction_mean"] == 0.0
+
+    # the old behaviour, reconstructed: everything outside the fold counts
+    naive = [{"train": [p.name for p in patches if p.name not in set(s["val"])],
+              "val": s["val"]} for s in splits]
+    assert measure_seen_fraction(patches, naive, labels)["seen_fraction_mean"] > 0.0

@@ -45,6 +45,16 @@ def _fold_of(splits: Sequence[dict]) -> Dict[str, int]:
     return fold
 
 
+def _train_sets(splits: Sequence[dict]) -> List[set]:
+    """The training names of each fold, taken from the split itself.
+
+    Not "everything outside this fold": a buffered split deliberately drops the
+    patches that touch validation, and counting those as training data would
+    make the split look like it still leaks.
+    """
+    return [set(split["train"]) for split in splits]
+
+
 def measure_seen_fraction(
     patches: Sequence[Patch],
     splits: Sequence[dict],
@@ -61,6 +71,7 @@ def measure_seen_fraction(
     """
     graph = graph if graph is not None else overlap_graph(patches)
     fold = _fold_of(splits)
+    train_sets = _train_sets(splits)
     by_name = {p.name: i for i, p in enumerate(patches)}
 
     per_patch: List[Dict] = []
@@ -82,12 +93,13 @@ def measure_seen_fraction(
             continue
 
         my_fold = fold[patch.name]
+        training = train_sets[my_fold]
         seen = np.zeros(mask.shape, dtype=bool)
         n_neighbours = 0
         for other in graph.get(by_name[patch.name], ()):
             neighbour = patches[other]
-            if fold.get(neighbour.name) == my_fold:
-                continue                      # same fold: not training data
+            if neighbour.name not in training:
+                continue          # validation, or dropped into the buffer zone
             box = _intersection(patch, neighbour)
             if box is None:
                 continue

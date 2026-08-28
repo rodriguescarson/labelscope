@@ -38,45 +38,62 @@ Optional: `pip install -e '.[zarr]'` to read Zarr and OME-Zarr as well as 3-D TI
 
 ## 1. `labelscope leakage` — is the validation score real?
 
-Vesuvius surface datasets are cut from a handful of scroll volumes on a sliding
-window whose stride is **smaller than the patch**, so neighbouring patches share
-voxels. nnU-Net's default is a *random* 5-fold split over cases. Random splits
-assume the cases are independent. These are not.
+Patch datasets cut on a sliding window can share voxels between patches. When
+they do, a random k-fold split puts the same voxels on both sides of the split
+and the validation score that follows is optimistic — which matters, because that
+score is what checkpoint selection and loss-variant comparisons are decided on.
 
 ```bash
-labelscope leakage --labels nnUNet_raw/DatasetXXX/labelsTr --patch-size 300 --k 5 --out audit/
+labelscope leakage --labels nnUNet_raw/DatasetXXX/labelsTr --k 5 --out audit/
 ```
 
 ```
-1754 patches, 7527 overlapping pairs (92.4% of patches)
-random 5-fold: 91.9% of validation patches leak
-blocked split: val folds [351, 351, 351, 351, 350], 0 residual leaks, 16.5% of training patches dropped to buffer
+read 1754 patch shapes from the volumes: 4 distinct — [(170,170,170), (172,172,172), (236,236,236), (300,300,300)]
+1754 patches, 28 overlapping pairs (1.8% of patches)
+nnU-Net default split: 1.5% of validation patches leak (random shuffles: 1.6%)
+blocked split: val folds [351, 351, 351, 351, 350], 0 residual leaks, 0.1% dropped to buffer
 ```
 
-The command writes `splits_final.json` in nnU-Net's own format. Drop it into
+**It reads every volume's real shape rather than trusting the name.** This is not
+a nicety. `Dataset059` names look uniform — `s1_z10240_y2560_x2560` carries only
+an origin — and the directory holds 170³, 172³, 236³ and 300³ cubes. Assuming
+300³ turns 28 overlapping pairs into 7,527 and a 1.5% leak into 91.9%. That
+mistake is in this repository's history; `--assume-patch-size` reproduces it, and
+two tests pin the difference.
+
+What it reports:
+
+* `overlapping_pairs`, and the share of patches touching another;
+* the leak in **the split nnU-Net actually generates** —
+  `generate_crossval_split(sorted_keys, seed=12345, n_splits=5)`, i.e.
+  `sklearn KFold(5, shuffle=True, random_state=12345)` — not just an average over
+  hypothetical shuffles;
+* with `--measure-seen`, the leak **in voxels**: for each validation patch, the
+  fraction of its labelled surface that a training patch also covers. That is an
+  upper bound on how much of the target is reproducible from memory alone, and it
+  needs no GPU and no training run;
+* with `--consistency N`, whether overlapping patches **agree** about the voxels
+  they share. They should — it is the same physical papyrus, labelled once.
+
+And it writes `splits_final.json` in nnU-Net's own format. Drop it into
 `nnUNet_preprocessed/DatasetXXX/` and the next run uses a split where no
 validation patch touches a training patch.
 
 Two strategies, both leak-free:
 
 * `--mode block` (default) — **spatial block cross-validation**. Each source
-  volume is tiled into blocks larger than the patch and whole blocks are dealt to
-  folds, so validation folds stay near-equal in size. Any training patch that
-  would still touch a validation patch is dropped into a buffer zone. This costs
-  a few percent of the training set and is the standard remedy for spatially
-  autocorrelated data.
+  volume is tiled into blocks larger than the largest patch and whole blocks are
+  dealt to folds, so validation folds stay near-equal in size. Any training patch
+  that would still touch a validation patch is dropped into a buffer zone.
 * `--mode component` — whole connected components of the overlap graph go to one
-  fold. Nothing is discarded, but fold sizes follow component sizes and can be
-  very uneven.
+  fold. Nothing is discarded, but fold sizes follow component sizes.
 
 `--buffer N` widens the definition of contamination: two patches that stop `N`
 voxels short of each other still count as neighbours, because the same papyrus
 sheet almost certainly runs through both.
 
-If the volumes are not on this machine, `--names-file names.txt` works too — the
-check only needs the patch names, which carry the coordinates.
-
----
+If the volumes are not on this machine, `--names-file names.txt` works — but then
+the patch size has to be assumed, with the consequences above.
 
 ## 2. `labelscope scan` — what is actually in this release?
 

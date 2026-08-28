@@ -60,9 +60,17 @@ class Patch:
 
 
 def parse_patch_names(
-    names: Iterable[str], size: Tuple[int, int, int]
+    names: Iterable[str],
+    size: Tuple[int, int, int],
+    sizes: Optional[Dict[str, Tuple[int, int, int]]] = None,
 ) -> Tuple[List[Patch], List[str]]:
-    """Parse coordinate-encoded patch names.  Returns (parsed, unparsed)."""
+    """Parse coordinate-encoded patch names.  Returns (parsed, unparsed).
+
+    ``sizes`` supplies each patch's real shape, read from the volume rather than
+    assumed.  That matters: ``Dataset059`` names look uniform but ships 170, 172,
+    236 and 300 voxel cubes in one directory, and computing overlaps at a single
+    assumed size gets every one of them wrong.
+    """
     parsed, unparsed = [], []
     for name in names:
         match = PATCH_NAME_RE.match(name)
@@ -74,10 +82,36 @@ def parse_patch_names(
                 name=name,
                 volume=match.group("vol"),
                 origin=(int(match.group("z")), int(match.group("y")), int(match.group("x"))),
-                size=size,
+                size=(sizes or {}).get(name, size),
             )
         )
     return parsed, unparsed
+
+
+def sizes_from_volumes(names: Iterable[str], directory: str) -> Tuple[Dict, List[str]]:
+    """Read each patch's true shape from its label volume header.
+
+    Returns ``(sizes, unreadable)``.  Header-only, so it costs a file open per
+    volume and no decoding.
+    """
+    import os
+
+    from labelscope.io import probe_volume
+
+    sizes, unreadable = {}, []
+    for name in names:
+        for extension in (".tif", ".tiff"):
+            path = os.path.join(directory, name + extension)
+            if os.path.exists(path):
+                info = probe_volume(path)
+                if info.shape and len(info.shape) == 3:
+                    sizes[name] = tuple(int(v) for v in info.shape)
+                else:
+                    unreadable.append(name)
+                break
+        else:
+            unreadable.append(name)
+    return sizes, unreadable
 
 
 # --------------------------------------------------------------------------- #
@@ -280,8 +314,10 @@ def blocked_kfold(
         rng.shuffle(groups)
         groups.sort(key=len, reverse=True)
     elif mode == "block":
-        size = patches[0].size if patches else (1, 1, 1)
-        block_size = tuple(max(1, s * block_factor) for s in size)
+        # blocks are sized off the largest patch, so a block is never smaller
+        # than the patches it is meant to separate
+        largest = tuple(max((p.size[a] for p in patches), default=1) for a in range(3))
+        block_size = tuple(max(1, s * block_factor) for s in largest)
         buckets: Dict[Tuple, List[int]] = defaultdict(list)
         for idx, patch in enumerate(patches):
             buckets[_block_id(patch, block_size)].append(idx)

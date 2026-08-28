@@ -211,7 +211,20 @@ def cmd_leakage(args: argparse.Namespace) -> int:
         return 2
 
     size = tuple(args.patch_size) if len(args.patch_size) == 3 else tuple(args.patch_size * 3)
-    patches, unparsed = parse_patch_names(names, size)
+    sizes, size_note = {}, ""
+    if args.labels and not is_remote(args.labels) and not args.assume_patch_size:
+        from labelscope.geometry import sizes_from_volumes
+
+        sizes, unreadable = sizes_from_volumes(names, args.labels)
+        if sizes:
+            distinct = sorted({s for s in sizes.values()})
+            size_note = (f"read {len(sizes)} patch shapes from the volumes: "
+                         f"{len(distinct)} distinct — {distinct[:6]}")
+            _log(size_note)
+            if unreadable:
+                _log(f"  {len(unreadable)} volumes unreadable; falling back to "
+                     f"--patch-size for those")
+    patches, unparsed = parse_patch_names(names, size, sizes=sizes)
     if not patches:
         _log("no volume names carry z/y/x coordinates — nothing to check.\n"
              "labelscope leakage needs names like s1_z10240_y2560_x2560.")
@@ -262,7 +275,11 @@ def cmd_leakage(args: argparse.Namespace) -> int:
                 max_pairs=args.consistency,
                 progress=lambda d, t: _log(f"  consistency {d}/{t}"))
     summary = {
-        "n_patches": len(patches), "patch_size": list(size), "buffer": args.buffer,
+        "n_patches": len(patches), "fallback_patch_size": list(size),
+        "patch_shapes_read_from_volumes": len(sizes),
+        "distinct_patch_shapes": sorted({list(v) for v in sizes.values()}, key=list)
+        if False else sorted([list(v) for v in {s for s in sizes.values()}]),
+        "buffer": args.buffer,
         "overlapping_pairs": n_pairs,
         "patches_with_overlapping_neighbour": len(touched),
         "patches_with_overlapping_neighbour_pct": 100.0 * len(touched) / len(patches),
@@ -549,7 +566,11 @@ def main(argv=None) -> int:
                       help="newline-separated patch names, when the volumes are not "
                            "on this machine — the check only needs the names")
     leak.add_argument("--patch-size", type=int, nargs="+", default=[300],
-                      help="one value for a cube, or three as z y x")
+                      help="fallback size when a volume's own shape cannot be read; "
+                           "one value for a cube, or three as z y x")
+    leak.add_argument("--assume-patch-size", action="store_true",
+                      help="trust --patch-size instead of reading each volume's real "
+                           "shape (faster, and wrong on any release with mixed sizes)")
     leak.add_argument("--k", type=int, default=5)
     leak.add_argument("--buffer", type=int, default=0,
                       help="treat patches within this many voxels as neighbours too")
