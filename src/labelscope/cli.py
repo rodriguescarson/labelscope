@@ -942,6 +942,8 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
             records.append({"name": name, "error": "no valid vertices"})
             continue
 
+        if args.window:
+            mesh = _best_window(mesh, args.window)
         if args.decimate > 1:
             mesh = _decimate(mesh, args.decimate)
         try:
@@ -999,6 +1001,36 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
     for row in summary["flagged"][:10]:
         print(f"  {row['name']}: max z {row['max_z']:.1f}  [{row['seams']}]")
     return 0
+
+
+def _best_window(mesh, size: int):
+    """The most complete size x size patch of the grid.
+
+    Streaming cost scales with how much scroll a surface spans, not with how many
+    vertices are sampled, so decimating a whole segment does not make it cheap --
+    taking a contiguous window does.  The window with the fewest missing vertices
+    is the one worth measuring.
+    """
+
+    from labelscope.mesh import QuadMesh
+
+    rows, cols = mesh.shape
+    if rows <= size and cols <= size:
+        return mesh
+    gh, gw = min(size, rows), min(size, cols)
+    best, coords = -1.0, (0, 0)
+    for r in range(0, rows - gh + 1, max(1, gh // 2)):
+        for c in range(0, cols - gw + 1, max(1, gw // 2)):
+            score = float(mesh.valid[r : r + gh, c : c + gw].mean())
+            if score > best:
+                best, coords = score, (r, c)
+    r, c = coords
+    return QuadMesh(
+        points=mesh.points[r : r + gh, c : c + gw],
+        valid=mesh.valid[r : r + gh, c : c + gw],
+        meta={**mesh.meta, "window": [r, gh, c, gw], "window_valid": best},
+        path=mesh.path,
+    )
 
 
 def _decimate(mesh, factor: int):
@@ -1225,6 +1257,15 @@ def main(argv=None) -> int:
         "passes through",
     )
     switch.add_argument("--cache", help="directory to keep fetched chunks in")
+    switch.add_argument(
+        "--window",
+        type=int,
+        default=0,
+        metavar="N",
+        help="measure the most complete NxN patch of each grid rather than the "
+        "whole surface; streaming cost scales with how much scroll the surface "
+        "spans, so a window is what makes a fleet-wide pass affordable",
+    )
     switch.add_argument(
         "--decimate",
         type=int,
