@@ -257,3 +257,42 @@ def test_a_symmetric_orientation_reference_is_reported_as_uninformative():
                                                 radius=8.0, n_samples=4000,
                                                 orient_field="unoriented")
     assert orientation_reference_quality(profiles2, offsets2) > 0.8
+
+
+def test_intensity_orientation_does_not_manufacture_an_offset():
+    """The offsets measured on real data are reported under a convention that
+    orients normals toward the denser side.  If that convention could invent a
+    displacement out of noise, the whole result would be an artefact.
+
+    It cannot, because the flip is one decision for a whole connected piece of
+    surface, not one per voxel: flipping every profile together mirrors the
+    average, and a symmetric average stays symmetric.  A label centred on a
+    symmetric sheet must therefore still read zero.
+    """
+    shape = (64, 96, 96)
+    for seed in range(4):
+        volume = scroll_like(shape, sheet_z=32.0, seed=seed)      # symmetric sheets
+        result = aggregate_alignment(volume, sheet_label(shape, 32), n_samples=10000,
+                                     bootstrap=40, seed=seed, min_global_snr=0.0)
+        assert abs(result["global_peak_offset_raw"]) < 0.5, (
+            f"symmetric sheet, centred label, seed {seed}: "
+            f"{result['global_peak_offset_raw']:+.3f}")
+
+
+def test_an_asymmetric_sheet_is_measured_the_same_way_whatever_the_raw_normal_signs():
+    """And where there IS a real asymmetry, the answer must not depend on which
+    way local PCA happened to return the normals."""
+    shape = (64, 96, 96)
+    z = np.arange(shape[0], dtype=np.float32)[:, None, None]
+    rng = np.random.default_rng(0)
+    volume = np.full(shape, 40.0, dtype=np.float32)
+    volume += 70.0 * np.exp(-0.5 * ((z - 35.0) / 2.5) ** 2)    # body 3 vx above
+    volume += rng.normal(0, 5.0, shape).astype(np.float32)
+
+    mask = sheet_label(shape, 32)
+    a = aggregate_alignment(volume, mask, n_samples=10000, bootstrap=40, seed=0)
+    b = aggregate_alignment(volume[::-1].copy(), sheet_label(shape, 31),
+                            n_samples=10000, bootstrap=40, seed=0)
+    # the mirrored volume is the same physics seen the other way round
+    assert abs(a["global_peak_offset_raw"] - b["global_peak_offset_raw"]) < 0.6
+    assert a["global_peak_offset_raw"] > 1.5

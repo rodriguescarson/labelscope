@@ -14,10 +14,13 @@ surface-detection release (`hf://buckets/scrollprize/datasets/surfaces/kaggle`):
 
 * 48 of 51 patches have enough sheet contrast at the labelled surface to measure
   at all (contrast ≥ 2× voxel noise).
-* In **47 of those 48**, the label sits on the **same side** of the density
-  maximum.
-* Median offset **+2.34 voxels**, interquartile range +1.75 to +3.02, per-patch
-  95% bootstrap intervals typically ±0.05.
+* In those 48 the density maximum is not under the label: median |offset|
+  **2.34 voxels**, interquartile range 1.79 to 3.02, ≥1 voxel in 45 of 48
+  patches, per-patch 95% bootstrap intervals typically ±0.05.
+* The sign is a convention — normals are oriented toward the denser side, since
+  the release ships no field that can say which way is out — so "positive in
+  47 of 48" is close to tautological and is not the evidence. The evidence is the
+  magnitude, its consistency, and a signal-to-noise of 2.0-14.8.
 * Sheets are 7.5–9.3 voxels thick (FWHM of the mean profile), and the local
   winding spacing measured from the scans runs 10.5–29.0 voxels.
 

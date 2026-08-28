@@ -60,22 +60,33 @@ labelscope align --images kaggle/images --labels kaggle/labels --overlays 10 --o
 **What it found**
 
 Across 51 patches of the Kaggle surface release, 48 have enough sheet contrast to
-measure. In **47 of those 48**, the labelled writing surface sits on the *same
-side* of the sheet's local CT density maximum:
+measure. In those 48 the sheet's local CT density maximum does not sit under the
+label — it sits about two and a third voxels away:
 
 | | |
 |---|---|
-| median offset | **+2.34 voxels** |
-| interquartile range | +1.75 to +3.02 |
-| patches with a positive offset | **47 / 48** |
+| median \|offset\| | **2.34 voxels** |
+| interquartile range | 1.79 to 3.02 |
+| patches with \|offset\| ≥ 1 voxel | **45 / 48 (94%)** |
+| patches with \|offset\| ≥ 2 voxels | 32 / 48 (67%) |
 | per-patch 95% bootstrap interval | typically ±0.05 |
 | measured winding spacing | 10.5 – 29.0 voxels (median 19.8) |
 | sheet thickness, FWHM of the mean profile | 7.5 – 9.3 voxels |
 
-Individually, the four highest-contrast patches read +2.34, +2.61, +2.48 and
-+2.14 voxels. The offset is about **half a sheet thickness**, which is what a
-label placed on the recto *face* rather than through the sheet's centre should
-look like.
+Individually, the four highest-contrast patches read 2.34, 2.61, 2.48 and 2.14
+voxels. The offset is about **half a sheet thickness**, which is what a label
+placed on the recto *face* rather than through the sheet's centre should look
+like.
+
+**On the sign.** `labelscope` orients normals toward the denser side of the
+sheet, because the release ships no field that can say which way is out (§4). The
+offset is therefore positive in 47 of 48 patches *by that convention*, which is
+close to tautological and is not the evidence. The evidence is the magnitude and
+its consistency: the density distribution around the labelled surface is
+genuinely asymmetric, at a signal-to-noise of 2.0 to 14.8. Two tests check that
+the convention cannot manufacture this — a label centred on a symmetric synthetic
+sheet still reads under 0.5 voxels across four seeds, and a genuinely asymmetric
+sheet measures the same when the volume is mirrored.
 
 **Why it matters**
 
