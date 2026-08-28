@@ -1,0 +1,131 @@
+{
+  "n_pairs": 892,
+  "n_ok": 836,
+  "n_measurable": 836,
+  "n_attempted": 892,
+  "frac_measurable": 0.9372197309417041,
+  "global_peak_offset": {
+    "median": 2.2845959663391113,
+    "mean": 2.2432874703521364,
+    "min": -2.2418060302734375,
+    "max": 5.797740936279297
+  },
+  "cell_offset_median": {
+    "median": 2.218305826187134,
+    "mean": 2.145061827162236,
+    "min": -1.487475872039795,
+    "max": 6.023534774780273
+  },
+  "cell_abs_offset_median": {
+    "median": 2.302727222442627,
+    "mean": 2.349211029173655,
+    "min": 0.506497859954834,
+    "max": 6.0604095458984375
+  },
+  "cell_abs_offset_p90": {
+    "median": 4.612463903427123,
+    "mean": 4.758689395719739,
+    "min": 1.6890754699707031,
+    "max": 9.913601875305176
+  },
+  "cell_frac_ge_1vx": {
+    "median": 0.8333333333333334,
+    "mean": 0.8106192050681393,
+    "min": 0.35526315789473684,
+    "max": 1.0
+  },
+  "cell_frac_ge_2vx": {
+    "median": 0.5832167832167832,
+    "mean": 0.5721167431694054,
+    "min": 0.030303030303030304,
+    "max": 1.0
+  },
+  "global_profile_snr": {
+    "median": 4.063344259447585,
+    "mean": 184842.25185140624,
+    "min": 2.003243368210547,
+    "max": 44065673.828125
+  },
+  "cell_snr_median": {
+    "median": 114.22397785364954,
+    "mean": 7756576.777768149,
+    "min": 56.77283331238384,
+    "max": 1767583857.48066
+  },
+  "hf_energy_norm": {
+    "median": 0.09668699279427528,
+    "mean": 0.086028097275395,
+    "min": 0.020241500809788704,
+    "max": 0.11834526807069778
+  },
+  "cell_frac_unresolved": {
+    "median": 0.0,
+    "mean": 0.007148860198134754,
+    "min": 0.0,
+    "max": 0.19047619047619047
+  },
+  "winding_spacing": {
+    "median": 19.0,
+    "mean": 20.04306220095694,
+    "min": 9.5,
+    "max": 46.0
+  },
+  "search_radius": {
+    "median": 11.55,
+    "mean": 11.605891148325359,
+    "min": 5.4,
+    "max": 16.0
+  },
+  "naive_median_abs_offset": {
+    "median": 2.2265045046806335,
+    "mean": 2.2223854601078523,
+    "min": 1.4374799653887749,
+    "max": 3.060433205217123
+  },
+  "separability_bins": [
+    {
+      "bin": 0,
+      "label": "least separable layers",
+      "n": 223,
+      "hf_energy_norm": 0.1014682725071907,
+      "layer_separability": 2.3745498933796547,
+      "winding_spacing": 16.5,
+      "cell_abs_offset_median": 2.2246108055114746,
+      "cell_frac_ge_1vx": 0.8,
+      "surface_voxels": 1590451
+    },
+    {
+      "bin": 1,
+      "label": "",
+      "n": 223,
+      "hf_energy_norm": 0.1044096127152443,
+      "layer_separability": 3.4461669576606373,
+      "winding_spacing": 20.0,
+      "cell_abs_offset_median": 2.1861658096313477,
+      "cell_frac_ge_1vx": 0.8356164383561644,
+      "surface_voxels": 1590184
+    },
+    {
+      "bin": 2,
+      "label": "",
+      "n": 223,
+      "hf_energy_norm": 0.09823610633611679,
+      "layer_separability": 4.554019047237973,
+      "winding_spacing": 20.5,
+      "cell_abs_offset_median": 2.4361605644226074,
+      "cell_frac_ge_1vx": 0.8611111111111112,
+      "surface_voxels": 1518259
+    },
+    {
+      "bin": 3,
+      "label": "most separable layers",
+      "n": 223,
+      "hf_energy_norm": 0.061959896236658096,
+      "layer_separability": 8.124958243305246,
+      "winding_spacing": 19.5,
+      "cell_abs_offset_median": 2.4227170944213867,
+      "cell_frac_ge_1vx": 0.8387096774193549,
+      "surface_voxels": 1551900
+    }
+  ]
+}

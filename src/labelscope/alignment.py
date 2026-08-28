@@ -229,15 +229,30 @@ def surface_normals(mask: np.ndarray, sigma: float = 1.5) -> np.ndarray:
     return out
 
 
-def noise_sigma(volume: np.ndarray, sample: int = 500_000, seed: int = 0) -> float:
+def noise_sigma(
+    volume: np.ndarray, sample: int = 500_000, seed: int = 0, void_fraction: float = 0.2
+) -> float:
     """Robust estimate of the volume's own voxel noise.
 
     Prominence has to be judged against this, not against the patch's dynamic
     range: a hazy, compressed patch has a *small* dynamic range, so normalising
     by it would hide exactly the degradation we are trying to detect.
+
+    Voxels that are identically zero are excluded when there are enough of them
+    to matter.  51 patches of the Kaggle surface release are masked crops, 53% to
+    67% exact zeros, and a median absolute deviation taken over those is simply
+    zero — which sends the reported signal-to-noise to 4e7 and floats a patch
+    straight through the reliability gate.  A robust estimator is only robust
+    while the thing it is estimating is the majority of its input.
     """
-    residual = volume.astype(np.float32) - ndi.gaussian_filter(volume.astype(np.float32), 1.0)
+    volume = volume.astype(np.float32)
+    residual = volume - ndi.gaussian_filter(volume, 1.0)
+    void = volume == 0
+    if void.mean() > void_fraction:
+        residual = residual[~void]
     flat = residual.ravel()
+    if flat.size == 0:
+        return 1e-6
     if flat.size > sample:
         flat = flat[np.random.default_rng(seed).choice(flat.size, sample, replace=False)]
     return float(max(1.4826 * np.median(np.abs(flat - np.median(flat))), 1e-6))
@@ -835,7 +850,10 @@ def aggregate_alignment(
         cell_sizes.append(int(group.size))
 
     separability = contrast / noise if noise else 0.0
-    reliable = separability >= min_global_snr
+    # A noise estimate pinned at the floor means the estimate failed, not that
+    # the scan is noiseless; the separability computed from it is meaningless.
+    noise_failed = noise <= 1e-5
+    reliable = bool(separability >= min_global_snr and not noise_failed)
     result = {
         "n_samples": int(coords.shape[0]),
         "polarity": polarity,
@@ -847,6 +865,7 @@ def aggregate_alignment(
         "global_peak_ci95": [float(lo), float(hi)],
         "global_peak_ci95_width": float(hi - lo),
         "global_offset_reliable": reliable,
+        "noise_estimate_failed": noise_failed,
         "global_profile_contrast": contrast,
         "global_profile_snr": separability,
         "n_cells": len(cell_offsets),

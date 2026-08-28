@@ -392,3 +392,33 @@ def test_an_asymmetric_sheet_is_measured_the_same_way_whatever_the_raw_normal_si
     # the mirrored volume is the same physics seen the other way round
     assert abs(a["global_peak_offset_raw"] - b["global_peak_offset_raw"]) < 0.6
     assert a["global_peak_offset_raw"] > 1.5
+
+
+def test_noise_is_not_estimated_over_a_masked_void():
+    """51 patches of the Kaggle release are masked crops, more than half exact
+    zeros.  A median absolute deviation taken over those is zero, which sends
+    the reported signal-to-noise to 4e7 and floats the patch through the
+    reliability gate."""
+    from labelscope.alignment import noise_sigma
+
+    shape = (64, 96, 96)
+    volume = scroll_like(shape, noise=8.0)
+    masked = volume.copy()
+    masked[:40] = 0.0  # 62% of the volume zeroed out
+
+    honest = noise_sigma(volume)
+    assert honest > 1.0
+    assert abs(noise_sigma(masked) - honest) < 0.5 * honest
+    assert noise_sigma(masked, void_fraction=1.0) < 1e-3  # the trap
+
+
+def test_a_failed_noise_estimate_is_never_called_reliable():
+    shape = (48, 64, 64)
+    volume = np.zeros(shape, dtype=np.float32)
+    volume[20:23] = 100.0  # noiseless, and 94% exact zeros
+    result = aggregate_alignment(
+        volume, sheet_label(shape, 21), radius=6.0, n_samples=4000, bootstrap=20
+    )
+    assert result["noise_estimate_failed"] is True
+    assert result["global_offset_reliable"] is False
+    assert result["global_peak_offset"] is None
