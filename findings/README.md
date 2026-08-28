@@ -117,35 +117,36 @@ rather than infer.
 
 ---
 
-## 2. `Dataset059` mixes four patch sizes and ships eight malformed volumes
+## 2. `Dataset059` mixes four patch sizes
 
 **Command**
 
 ```bash
-labelscope leakage --labels Dataset059/labelsTr --measure-seen --consistency 250 --out findings/dataset059/
+labelscope leakage --labels Dataset059/labelsTr --measure-seen --consistency 400 --out findings/dataset059/
 ```
 
-Beyond the four cube sizes in §0, eight volumes carry 300×300 pages but **fewer
-than 300 of them**:
+Beyond the shapes in §0, one volume is 364³ — larger than any nominal patch size
+in the release. Nothing in a filename or in `dataset.json` says which size a
+given patch is.
 
-| volume | pages | page size |
-|---|---|---|
-| `s1_z10880_y2880_x3200` | 98 | 300×300 |
-| `s1_z10880_y3520_x3520` | 117 | 300×300 |
-| `s1_z10880_y3200_x3520` | 119 | 300×300 |
-| `s1_z10560_y3840_x3840` | 187 | 300×300 |
-| `s1_z10880_y2880_x2560` | 218 | 300×300 |
-| `s1_z10880_y2560_x2560` | 230 | 300×300 |
-| `s1_z10560_y4480_x2880` | 243 | 300×300 |
-| `s1_z10560_y4480_x3520` | 293 | 300×300 |
+**A second retraction.** An earlier version of this section reported **eight
+malformed volumes** carrying 300×300 pages but only 98–293 of them. They are not
+malformed. They were **truncated by my own downloader**: the server serves those
+files without a `Content-Length`, so the completion check — "bytes received ≥
+declared size" — compared against zero and passed trivially, renaming a partial
+file as complete. Re-fetched on a machine with a fast link, all eight read
+cleanly as 300³ binary volumes with sensible foreground fractions.
 
-These raise `invalid page offset` on read. Their sizes match the server exactly,
-so the copies here are faithful — the volumes are malformed at the source. One
-further volume is 364³, larger than any nominal patch size in the release.
+Two lessons, both now in the code. A downloader must verify what it wrote rather
+than trust a header that may be absent (`scripts/` does this now). And an old
+TIFF reader can turn a truncated file into a *plausible* shape rather than an
+error: `tifffile` 2024.8.30 reported `(98, 300, 300)` with an `invalid page
+offset` warning where 2026.8.23 raises nothing at all on the intact file. Version
+skew in a reader is not a detail when the reader is your measuring instrument.
 
-**Good news, reported as such:** where patches do overlap, their labels agree.
-Median IoU 0.999 across 28 pairs, minimum 0.993, none below 0.9. The release does
-not carry two answers for the same scroll voxel.
+**Good news, unchanged:** where patches do overlap, their labels agree. Median
+IoU 0.999, minimum 0.993, none below 0.9. The release does not carry two answers
+for the same scroll voxel.
 
 ---
 

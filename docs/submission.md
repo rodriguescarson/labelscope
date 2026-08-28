@@ -34,12 +34,13 @@ than the systematic part: per 64³ cube, median |offset| 2.43 voxels, p90 4.66.
 
 **2. `Dataset059`, the surface training set cited in villa#191, is not what its
 filenames imply.** It ships four patch sizes — 170³, 172³, 236³, 300³ — plus one
-364³ and eight volumes carrying 300×300 pages but only 98–293 of them, which
-raise `invalid page offset` on read and are malformed at the source. I know this
-trap is easy to fall into because I fell into it: assuming a uniform 300³ turned
-28 overlapping patch pairs into 7,527 and a 1.5% train/validation leak into
-91.9%. That retraction is written into the findings, and the tool now reads every
-volume's real shape by default.
+364³, and nothing in a filename or in `dataset.json` says which is which. I know
+this trap is easy to fall into because I fell into it: assuming a uniform 300³
+turned 28 overlapping patch pairs into 7,527 and a 1.5% train/validation leak
+into 91.9%. The tool now reads every volume's real shape by default, and both
+that retraction and a second one — eight volumes I reported as malformed turned
+out to be truncated by my own downloader — are written into the findings rather
+than quietly dropped.
 
 **3. Fifteen gigabytes of the Kaggle release is uncompressed padding** — 487 of
 892 label volumes at `COMPRESSION.NONE`, 15.52 GB of a 45 GB release, where the
