@@ -126,6 +126,25 @@ median absolute offset is 2.30 voxels and the 90th percentile 4.61 — against a
 sheet 7.5–9.3 voxels thick. 83% of cells are at least a voxel off, 58% at least
 two.
 
+**It replicates on an independent release.** The same command over all 1,754
+`Dataset059` pairs — a different scroll set, different patch sizes, a different
+production pipeline — gives:
+
+| | Kaggle surface release | `Dataset059` |
+|---|---|---|
+| pairs | 892 | 1,754 |
+| measurable | 836 (93.7%) | 1,732 (98.7%) |
+| median \|offset\| | **2.285 vx** | **2.576 vx** |
+| interquartile range | 1.69 – 2.83 | 1.88 – 3.79 |
+| ≥ 1 voxel | 89% | 98% |
+| ≥ 2 voxels | 63% | 70% |
+| per-cell \|offset\|, median | 2.30 vx | 2.62 vx |
+| cells ≥ 1 voxel off | 83.3% | 85.2% |
+| median winding spacing | 19.0 vx | 21.0 vx |
+
+2,568 pairs between them and the same answer to within a third of a voxel. This
+is a property of how these surfaces are annotated, not of one release.
+
 **What it does not show.** Binned by layer separability, the four quartiles read
 2.21, 2.19, 2.44 and 2.42 voxels of per-cell offset from least to most separable.
 There is no gradient: no evidence that the labels are worse where the layers are
@@ -240,4 +259,79 @@ guess, and finds a surface class in all 1,754.
 
 ## 6. Label topology is clean
 
-*Pending the deep scan over a 200-volume subsample.*
+Over a 200-volume seeded sample of the Kaggle release, with `scan --deep`:
+
+| metric | median | p90 | max |
+|---|---|---|---|
+| surface fraction | 0.049 | 0.084 | 0.154 |
+| local thickness (median) | 2.00 | 2.00 | 2.00 |
+| local thickness (p95) | 4.00 | 4.00 | 4.00 |
+| connected components | 7 | 13 | 22 |
+| fragment fraction | 0.000 | 0.000 | 0.000 |
+| worst-component planarity | 0.011 | 0.037 | 0.183 |
+| junction fraction | 0.0027 | 0.0047 | 0.0070 |
+
+Uniform `[0, 1, 2]` class scheme in all 200; surface class detected as 1 in all
+200. No speckle, no blobs, no fat thickness tail, and junctions — the local
+signature of a label bridging two windings — sit at a quarter of one percent of
+surface voxels with a maximum of 0.7%.
+
+A negative result, and worth having. These particular failure modes can now be
+ruled out by measurement rather than by hope, and the same command will say so
+again the next time the release changes.
+
+---
+
+## 7. A detector for the failure the spiral metric cannot see
+
+The Open Problems bottleneck table lists "Meshes can jump from one wrap to
+another" and asks for conservative failure detection.
+[villa#1621](https://github.com/ScrollPrize/villa/issues/1621) shows why the
+spiral satisfaction metric cannot provide it: it derives its target from the
+patch's own position, so a patch displaced by any whole number of windings scores
+identically to a correct one — a delta of exactly zero.
+
+```bash
+labelscope sheetswitch --mesh <tifxyz>... --volume <zarr-url> --remote --window 160 --out audit/
+```
+
+A displaced surface still lies on papyrus, so nothing about the surface gives it
+away. What does is the seam: the one line of grid edges that has to cross the gap
+between two wraps, and the gap is dark. On a published PHercParis4 surface against
+its own 2.4 µm scan, with one winding planted over half the grid:
+
+| | real mesh | one winding displaced |
+|---|---|---|
+| seam line mean darkening | 9.1 | **36.3** |
+| ratio to the other lines | 1.13 | **4.72×** |
+| **z-score** | **0.4** | **11.5** |
+
+It fires at one, two and three windings alike, which is the periodicity the
+satisfaction metric is blind to.
+
+**It also refuses to answer when it cannot.** The seam is only visible if a grid
+edge normally stays on one wrap, so the detector measures the winding spacing from
+the scan and reports `steps_per_winding`. Below two it moves its findings to
+`seams_unreliable` and reports none. That matters more than it sounds: at 45.5 µm
+on Scroll 1 the grid step is ~18 voxels against a 12.5 voxel spacing, and a first
+fleet run there was flagging "seams" that were just the scan's roughness. The
+requirement works out as voxel size < winding spacing / 40, and it is per scroll —
+`PHerc0500P2` fails it even at 9.362 µm, because its wraps are physically about
+3.5× tighter than Scroll 1's.
+
+**Reading a surface out of an 81 TB volume.** A traced surface is a 2-D sheet
+threaded through the scan and touches a small fraction of the chunks in its own
+bounding box. `--remote` fetches only those chunks, so a segment costs about 4 GB
+of transfer against roughly 50 GB for its bounding box, and the 81 TB array is
+never a consideration.
+
+**Two simpler detectors were tried first and both fail**, which is worth recording
+because both look reasonable:
+
+* *Large 3-D jumps between grid-adjacent vertices.* Published meshes are smooth —
+  a switch slides onto the next wrap rather than tearing. Maximum step on a real
+  segment: 27.7 voxels against a 20.0 median. Nothing.
+* *An aggregate edge-darkening statistic.* A displaced surface still lies on
+  papyrus, and only the seam crosses a gap — about 1% of a mesh's edges. Real
+  versus one-winding-displaced: 12.29% against 11.72% of edges dipping past
+  threshold. Nothing.
