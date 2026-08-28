@@ -919,6 +919,100 @@ def _render_align_html(records, summary, path) -> None:
 
 
 # --------------------------------------------------------------------------- #
+def cmd_sheetswitch(args: argparse.Namespace) -> int:
+    """Look for places where a traced surface jumps to a neighbouring wrap."""
+
+    from labelscope.mesh import find_sheet_switches, read_tifxyz
+
+    meshes = sorted(args.mesh)
+    if not meshes:
+        _log("no meshes given")
+        return 2
+    _log(f"checking {len(meshes)} surfaces")
+
+    records = []
+    for n, directory in enumerate(meshes, 1):
+        name = os.path.basename(directory.rstrip("/"))
+        try:
+            mesh = read_tifxyz(directory)
+        except Exception as exc:
+            records.append({"name": name, "error": f"{type(exc).__name__}: {exc}"})
+            continue
+        if not mesh.valid.any():
+            records.append({"name": name, "error": "no valid vertices"})
+            continue
+
+        lo, hi = mesh.bounds(margin=args.margin)
+        try:
+            volume, origin = _load_window(args.volume, lo, hi)
+        except Exception as exc:
+            records.append({"name": name, "error": f"volume unreadable: {exc}"})
+            continue
+
+        result = find_sheet_switches(
+            mesh, volume, origin=origin, z_threshold=args.z_threshold, steps=args.steps
+        )
+        result["name"] = name
+        result["valid_fraction"] = float(mesh.valid.mean())
+        seams = result.pop("seams")
+        result["seam_lines"] = ";".join(
+            f"{s['axis']}:{s['line']}@{s['z']:.1f}" for s in seams[:8]
+        )
+        records.append(result)
+        _log(
+            f"  {n}/{len(meshes)} {name}: max z {result['max_z']:.1f}, "
+            f"{result['n_seams']} seam(s)"
+        )
+
+    os.makedirs(args.out, exist_ok=True)
+    write_csv(records, os.path.join(args.out, "sheetswitch.csv"))
+    flagged = [r for r in records if r.get("n_seams")]
+    summary = {
+        "n_meshes": len(records),
+        "n_readable": len([r for r in records if "max_z" in r]),
+        "n_flagged": len(flagged),
+        "z_threshold": args.z_threshold,
+        "flagged": [
+            {"name": r["name"], "max_z": r["max_z"], "seams": r["seam_lines"]}
+            for r in sorted(flagged, key=lambda r: -r["max_z"])[:40]
+        ],
+    }
+    write_json(summary, os.path.join(args.out, "sheetswitch_summary.json"))
+    _log(f"wrote {args.out}/sheetswitch.csv, sheetswitch_summary.json")
+    print(
+        f"{summary['n_readable']} surfaces checked, {summary['n_flagged']} carry a seam "
+        f"at z >= {args.z_threshold}"
+    )
+    for row in summary["flagged"][:10]:
+        print(f"  {row['name']}: max z {row['max_z']:.1f}  [{row['seams']}]")
+    return 0
+
+
+def _load_window(volume_path: str, lo, hi):
+    """Read the sub-volume a mesh lives in.  Returns (array, origin)."""
+    import numpy as np
+
+    lo = np.maximum(np.asarray(lo), 0)
+    if volume_path.endswith((".zarr", ".zarr/")):
+        import zarr
+
+        root = zarr.open(store=volume_path.rstrip("/"), mode="r")
+        array = (
+            root["0"]
+            if hasattr(root, "array_keys") and "0" in list(root.array_keys())
+            else root
+        )
+        hi = np.minimum(np.asarray(hi), np.array(array.shape))
+        window = np.asarray(array[lo[0] : hi[0], lo[1] : hi[1], lo[2] : hi[2]])
+    else:
+        from labelscope.io import read_volume
+
+        full = read_volume(volume_path)
+        hi = np.minimum(np.asarray(hi), np.array(full.shape))
+        window = full[lo[0] : hi[0], lo[1] : hi[1], lo[2] : hi[2]]
+    return window, lo
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         prog="labelscope",
@@ -1070,6 +1164,37 @@ def main(argv=None) -> int:
         help="render CT/label overlay and drift-map PNGs for the N worst-aligned patches",
     )
     align.set_defaults(func=cmd_align)
+
+    switch = sub.add_parser(
+        "sheetswitch",
+        help="find where a traced surface jumps to a neighbouring wrap",
+    )
+    switch.add_argument(
+        "--mesh", nargs="+", required=True, help="one or more tifxyz directories"
+    )
+    switch.add_argument(
+        "--volume",
+        required=True,
+        help="the CT volume the surface was traced on (.zarr or 3-D TIFF)",
+    )
+    switch.add_argument("--out", default="labelscope_out")
+    switch.add_argument(
+        "--z-threshold",
+        type=float,
+        default=5.0,
+        help="how far a grid line's mean darkening must stand out from "
+        "the rest of the surface before it is called a seam",
+    )
+    switch.add_argument(
+        "--steps", type=int, default=17, help="samples taken along each grid edge"
+    )
+    switch.add_argument(
+        "--margin",
+        type=int,
+        default=8,
+        help="voxels of volume to read beyond the surface's bounding box",
+    )
+    switch.set_defaults(func=cmd_sheetswitch)
 
     args = parser.parse_args(argv)
     return args.func(args)
