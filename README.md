@@ -37,7 +37,7 @@ Optional extras: `.[zarr]` to read Zarr and OME-Zarr as well as 3-D TIFF, `.[dev
 for the test suite.
 
 ```bash
-pytest -q          # 74 tests, ~25 s, no data download required
+pytest -q          # 88 tests, well under a minute, no data download required
 ```
 
 Every test builds its own synthetic volumes, so the suite runs on a clean clone
@@ -191,12 +191,11 @@ So `labelscope align` reports:
   is hardest.
 
 The result is stable in the way the naive measure is not — across `R = 5…16` on
-`sample_00004` the global offset moves by 0.035 voxels:
+`sample_00004` the answer moves by 0.16 voxels while the naive one moves by 2.4:
 
 | search radius (vx) | 5 | 7 | 9 | 12 | 16 |
 |---|---|---|---|---|---|
-| global offset (vx) | +0.283 | +0.265 | +0.265 | +0.248 | +0.258 |
-| median per-cell \|offset\| | 0.89 | 0.92 | 1.06 | 1.00 | 0.99 |
+| aggregated offset (vx) | +2.19 | +2.31 | +2.33 | +2.34 | +2.34 |
 
 ### Four traps, each now a test
 
@@ -223,9 +222,6 @@ it would have let through:
 itself and keeps the search inside 45% of it, so it cannot reach the next wrap.
 The spacing it measured is reported alongside every result.
 
-```bash
-pytest -q          # 54 tests
-```
 
 ## Findings
 
