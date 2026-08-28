@@ -41,16 +41,16 @@
     "max": 1.0
   },
   "global_profile_snr": {
-    "median": 4.063344259447585,
-    "mean": 184842.25185140624,
+    "median": 4.054486082784084,
+    "mean": 5.001716557912687,
     "min": 2.003243368210547,
-    "max": 44065673.828125
+    "max": 20.948293447834423
   },
   "cell_snr_median": {
     "median": 114.22397785364954,
-    "mean": 7756576.777768149,
+    "mean": 143.1932276798751,
     "min": 56.77283331238384,
-    "max": 1767583857.48066
+    "max": 525.1503491718423
   },
   "hf_energy_norm": {
     "median": 0.09668699279427528,
@@ -87,30 +87,30 @@
       "bin": 0,
       "label": "least separable layers",
       "n": 223,
-      "hf_energy_norm": 0.1014682725071907,
+      "hf_energy_norm": 0.10089461505413055,
       "layer_separability": 2.3745498933796547,
       "winding_spacing": 16.5,
-      "cell_abs_offset_median": 2.2246108055114746,
-      "cell_frac_ge_1vx": 0.8,
-      "surface_voxels": 1590451
+      "cell_abs_offset_median": 2.214967727661133,
+      "cell_frac_ge_1vx": 0.796875,
+      "surface_voxels": 1580415
     },
     {
       "bin": 1,
       "label": "",
       "n": 223,
       "hf_energy_norm": 0.1044096127152443,
-      "layer_separability": 3.4461669576606373,
+      "layer_separability": 3.439382759085823,
       "winding_spacing": 20.0,
-      "cell_abs_offset_median": 2.1861658096313477,
-      "cell_frac_ge_1vx": 0.8356164383561644,
+      "cell_abs_offset_median": 2.1871566772460938,
+      "cell_frac_ge_1vx": 0.8372093023255814,
       "surface_voxels": 1590184
     },
     {
       "bin": 2,
       "label": "",
       "n": 223,
-      "hf_energy_norm": 0.09823610633611679,
-      "layer_separability": 4.554019047237973,
+      "hf_energy_norm": 0.09829577803611755,
+      "layer_separability": 4.52830619444195,
       "winding_spacing": 20.5,
       "cell_abs_offset_median": 2.4361605644226074,
       "cell_frac_ge_1vx": 0.8611111111111112,
@@ -120,12 +120,12 @@
       "bin": 3,
       "label": "most separable layers",
       "n": 223,
-      "hf_energy_norm": 0.061959896236658096,
-      "layer_separability": 8.124958243305246,
+      "hf_energy_norm": 0.062311455607414246,
+      "layer_separability": 8.07503076780673,
       "winding_spacing": 19.5,
       "cell_abs_offset_median": 2.4227170944213867,
-      "cell_frac_ge_1vx": 0.8387096774193549,
-      "surface_voxels": 1551900
+      "cell_frac_ge_1vx": 0.8360655737704918,
+      "surface_voxels": 1571692
     }
   ]
 }
