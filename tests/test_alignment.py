@@ -85,7 +85,7 @@ def test_dark_sheets_are_handled():
     shape = (64, 64, 64)
     volume = 255.0 - synthetic_sheet(shape, sheet_z=32.0)
     result = ridge_alignment(volume, planar_label(shape, 30), n_samples=4000,
-                              orient_field=upward(shape))
+                              orient_field=upward(shape), polarity="auto")
     assert result["polarity"] == "dark"
     assert abs(abs(result["mean_signed_offset"]) - 2.0) < 0.3
 

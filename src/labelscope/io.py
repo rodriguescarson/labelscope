@@ -33,6 +33,7 @@ class VolumeInfo:
     n_pages: Optional[int] = None
     file_size: Optional[int] = None
     error: Optional[str] = None
+    meta: dict = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
@@ -150,6 +151,35 @@ def _list_volumes(directory: str) -> dict:
         elif entry.endswith(".zarr") and os.path.isdir(full):
             out[_stem(entry[: -len(".zarr")])] = full
     return out
+
+
+def discover_pairs_remote(
+    images_base: Optional[str], labels_base: Optional[str], names: Sequence[str]
+) -> list:
+    """Pair up volumes hosted over HTTP, given the filenames to look for.
+
+    A directory listing is not something every host offers, so the names come
+    from the caller: ``--names-file``, or a listing already in hand.
+    """
+    pairs = []
+    for raw in names:
+        name = raw.strip()
+        if not name:
+            continue
+        filename = name if name.endswith((".tif", ".tiff")) else name + ".tif"
+        pairs.append(
+            VolumePair(
+                name=_stem(filename),
+                image=f"{images_base.rstrip('/')}/{filename}" if images_base else None,
+                label=f"{labels_base.rstrip('/')}/{filename}" if labels_base else None,
+                meta={"remote": True},
+            )
+        )
+    return pairs
+
+
+def is_remote(path: Optional[str]) -> bool:
+    return bool(path) and path.startswith(("http://", "https://"))
 
 
 def discover_pairs(images_dir: Optional[str], labels_dir: Optional[str]) -> list:
@@ -284,3 +314,107 @@ def read_volume_http(url: str, z_slice: Optional[slice] = None, block_size: int 
         return data, handle.bytes_fetched
     finally:
         handle.close()
+
+
+# --------------------------------------------------------------------------- #
+# probing a remote volume from its header alone
+# --------------------------------------------------------------------------- #
+_TIFF_TAGS = {256: "width", 257: "length", 258: "bits", 259: "compression",
+              277: "samples"}
+_TIFF_COMPRESSION = {1: "NONE", 5: "LZW", 7: "JPEG", 8: "ADOBE_DEFLATE",
+                     32773: "PACKBITS", 32946: "DEFLATE", 34925: "LZMA",
+                     50000: "ZSTD", 50001: "WEBP"}
+_TIFF_TYPE_SIZE = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8,
+                   11: 4, 12: 8, 16: 8, 17: 8, 18: 8}
+
+
+def probe_volume_http(url: str, session=None, timeout: int = 60) -> VolumeInfo:
+    """Inventory a remote 3-D TIFF from roughly one kilobyte of it.
+
+    Reads the file header and the first image directory only — enough for shape,
+    dtype and compression — and infers the number of z-slices from the content
+    length.  That makes it practical to check what is in a release *before*
+    pulling it, which matters when the release is measured in terabytes.
+
+    The inferred depth assumes every page has the same footprint, which holds for
+    the uniform patch stacks these datasets ship.  ``depth_inferred`` records
+    that the number was derived rather than read.
+    """
+    import struct
+
+    import requests
+
+    session = session or requests.Session()
+    info = VolumeInfo(path=url)
+    try:
+        response = session.get(url, headers={"Range": "bytes=0-2047"},
+                               timeout=timeout, allow_redirects=True)
+        response.raise_for_status()
+        head = response.content
+        total = response.headers.get("content-range", "").split("/")[-1]
+        info.file_size = int(total) if total.isdigit() else None
+    except Exception as exc:
+        info.error = f"range request failed: {type(exc).__name__}: {exc}"
+        return info
+
+    if len(head) < 8:
+        info.error = "response too short for a TIFF header"
+        return info
+    if head[:2] == b"II":
+        endian = "<"
+    elif head[:2] == b"MM":
+        endian = ">"
+    else:
+        info.error = "not a TIFF (bad byte-order mark)"
+        return info
+
+    magic = struct.unpack(endian + "H", head[2:4])[0]
+    if magic != 42:
+        info.error = f"unsupported TIFF variant (magic {magic}); BigTIFF is not handled"
+        return info
+
+    offset = struct.unpack(endian + "I", head[4:8])[0]
+    if offset + 2 > len(head):
+        info.error = "first image directory lies beyond the fetched header"
+        return info
+
+    count = struct.unpack(endian + "H", head[offset:offset + 2])[0]
+    fields = {}
+    for n in range(count):
+        entry = offset + 2 + n * 12
+        if entry + 12 > len(head):
+            break
+        tag, dtype, length = struct.unpack(endian + "HHI", head[entry:entry + 8])
+        name = _TIFF_TAGS.get(tag)
+        if name is None:
+            continue
+        size = _TIFF_TYPE_SIZE.get(dtype, 4) * length
+        raw = head[entry + 8:entry + 12]
+        if size <= 4:
+            fields[name] = struct.unpack(endian + ("I" if dtype == 4 else "H"),
+                                         raw[:4] if dtype == 4 else raw[:2])[0]
+
+    width, length = fields.get("width"), fields.get("length")
+    bits = fields.get("bits", 8)
+    info.compression = _TIFF_COMPRESSION.get(fields.get("compression", 1),
+                                             str(fields.get("compression")))
+    info.dtype = {8: "uint8", 16: "uint16", 32: "float32"}.get(bits, f"{bits}-bit")
+    if not (width and length):
+        info.error = "first image directory carries no width/length"
+        return info
+
+    info.meta["plane_shape"] = (length, width)          # exact, read from the IFD
+    if info.compression == "NONE" and info.file_size:
+        # uncompressed pages have a fixed footprint, so depth follows from size.
+        # ~166 bytes of per-page directory overhead is what these writers emit;
+        # rounding absorbs the rest.
+        page_bytes = width * length * max(1, bits // 8)
+        depth = max(1, round(info.file_size / (page_bytes + 166)))
+        info.n_pages = depth
+        info.shape = (depth, length, width)
+        info.meta["depth_inferred"] = True
+    else:
+        # a compressed file's size says nothing about its page count
+        info.shape = (None, length, width)
+        info.meta["depth_inferred"] = False
+    return info

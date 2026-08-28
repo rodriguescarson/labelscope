@@ -84,38 +84,69 @@ data.
 
 ---
 
-## 2. Half the Kaggle surface release ships uncompressed
+## 2. Fifteen gigabytes of the Kaggle surface release is uncompressed padding
 
 **Command**
 
 ```bash
-labelscope scan --labels kaggle/labels --images kaggle/images --out findings/kaggle_surfaces/
+labelscope scan --labels kaggle/labels --remote --headers-only --out findings/kaggle_surfaces/
 ```
+
+`--headers-only` over HTTP reads roughly a kilobyte per volume: the TIFF byte-order
+mark, the first image directory, and the content length. That was enough to
+inventory all **1,784 volumes** of the release — every image and every label —
+for about **1.8 MB of transfer**, against 45 GB to download them.
 
 **What it found**
 
-Of 892 label volumes, 458 are byte-identical in size at exactly 32,821,210 bytes
-— 320³ uint8 with `COMPRESSION.NONE`. The other 434 carry the same kind of
-content compressed, and average under a megabyte.
+| | files | on disk |
+|---|---|---|
+| labels, `COMPRESSION.NONE` | **487** | **15.52 GB** |
+| labels, `COMPRESSION.LZW` | 405 | 0.36 GB (median 0.87 MB) |
+| images, `COMPRESSION.LZW` | 873 | — |
+| images, `COMPRESSION.NONE` | 19 | — |
+| | | **45 GB total** |
 
-The contents are *not* different: sampling both groups, class 1 is a ~2-voxel
-thick, highly planar writing surface in both, and class 2 is a single bulky
-region in both. It is purely a writer setting that differs.
+The uncompressed labels are not different in content. Sampling both groups, class
+1 is a ~2-voxel-thick, highly planar writing surface in both (median local
+thickness 2.0, worst-component planarity 0.007) and class 2 is a single bulky
+region in both. Only the writer setting differs — and the compressed half of the
+same release shows what the other half would cost: a median of 0.87 MB against
+32.82 MB.
 
 **Why it matters**
 
-Small, and worth one line of a release script rather than a discussion: it is
-roughly 15 GB of avoidable transfer on a release that is otherwise about 1.5 GB
-of labels, for a project whose users already stream tens of terabytes of CT.
-
-**Not a finding:** 24 sample indices between 1 and 916 have neither an image nor
-a label. Numbering is simply not contiguous — nothing is missing or orphaned.
-`labelscope scan` reports unpaired volumes precisely so that this distinction
-can be made instead of assumed.
+Small, and worth one line of a release script rather than a discussion: re-encoding
+those 487 labels with the compression the other 405 already use takes roughly
+15 GB off a 45 GB release, for a project whose users already stream tens of
+terabytes of CT.
 
 ---
 
-## 3. Labels are not binary, and the surface class is not always index 1
+## 3. The release mixes three patch sizes — and that is fine, but you have to know
+
+Plane shapes across all 892 pairs:
+
+| shape | pairs |
+|---|---|
+| 320 × 320 | 840 |
+| 256 × 256 | 51 |
+| 384 × 384 | 1 |
+
+**Images and labels agree on shape in every single pair — zero mismatches.** So
+this is deliberate structure, not corruption, and it is recorded here as a fact a
+consumer needs rather than as a defect. Any loader that hard-codes 320³ will
+break on 52 of the 892 pairs, and the single 384³ pair will surprise anything that
+handles only the two common sizes.
+
+**Not a finding:** 24 sample indices between 1 and 916 have neither an image nor a
+label. The numbering is simply not contiguous — nothing is orphaned or missing a
+pair. `labelscope scan` reports unpaired volumes precisely so this distinction can
+be made rather than assumed.
+
+---
+
+## 4. Labels are not binary, and the surface class is not always index 1
 
 `labelscope` detects the sheet-like class rather than assuming it: the class that
 is thin, planar and does not fill the volume. In this release that is class 1

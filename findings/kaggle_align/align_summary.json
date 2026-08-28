@@ -1,0 +1,88 @@
+{
+  "n_pairs": 51,
+  "n_ok": 51,
+  "mean_signed_offset": {
+    "median": -0.02994149086249051,
+    "mean": -0.03593346185568944,
+    "min": -0.41035470947988684,
+    "max": 0.36086256794081045
+  },
+  "median_abs_offset": {
+    "median": 2.23962662788108,
+    "mean": 2.2484338303443554,
+    "min": 1.8065153565257788,
+    "max": 2.6641462929546833
+  },
+  "frac_offset_ge_1vx": {
+    "median": 0.76258783620063,
+    "mean": 0.7610119896770748,
+    "min": 0.7014388489208633,
+    "max": 0.8017615354278954
+  },
+  "frac_offset_ge_2vx": {
+    "median": 0.5491079262942381,
+    "mean": 0.548766901070394,
+    "min": 0.4591703260768009,
+    "max": 0.6144998028131984
+  },
+  "frac_flat_support": {
+    "median": 0.08388,
+    "mean": 0.08819529411764705,
+    "min": 0.0048,
+    "max": 0.19416
+  },
+  "median_prominence_norm": {
+    "median": 0.5100861191749573,
+    "mean": 0.468236266690142,
+    "min": 0.21203432977199554,
+    "max": 0.5848722457885742
+  },
+  "hf_energy_norm": {
+    "median": 0.09860173612833023,
+    "mean": 0.08880403506405213,
+    "min": 0.049617208540439606,
+    "max": 0.11276315897703171
+  },
+  "coverage_vs_difficulty": [
+    {
+      "bin": 0,
+      "label": "hardest (haziest)",
+      "n": 12,
+      "hf_energy_norm": 0.05765070207417011,
+      "median_abs_offset": 2.312838565558195,
+      "frac_offset_ge_1vx": 0.7658087036122284,
+      "median_prominence_norm": 0.3270064741373062,
+      "surface_voxels": 1575487.0
+    },
+    {
+      "bin": 1,
+      "label": "hard",
+      "n": 12,
+      "hf_energy_norm": 0.08559015393257141,
+      "median_abs_offset": 2.2503239633515477,
+      "frac_offset_ge_1vx": 0.7678928537558545,
+      "median_prominence_norm": 0.46594397723674774,
+      "surface_voxels": 1636893.0
+    },
+    {
+      "bin": 2,
+      "label": "easier",
+      "n": 12,
+      "hf_energy_norm": 0.10033758729696274,
+      "median_abs_offset": 2.20146007835865,
+      "frac_offset_ge_1vx": 0.7596864370213003,
+      "median_prominence_norm": 0.5573619306087494,
+      "surface_voxels": 1465872.0
+    },
+    {
+      "bin": 3,
+      "label": "easiest (sharpest)",
+      "n": 15,
+      "hf_energy_norm": 0.10885237902402878,
+      "median_abs_offset": 2.2181899286806583,
+      "frac_offset_ge_1vx": 0.7548048636987644,
+      "median_prominence_norm": 0.5196762084960938,
+      "surface_voxels": 1476731
+    }
+  ]
+}

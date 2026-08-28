@@ -8,7 +8,9 @@ import sys
 from typing import Dict, List
 
 from labelscope import __version__
-from labelscope.io import discover_pairs, probe_volume, read_volume
+from labelscope.io import (discover_pairs, discover_pairs_remote, is_remote,
+                          probe_volume, probe_volume_http, read_volume,
+                          read_volume_http)
 from labelscope.report import write_csv, write_html, write_json
 
 
@@ -26,33 +28,49 @@ def _pct(x: float) -> str:
 def cmd_scan(args: argparse.Namespace) -> int:
     from labelscope.quality import audit_label
 
-    pairs = discover_pairs(args.images, args.labels)
+    remote = is_remote(args.labels) or is_remote(args.images)
+    if remote:
+        if not args.names_file:
+            _log("scanning a remote base URL needs --names-file: hosts do not all "
+                 "offer a directory listing")
+            return 2
+        with open(args.names_file) as handle:
+            names = [line.strip() for line in handle if line.strip()]
+        pairs = discover_pairs_remote(args.images, args.labels, names)
+    else:
+        pairs = discover_pairs(args.images, args.labels)
     if not pairs:
         _log("no volumes found")
         return 2
-    _log(f"scanning {len(pairs)} volumes")
+    _log(f"scanning {len(pairs)} volumes{' over HTTP' if remote else ''}")
 
     records: List[Dict] = []
     for n, pair in enumerate(pairs, 1):
         record: Dict = {"name": pair.name, "has_image": pair.image is not None,
                         "has_label": pair.label is not None}
         if pair.label:
-            info = probe_volume(pair.label)
+            info = probe_volume_http(pair.label) if remote else probe_volume(pair.label)
             record.update({
-                "label_shape": info.shape, "label_dtype": info.dtype,
+                "label_shape": info.shape,
+                "label_plane_shape": info.meta.get("plane_shape"),
+                "label_dtype": info.dtype,
                 "label_compression": info.compression, "label_bytes": info.file_size,
                 "label_header_error": info.error,
             })
         if pair.image:
-            info = probe_volume(pair.image)
+            info = probe_volume_http(pair.image) if remote else probe_volume(pair.image)
             record.update({
-                "image_shape": info.shape, "image_dtype": info.dtype,
+                "image_shape": info.shape,
+                "image_plane_shape": info.meta.get("plane_shape"),
+                "image_dtype": info.dtype,
                 "image_compression": info.compression, "image_bytes": info.file_size,
                 "image_header_error": info.error,
             })
         if pair.label and not args.headers_only:
             try:
-                record.update(audit_label(read_volume(pair.label), deep=args.deep))
+                volume = (read_volume_http(pair.label)[0] if remote
+                          else read_volume(pair.label))
+                record.update(audit_label(volume, deep=args.deep))
             except Exception as exc:
                 record["label_read_error"] = f"{type(exc).__name__}: {exc}"
         records.append(record)
@@ -78,7 +96,7 @@ def _summarise_scan(records: List[Dict]) -> Dict:
     schemes: Dict = {}
     bytes_by_compression: Dict = {}
     for r in records:
-        shape = str(r.get("label_shape"))
+        shape = str(r.get("label_plane_shape") or r.get("label_shape"))
         shapes[shape] = shapes.get(shape, 0) + 1
         comp = str(r.get("label_compression"))
         compressions[comp] = compressions.get(comp, 0) + 1
@@ -282,7 +300,8 @@ def cmd_align(args: argparse.Namespace) -> int:
                 image, label,
                 surface_class=args.surface_class if args.surface_class >= 0 else None,
                 orient_class=args.orient_class if args.orient_class >= 0 else None,
-                radius=args.radius, n_samples=args.samples))
+                radius=args.radius, n_samples=args.samples,
+                cell=args.cell, min_per_cell=args.min_per_cell))
             records.append(record)
             if args.overlays:
                 cache[pair.name] = (pair.image, pair.label,
@@ -296,13 +315,17 @@ def cmd_align(args: argparse.Namespace) -> int:
 
     os.makedirs(args.out, exist_ok=True)
     write_csv(records, os.path.join(args.out, "align.csv"))
-    good = [r for r in records if "median_abs_offset" in r]
+    good = [r for r in records if "global_peak_offset" in r]
     summary: Dict = {"n_pairs": len(records), "n_ok": len(good)}
     if good:
-        for key in ("mean_signed_offset", "median_abs_offset", "frac_offset_ge_1vx",
-                    "frac_offset_ge_2vx", "frac_flat_support", "median_prominence_norm",
-                    "hf_energy_norm"):
-            values = [r[key] for r in good if key in r]
+        for key in ("global_peak_offset", "cell_offset_median", "cell_abs_offset_median",
+                    "cell_abs_offset_p90", "cell_frac_ge_1vx", "cell_frac_ge_2vx",
+                    "global_profile_snr", "cell_snr_median", "hf_energy_norm",
+                    "cell_frac_unresolved", "winding_spacing", "search_radius",
+                    "naive_median_abs_offset"):
+            values = [r[key] for r in good if r.get(key) is not None]
+            if not values:
+                continue
             summary[key] = {"median": statistics.median(values),
                             "mean": statistics.fmean(values),
                             "min": min(values), "max": max(values)}
@@ -311,9 +334,14 @@ def cmd_align(args: argparse.Namespace) -> int:
     _render_align_html(good, summary, os.path.join(args.out, "align.html"))
     _log(f"wrote {args.out}/align.csv, align_summary.json, align.html")
     if good:
-        print(f"median |offset| = {summary['median_abs_offset']['median']:.2f} vx, "
-              f"signed mean = {summary['mean_signed_offset']['median']:+.2f} vx, "
-              f"{_pct(summary['frac_offset_ge_1vx']['median'])} of surface ≥1 vx off ridge")
+        print(f"global label-to-ridge offset: median "
+              f"{summary['global_peak_offset']['median']:+.2f} vx "
+              f"(across patches: {summary['global_peak_offset']['min']:+.2f} to "
+              f"{summary['global_peak_offset']['max']:+.2f})")
+        if "cell_abs_offset_median" in summary:
+            print(f"per-cell |offset|: median "
+                  f"{summary['cell_abs_offset_median']['median']:.2f} vx, "
+                  f"{_pct(summary['cell_frac_ge_1vx']['median'])} of cells >= 1 vx off")
     return 0
 
 
@@ -322,8 +350,9 @@ def _render_overlays(records, cache, out_dir, count) -> None:
     read a number for it."""
     from labelscope.visualize import render_drift_map, render_overlay
 
-    usable = [r for r in records if "median_abs_offset" in r and r["name"] in cache]
-    usable.sort(key=lambda r: -r["median_abs_offset"])
+    usable = [r for r in records
+              if r.get("cell_abs_offset_median") is not None and r["name"] in cache]
+    usable.sort(key=lambda r: -r["cell_abs_offset_median"])
     directory = os.path.join(out_dir, "overlays")
     for record in usable[:count]:
         image_path, label_path, surface, orient = cache[record["name"]]
@@ -345,6 +374,7 @@ def _render_overlays(records, cache, out_dir, count) -> None:
 
 def _difficulty_bins(records: List[Dict], bins: int = 4) -> List[Dict]:
     """Are the labels worse where the scan is harder?  Bin by local contrast."""
+    records = [r for r in records if "cell_abs_offset_median" in r]
     ranked = sorted(records, key=lambda r: r.get("hf_energy_norm", 0.0))
     if len(ranked) < bins:
         return []
@@ -358,9 +388,10 @@ def _difficulty_bins(records: List[Dict], bins: int = 4) -> List[Dict]:
             if bins == 4 else str(b),
             "n": len(chunk),
             "hf_energy_norm": statistics.median(r["hf_energy_norm"] for r in chunk),
-            "median_abs_offset": statistics.median(r["median_abs_offset"] for r in chunk),
-            "frac_offset_ge_1vx": statistics.median(r["frac_offset_ge_1vx"] for r in chunk),
-            "median_prominence_norm": statistics.median(r["median_prominence_norm"] for r in chunk),
+            "global_peak_offset": statistics.median(r["global_peak_offset"] for r in chunk),
+            "cell_abs_offset_median": statistics.median(r["cell_abs_offset_median"] for r in chunk),
+            "cell_frac_ge_1vx": statistics.median(r["cell_frac_ge_1vx"] for r in chunk),
+            "global_profile_snr": statistics.median(r["global_profile_snr"] for r in chunk),
             "surface_voxels": statistics.median(r["surface_voxels"] for r in chunk),
         })
     return out
@@ -370,31 +401,50 @@ def _render_align_html(records, summary, path) -> None:
     if not records:
         write_html("labelscope — alignment", "No usable pairs.", [], [], path)
         return
+    peak = summary["global_peak_offset"]
     cards = [
         ("pairs", summary["n_ok"], ""),
-        ("median |offset|", f'{summary["median_abs_offset"]["median"]:.2f} vx', ""),
-        ("signed mean", f'{summary["mean_signed_offset"]["median"]:+.2f} vx',
-         "warn" if abs(summary["mean_signed_offset"]["median"]) > 0.2 else "ok"),
-        ("surface ≥1 vx off", _pct(summary["frac_offset_ge_1vx"]["median"]), ""),
-        ("flat support", _pct(summary["frac_flat_support"]["median"]),
-         "warn" if summary["frac_flat_support"]["median"] > 0.05 else "ok"),
+        ("global offset", f'{peak["median"]:+.2f} vx',
+         "warn" if abs(peak["median"]) > 0.5 else "ok"),
+        ("per-cell |offset|",
+         f'{summary["cell_abs_offset_median"]["median"]:.2f} vx'
+         if "cell_abs_offset_median" in summary else "—", ""),
+        ("cells ≥ 1 vx off",
+         _pct(summary["cell_frac_ge_1vx"]["median"])
+         if "cell_frac_ge_1vx" in summary else "—", ""),
+        ("profile SNR",
+         f'{summary["global_profile_snr"]["median"]:.1f}'
+         if "global_profile_snr" in summary else "—", ""),
     ]
-    worst = sorted(records, key=lambda r: -r["median_abs_offset"])
-    rows = [{"name": r["name"], "median |offset|": r["median_abs_offset"],
-             "signed mean": r["mean_signed_offset"],
-             "≥1 vx": r["frac_offset_ge_1vx"], "flat support": r["frac_flat_support"],
-             "hf energy": r["hf_energy_norm"]} for r in worst]
+    worst = sorted(records, key=lambda r: -abs(r.get("cell_offset_worst", 0.0)))
+    rows = [{"name": r["name"],
+             "global offset": r["global_peak_offset"],
+             "CI95": f'[{r["global_peak_ci95"][0]:+.2f}, {r["global_peak_ci95"][1]:+.2f}]',
+             "cells": r.get("n_cells"),
+             "|offset| median": r.get("cell_abs_offset_median"),
+             "worst cell": r.get("cell_offset_worst"),
+             "≥1 vx": r.get("cell_frac_ge_1vx"),
+             "SNR": r.get("global_profile_snr"),
+             "hf energy": r.get("hf_energy_norm")} for r in worst]
+    method = (
+        "Offset is measured along the surface normal, in voxels, positive outward, "
+        "by averaging intensity profiles over a cube of labelled surface and locating "
+        "the peak of the average. A per-voxel nearest-maximum would be meaningless "
+        "here — on carbonised papyrus its value tracks the search radius rather than "
+        "any displacement, because fibre maxima, both faces of the sheet and the "
+        "neighbouring wrap all sit within the window. The <code>naive_*</code> columns "
+        "in the CSV keep that measure alongside, for comparison only."
+    )
     sections = [
-        ("Labels worst aligned with the CT ridge",
-         "Offset is measured along the surface normal, in voxels, positive outward. "
-         "A non-zero <em>signed</em> mean is systematic bias rather than annotator noise.",
-         rows, ["name", "median |offset|", "signed mean", "≥1 vx", "flat support", "hf energy"]),
+        ("Patches ranked by their worst-aligned region", method, rows,
+         ["name", "global offset", "CI95", "cells", "|offset| median", "worst cell",
+          "≥1 vx", "SNR", "hf energy"]),
         ("Does label quality track scan difficulty?",
          "Patches binned by high-frequency energy — the label-free proxy for the "
          "compressed, hazy regions the Open Problems post describes.",
          summary.get("coverage_vs_difficulty", []),
-         ["label", "n", "hf_energy_norm", "median_abs_offset", "frac_offset_ge_1vx",
-          "median_prominence_norm", "surface_voxels"]),
+         ["label", "n", "hf_energy_norm", "global_peak_offset", "cell_abs_offset_median",
+          "cell_frac_ge_1vx", "global_profile_snr", "surface_voxels"]),
     ]
     write_html("labelscope — CT/label alignment",
                "How far the labels sit from the ridge the scan actually shows.",
@@ -413,6 +463,9 @@ def main(argv=None) -> int:
     scan.add_argument("--labels", required=True)
     scan.add_argument("--images")
     scan.add_argument("--out", default="labelscope_out")
+    scan.add_argument("--names-file",
+                      help="newline-separated filenames; required when --labels or "
+                           "--images is a base URL")
     scan.add_argument("--headers-only", action="store_true",
                       help="probe headers only; never decode voxels")
     scan.add_argument("--deep", action="store_true",
@@ -445,8 +498,15 @@ def main(argv=None) -> int:
     align.add_argument("--orient-class", type=int, default=-1,
                        help="bulky region class defining 'outward', so the offset "
                             "sign is meaningful; -1 (default) detects it")
-    align.add_argument("--radius", type=int, default=6)
-    align.add_argument("--samples", type=int, default=20000)
+    align.add_argument("--radius", default="auto",
+                       help="how far along the normal to look, in voxels; 'auto' "
+                            "(default) measures the local winding spacing and uses "
+                            "45%% of it, so the search cannot reach the next wrap")
+    align.add_argument("--cell", type=int, default=64,
+                       help="edge of the cube of surface each offset is measured over")
+    align.add_argument("--min-per-cell", type=int, default=200,
+                       help="minimum sampled voxels before a cell gets an offset")
+    align.add_argument("--samples", type=int, default=40000)
     align.add_argument("--limit", type=int, default=0)
     align.add_argument("--overlays", type=int, default=0, metavar="N",
                        help="render CT/label overlay and drift-map PNGs for the N "

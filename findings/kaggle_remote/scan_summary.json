@@ -1,0 +1,29 @@
+{
+  "n_volumes": 892,
+  "shapes": {
+    "(320, 320)": 423,
+    "None": 428,
+    "(256, 256)": 41
+  },
+  "compressions": {
+    "LZW": 141,
+    "NONE": 323,
+    "None": 428
+  },
+  "detected_surface_classes": {},
+  "bytes_by_compression": {
+    "LZW": 115386037,
+    "NONE": 10201215630,
+    "None": 0
+  },
+  "class_schemes": {},
+  "modal_scheme": null,
+  "off_scheme_volumes": [],
+  "unpaired_volumes": [],
+  "headline": [
+    "volumes: 892",
+    "distinct label shapes: 3  {'(320, 320)': 423, 'None': 428, '(256, 256)': 41}",
+    "label compressions: {'LZW': 141, 'NONE': 323, 'None': 428}",
+    "mixed compression: LZW=141 files / 0.12 GB, NONE=323 files / 10.20 GB, None=428 files / 0.00 GB"
+  ]
+}
