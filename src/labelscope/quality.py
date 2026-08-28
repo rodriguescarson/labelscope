@@ -57,6 +57,8 @@ def thickness_stats(
     mask: np.ndarray,
     sample: int = 200_000,
     max_thickness: Optional[int] = 24,
+    bulk_probe: int = 4,
+    bulk_fraction: float = 0.5,
     seed: int = 0,
 ) -> Dict:
     """Local sheet thickness, as twice the distance to the nearest background voxel.
@@ -72,6 +74,11 @@ def thickness_stats(
     beyond the cap.  Since the question being asked is "is this label a sheet", a
     measurement that stops caring above 24 voxels loses nothing.  Pass
     ``max_thickness=None`` for the exact transform.
+
+    A mask that is still mostly intact after ``bulk_probe`` erosions is not a
+    sheet, and the ladder stops there rather than peeling it to the cap — that
+    case is where nearly all the time goes, and the resulting number would mean
+    nothing.  ``saturated`` reports the share of voxels that never bottomed out.
 
     The erosion ladder measures city-block depth rather than Euclidean distance.
     Across a thin sheet the two agree, because the nearest background voxel lies
@@ -90,16 +97,27 @@ def thickness_stats(
         # depth[v] = how many erosions v survives; 1 for a surface voxel
         depth = np.zeros(mask.shape, dtype=np.uint8)
         current = mask
+        total = int(mask.sum())
+        reached = int(max_thickness)
         for step in range(1, int(max_thickness) + 1):
             depth[current] = step
             # border_value=1 keeps the volume's own faces from acting as
             # background, which is what distance_transform_edt does too — a sheet
             # running out of the patch is not thinner for it
             current = ndi.binary_erosion(current, _BALL, border_value=1)
-            if not current.any():
+            alive = int(current.sum())
+            if alive == 0:
+                reached = step
+                break
+            if step >= bulk_probe and alive > bulk_fraction * total:
+                # Most of the mask has survived several erosions, so it is not a
+                # sheet and its thickness is not a number anyone wants.  Peeling
+                # a bulky region to the cap is where this measurement spends
+                # nearly all of its time, so stop and say so.
+                reached = step
                 break
         values = 2.0 * depth[mask].astype(np.float32)
-        saturated = float((depth[mask] >= max_thickness).mean())
+        saturated = float((depth[mask] >= reached).mean())
 
     if values.size > sample:
         rng = np.random.default_rng(seed)
