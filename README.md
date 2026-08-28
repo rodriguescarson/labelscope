@@ -22,6 +22,7 @@ It answers three questions:
 | Is my train/validation split honest? | `labelscope leakage` | leak percentage + a drop-in `splits_final.json` that removes it |
 | Are the labels internally consistent? | `labelscope scan` | class-scheme, shape, encoding and topology census; ranked worst volumes |
 | Do the labels sit where the CT says the surface is? | `labelscope align` | signed offset from the label to the scan's own ridge, in voxels |
+| Has this traced surface jumped to a neighbouring wrap? | `labelscope sheetswitch` | the grid lines where it does, and a refusal when the resolution cannot tell |
 
 ---
 
@@ -222,6 +223,62 @@ it would have let through:
 itself and keeps the search inside 45% of it, so it cannot reach the next wrap.
 The spacing it measured is reported alongside every result.
 
+
+## 4. `labelscope sheetswitch` — has this surface jumped to another wrap?
+
+The Open Problems bottleneck table lists "Meshes can jump from one wrap to
+another" and asks for conservative failure detection.
+[villa#1621](https://github.com/ScrollPrize/villa/issues/1621) shows why the
+spiral satisfaction metric cannot give it: the metric derives its target from the
+patch's own position, so a patch displaced by any whole number of windings scores
+identically to a correct one — a delta of exactly zero.
+
+```bash
+labelscope sheetswitch --mesh seg/*.tifxyz --volume https://.../volume.zarr \
+                       --remote --window 160 --out audit/
+```
+
+A displaced surface still lies on papyrus, so nothing about the surface itself
+gives it away. What does is the **seam**: the one line of grid edges that has to
+cross the gap between two wraps, and the gap is dark. The statistic is the depth
+of that trough relative to each edge's own endpoints, averaged along the seam
+direction — a seam is about 1% of a mesh's edges, so judging edges individually
+drowns it.
+
+On a published PHercParis4 surface against its own 2.4 µm scan, one winding
+planted over half the grid:
+
+| | real mesh | one winding displaced |
+|---|---|---|
+| seam line mean darkening | 9.1 | **36.3** |
+| **z-score** | **0.4** | **11.5** |
+
+It fires at one, two and three windings alike — the periodicity the satisfaction
+metric is blind to.
+
+### It refuses to answer when it cannot
+
+The seam is only visible if a grid edge normally stays on one wrap. The detector
+measures the winding spacing from the scan and reports `steps_per_winding`; below
+two it moves its findings to `seams_unreliable` and reports none. In practice the
+requirement is **voxel size < winding spacing / 40**, and it is per scroll: at
+45.5 µm on Scroll 1 the grid step is ~18 voxels against a 12.5 voxel spacing, and
+`PHerc0500P2` fails the test even at 9.362 µm because its wraps are physically
+about 3.5× tighter.
+
+### Reading a surface out of an 81 TB volume
+
+`--remote` streams the scan chunk by chunk, fetching only the chunks the surface
+passes through. A traced surface is a 2-D sheet threaded through the scan, so that
+is a small fraction of its own bounding box: about 4 GB of transfer per segment
+against roughly 50 GB for the box, and the size of the full array — 75784 × 32693
+× 32693 for PHercParis4 at 2.4 µm — never enters into it.
+
+`--window N` measures the most complete N×N patch of each grid. Streaming cost
+follows how much scroll a surface spans, not how many vertices are sampled, so
+decimating a whole segment does not make it cheap and a contiguous window does.
+
+---
 
 ## Findings
 
