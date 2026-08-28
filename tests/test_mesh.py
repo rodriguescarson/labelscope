@@ -118,3 +118,38 @@ def test_edge_dip_is_nan_where_a_vertex_is_missing():
     mesh.valid[5, 5] = False
     dip = edge_dip(mesh, volume)
     assert np.isnan(dip[0][4, 5]) and np.isnan(dip[1][5, 4])
+
+
+def test_the_detector_reads_a_chunked_volume_the_same_way():
+    """The remote path must give the same answer as the in-memory one, or the
+    fleet-wide run is measuring something different from the tests."""
+    from labelscope.remote_zarr import ChunkedVolume
+
+    volume = wrapped_volume(spacing=24.0).astype(np.uint8)
+
+    class LocalStore:
+        def get(self, url, timeout=None):
+            key = tuple(int(p) for p in url.rsplit("/", 3)[-3:])
+            lo = np.array(key) * 32
+            block = np.zeros((32, 32, 32), np.uint8)
+            hi = np.minimum(lo + 32, volume.shape)
+            sub = volume[lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]]
+            block[tuple(slice(0, s) for s in sub.shape)] = sub
+
+            class R:
+                status_code = 200
+                content = block.tobytes()
+
+                def raise_for_status(self):
+                    pass
+            return R()
+
+    remote = ChunkedVolume("http://x/0", volume.shape, (32, 32, 32), "|u1", session=LocalStore())
+    mesh = mesh_on_sheet(sheet_z=72.0)
+    switched = displace(mesh, 24.0)
+
+    local_result = find_sheet_switches(switched, volume.astype(np.float32))
+    remote_result = find_sheet_switches(switched, remote)
+    assert abs(local_result["max_z"] - remote_result["max_z"]) < 0.5
+    assert local_result["n_seams"] == remote_result["n_seams"]
+    assert remote.chunks_fetched > 0

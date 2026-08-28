@@ -88,9 +88,25 @@ def read_tifxyz(directory: str) -> QuadMesh:
 # --------------------------------------------------------------------------- #
 # the detector
 # --------------------------------------------------------------------------- #
-def edge_dip(
-    mesh: QuadMesh, volume: np.ndarray, origin=None, steps: int = 17
-) -> Dict[int, np.ndarray]:
+def _sampler(volume, origin):
+    """Accept either an in-memory array or a ChunkedVolume."""
+    origin = np.zeros(3) if origin is None else np.asarray(origin, dtype=np.float32)
+    if hasattr(volume, "sample"):
+        return lambda pts: volume.sample(np.asarray(pts, np.float32) - origin), True
+    array = volume.astype(np.float32, copy=False)
+    return (
+        lambda pts: ndi.map_coordinates(
+            array,
+            (np.asarray(pts, np.float32) - origin).reshape(-1, 3).T,
+            order=1,
+            mode="constant",
+            cval=0.0,
+        ),
+        False,
+    )
+
+
+def edge_dip(mesh: QuadMesh, volume, origin=None, steps: int = 17) -> Dict[int, np.ndarray]:
     """How far the scan darkens *between* grid-adjacent vertices.
 
     Two vertices on the same sheet are joined by a path that stays on papyrus.
@@ -102,22 +118,21 @@ def edge_dip(
     Returns ``{axis: dip}`` for axis 0 (row edges) and 1 (column edges), each with
     NaN where either endpoint is missing.
     """
-    origin = np.zeros(3) if origin is None else np.asarray(origin)
-    local = mesh.points - origin
-    volume = volume.astype(np.float32, copy=False)
+    sample, remote = _sampler(volume, origin)
     fractions = np.linspace(0.0, 1.0, steps)[:, None, None, None]
 
     out = {}
     for axis in (0, 1):
-        a = np.take(local, range(local.shape[axis] - 1), axis=axis)
-        b = np.take(local, range(1, local.shape[axis]), axis=axis)
+        a = np.take(mesh.points, range(mesh.points.shape[axis] - 1), axis=axis)
+        b = np.take(mesh.points, range(1, mesh.points.shape[axis]), axis=axis)
         m = np.take(mesh.valid, range(mesh.valid.shape[axis] - 1), axis=axis) & np.take(
             mesh.valid, range(1, mesh.valid.shape[axis]), axis=axis
         )
         walk = a[None] + (b - a)[None] * fractions
-        values = ndi.map_coordinates(
-            volume, walk.reshape(-1, 3).T, order=1, mode="constant", cval=0.0
-        ).reshape(steps, *a.shape[:2])
+        flat = walk.reshape(-1, 3)
+        if remote and hasattr(volume, "prefetch"):
+            volume.prefetch(flat - (np.zeros(3) if origin is None else np.asarray(origin)))
+        values = sample(flat).reshape(steps, *a.shape[:2])
         dip = np.minimum(values[0], values[-1]) - values[1:-1].min(0)
         dip[~m] = np.nan
         out[axis] = dip
@@ -148,7 +163,7 @@ def _line_scores(dip: np.ndarray, along: int) -> np.ndarray:
 
 def find_sheet_switches(
     mesh: QuadMesh,
-    volume: np.ndarray,
+    volume,
     origin=None,
     z_threshold: float = 5.0,
     steps: int = 17,
