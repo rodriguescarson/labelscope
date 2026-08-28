@@ -1218,6 +1218,20 @@ def main(argv=None) -> int:
         default=8,
         help="voxels of volume to read beyond the surface's bounding box",
     )
+    switch.add_argument(
+        "--remote",
+        action="store_true",
+        help="stream the volume over HTTP, fetching only the chunks the surface "
+        "passes through",
+    )
+    switch.add_argument("--cache", help="directory to keep fetched chunks in")
+    switch.add_argument(
+        "--decimate",
+        type=int,
+        default=1,
+        help="use every Nth grid line; a seam spans a whole line, so decimating "
+        "keeps it while cutting the sampling cost",
+    )
     switch.set_defaults(func=cmd_sheetswitch)
 
     args = parser.parse_args(argv)
