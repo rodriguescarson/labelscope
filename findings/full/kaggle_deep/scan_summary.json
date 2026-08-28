@@ -1,0 +1,34 @@
+{
+  "n_volumes": 200,
+  "shapes": {
+    "(320, 320, 320)": 189,
+    "(256, 256, 256)": 11
+  },
+  "compressions": {
+    "LZW": 102,
+    "NONE": 98
+  },
+  "detected_surface_classes": {
+    "1": 200
+  },
+  "bytes_by_compression": {
+    "LZW": 89619362,
+    "NONE": 3104468724
+  },
+  "class_schemes": {
+    "[0, 1, 2]": 200
+  },
+  "modal_scheme": "[0, 1, 2]",
+  "off_scheme_volumes": [],
+  "unpaired_volumes": [],
+  "unreadable_volumes": [],
+  "headline": [
+    "volumes: 200",
+    "distinct label shapes: 2  {'(320, 320, 320)': 189, '(256, 256, 256)': 11}",
+    "label compressions: {'LZW': 102, 'NONE': 98}",
+    "modal class scheme: [0, 1, 2] (200/200)",
+    "volumes off the modal scheme: 0",
+    "mixed compression: LZW=102 files / 0.09 GB, NONE=98 files / 3.10 GB",
+    "detected surface class: {'1': 200}"
+  ]
+}

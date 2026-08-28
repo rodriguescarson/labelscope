@@ -1,0 +1,34 @@
+{
+  "n_volumes": 1754,
+  "shapes": {
+    "(300, 300, 300)": 121,
+    "(172, 172, 172)": 840,
+    "(364, 364, 364)": 1,
+    "(236, 236, 236)": 753,
+    "(170, 170, 170)": 39
+  },
+  "compressions": {
+    "LZW": 1754
+  },
+  "detected_surface_classes": {
+    "1": 1754
+  },
+  "bytes_by_compression": {
+    "LZW": 760477858
+  },
+  "class_schemes": {
+    "[0, 1]": 1754
+  },
+  "modal_scheme": "[0, 1]",
+  "off_scheme_volumes": [],
+  "unpaired_volumes": [],
+  "unreadable_volumes": [],
+  "headline": [
+    "volumes: 1754",
+    "distinct label shapes: 5  {'(300, 300, 300)': 121, '(172, 172, 172)': 840, '(364, 364, 364)': 1, '(236, 236, 236)': 753, '(170, 170, 170)': 39}",
+    "label compressions: {'LZW': 1754}",
+    "modal class scheme: [0, 1] (1754/1754)",
+    "volumes off the modal scheme: 0",
+    "detected surface class: {'1': 1754}"
+  ]
+}
