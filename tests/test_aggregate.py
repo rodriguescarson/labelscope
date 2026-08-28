@@ -79,7 +79,7 @@ def test_aggregated_estimator_recovers_a_planted_displacement(displacement):
     shape = (64, 96, 96)
     volume = scroll_like(shape, sheet_z=32.0)
     mask = sheet_label(shape, 32 + displacement)
-    result = aggregate_alignment(volume, mask, orient_field=upward(shape),
+    result = aggregate_alignment(volume, mask, orient_field=upward(shape), orient_by='field',
                                  n_samples=8000, bootstrap=40)
     assert abs(result["global_peak_offset_raw"] + displacement) < 0.6
 
@@ -90,7 +90,7 @@ def test_aggregated_estimator_is_stable_across_search_radii():
     shape = (64, 96, 96)
     volume = scroll_like(shape)
     mask = sheet_label(shape, 34)          # 2 voxels off
-    peaks = [aggregate_alignment(volume, mask, radius=r, orient_field=upward(shape),
+    peaks = [aggregate_alignment(volume, mask, radius=r, orient_field=upward(shape), orient_by='field',
                                  n_samples=6000, bootstrap=20)["global_peak_offset_raw"]
              for r in (5, 7, 9)]
     assert max(peaks) - min(peaks) < 0.5
@@ -180,7 +180,7 @@ def test_polarity_is_not_inferred_from_a_displaced_label():
                                        orient_field=upward(shape), polarity="auto")
     assert guessed == "dark"                    # the trap
 
-    result = aggregate_alignment(volume, displaced, orient_field=upward(shape),
+    result = aggregate_alignment(volume, displaced, orient_field=upward(shape), orient_by='field',
                                  n_samples=8000, bootstrap=20)
     assert result["polarity"] == "bright"       # the default does not fall for it
     assert abs(result["global_peak_offset_raw"] + 5.0) < 1.0
@@ -209,3 +209,51 @@ def test_a_clear_sheet_passes_the_reliability_gate():
                                  bootstrap=20, min_global_snr=2.0)
     assert result["global_offset_reliable"] is True
     assert result["global_peak_offset"] == result["global_peak_offset_raw"]
+
+
+def test_intensity_orientation_agrees_across_patches_where_a_symmetric_field_cannot():
+    """The Kaggle release ships a void class that is symmetric about the writing
+    surface, so orienting against it gives a sign that flips from patch to patch.
+    Orienting by the scan gives every patch the same convention."""
+    from labelscope.alignment import orient_by_intensity, point_normals, propagate_orientation
+
+    shape = (64, 96, 96)
+    rng = np.random.default_rng(0)
+    z = np.arange(shape[0], dtype=np.float32)[:, None, None]
+    # a sheet with body on the +z side only: brighter above, gap below
+    volume = np.full(shape, 40.0, dtype=np.float32)
+    volume += 80.0 * np.exp(-0.5 * ((z - 35.0) / 2.5) ** 2)
+    volume += rng.normal(0, 4.0, shape).astype(np.float32)
+
+    mask = sheet_label(shape, 32)
+    coords = np.argwhere(mask).astype(np.float32)
+    normals, components = propagate_orientation(coords, point_normals(coords, coords))
+    for flip in (1.0, -1.0):
+        oriented = orient_by_intensity(volume, coords.T, normals * flip,
+                                       components=components)
+        # whichever way the raw normals arrived, the result points at the body
+        forward = oriented[0].mean()
+        assert forward > 0.5, "normals must end up pointing toward the denser side"
+
+
+def test_a_symmetric_orientation_reference_is_reported_as_uninformative():
+    from labelscope.alignment import orientation_reference_quality, sample_profiles
+
+    shape = (64, 96, 96)
+    volume = scroll_like(shape)
+    mask = sheet_label(shape, 32)
+    # a "void" field that is symmetric about the surface, like the shipped one
+    symmetric = np.zeros(shape, dtype=np.float32)
+    symmetric[:26] = 1.0            # 6 voxels below the label at 32
+    symmetric[39:] = 1.0            # and 7 above: the same both ways
+    _, offsets, profiles, _ = sample_profiles(volume * 0 + symmetric * 100.0, mask,
+                                              radius=8.0, n_samples=4000,
+                                              orient_field="unoriented")
+    assert orientation_reference_quality(profiles, offsets) < 0.15
+
+    onesided = np.zeros(shape, dtype=np.float32)
+    onesided[:26] = 1.0
+    _, offsets2, profiles2, _ = sample_profiles(volume * 0 + onesided * 100.0, mask,
+                                                radius=8.0, n_samples=4000,
+                                                orient_field="unoriented")
+    assert orientation_reference_quality(profiles2, offsets2) > 0.8

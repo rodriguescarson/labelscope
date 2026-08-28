@@ -56,22 +56,159 @@ def point_normals(coords: np.ndarray, neighbours: np.ndarray, k: int = 40) -> np
 
 
 def orient_normals(
-    normals: np.ndarray, points: np.ndarray, reference: np.ndarray, sigma: float = 3.0
+    normals: np.ndarray,
+    points: np.ndarray,
+    reference: np.ndarray,
+    sigma: float = 3.0,
+    components: Optional[np.ndarray] = None,
+    pointwise: bool = False,
 ) -> np.ndarray:
-    """Flip normals so they point up the gradient of ``reference``.
+    """Fix the *global* sign of an already-consistent normal field.
 
-    ``reference`` is any field that says which way is "outward" — in these
-    datasets the air/void class next to the papyrus does the job.  Without it
-    the offset sign is arbitrary per voxel and only ``|offset|`` is meaningful.
+    ``reference`` is any field that says which way is outward — the air/void
+    class beside the papyrus does the job.  The decision is taken by majority
+    over each already-consistent ``components`` piece, or once over everything
+    when no components are given: the field is reliable in aggregate even where
+    it is useless voxel by voxel.  ``pointwise=True`` restores per-voxel
+    flipping, which is only appropriate for a surface whose normals are not
+    already consistent and whose reference is close by.
     """
     field = ndi.gaussian_filter(reference.astype(np.float32), sigma)
     grad = np.stack(np.gradient(field), axis=0)
     sampled = np.stack([
         ndi.map_coordinates(grad[a], points, order=1, mode="nearest") for a in range(3)
     ])
-    sign = np.sign((normals * sampled).sum(axis=0))
-    sign[sign == 0] = 1.0
-    return normals * sign
+    dots = (normals * sampled).sum(axis=0)
+    if pointwise:
+        sign = np.sign(dots)
+        sign[sign == 0] = 1.0
+        return normals * sign
+    if components is None:
+        return normals if float(dots.sum()) >= 0 else -normals
+
+    oriented = normals.copy()
+    for piece in np.unique(components):
+        member = components == piece
+        if float(dots[member].sum()) < 0:
+            oriented[:, member] *= -1.0
+    return oriented
+
+
+def _knn_edges(points: np.ndarray, normals: np.ndarray, k: int):
+    from scipy.spatial import cKDTree
+
+    n = points.shape[0]
+    tree = cKDTree(points)
+    k = int(min(k + 1, n))
+    _, idx = tree.query(points, k=k, workers=-1)
+    if idx.ndim == 1:
+        idx = idx[:, None]
+    rows = np.repeat(np.arange(n), idx.shape[1] - 1)
+    cols = idx[:, 1:].ravel()
+    return tree, rows, cols
+
+
+def _components_of(n: int, rows: np.ndarray, cols: np.ndarray) -> np.ndarray:
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    graph = coo_matrix((np.ones(rows.size), (rows, cols)), shape=(n, n))
+    _, labels = connected_components(graph, directed=False)
+    return labels
+
+
+def propagate_orientation(
+    points: np.ndarray, normals: np.ndarray, k: int = 10, max_bridges: int = 200
+):
+    """Give an unsigned normal field a consistent sign across the surface.
+
+    Local PCA returns an *axis*, not a direction, so half the normals on a sheet
+    can come back pointing the wrong way.  Orienting each one independently
+    against some distant reference field does not fix it: deep inside a scroll
+    the reference is far away, its smoothed gradient is numerically zero, and the
+    sign it hands back is noise.  Measured on the Kaggle release, normals inside
+    a 64-voxel cell agreed with their own cell mean only 54-64% of the time —
+    barely better than a coin.  Profiles averaged over such a cell are half
+    mirrored, the average symmetrises, and every offset is pulled toward zero.
+
+    The fix is the standard one for unoriented point clouds (Hoppe et al. 1992):
+    build a neighbourhood graph weighted so that strongly-aligned neighbours are
+    cheap to traverse, take its minimum spanning tree, and walk the tree flipping
+    each normal to agree with its parent.
+
+    Concentric wraps sit far enough apart that a k-nearest-neighbour graph does
+    not connect them, so each wrap would otherwise keep its own arbitrary sign.
+    They are bridged here by one edge per component to its nearest point
+    elsewhere: adjacent wraps are near-parallel, so that edge is cheap and
+    carries the orientation across correctly.  Only the single remaining global
+    sign is left for :func:`orient_normals` to settle.
+
+    Returns ``(oriented_normals, component_labels)``.
+    """
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import breadth_first_order, minimum_spanning_tree
+
+    n = points.shape[0]
+    if n < 3:
+        return normals, np.zeros(n, dtype=np.int32)
+
+    tree, rows, cols = _knn_edges(points, normals, k)
+    labels = _components_of(n, rows, cols)
+
+    # Bridge the wraps.  A k-nearest-neighbour probe cannot find them: inside a
+    # sheet the neighbours are one voxel away and the next wrap is a dozen or
+    # more, so every candidate in the probe is a same-sheet point.  Query a tree
+    # built on everything *outside* the component instead.
+    from scipy.spatial import cKDTree
+
+    bridges_r, bridges_c = [], []
+    unique = np.unique(labels)
+    rng = np.random.default_rng(0)
+    if unique.size > 1:
+        for piece in unique[:max_bridges]:
+            member = np.flatnonzero(labels == piece)
+            outside = np.flatnonzero(labels != piece)
+            if outside.size == 0:
+                continue
+            probe_points = member
+            if probe_points.size > 2000:
+                probe_points = rng.choice(member, 2000, replace=False)
+            distances, nearest = cKDTree(points[outside]).query(
+                points[probe_points], k=1, workers=-1)
+            best = int(np.argmin(distances))
+            bridges_r.append(int(probe_points[best]))
+            bridges_c.append(int(outside[nearest[best]]))
+    if bridges_r:
+        rows = np.concatenate([rows, np.asarray(bridges_r)])
+        cols = np.concatenate([cols, np.asarray(bridges_c)])
+
+    alignment = np.abs((normals[:, rows] * normals[:, cols]).sum(axis=0))
+    weights = 1.0 - alignment + 1e-6
+    graph = coo_matrix((weights, (rows, cols)), shape=(n, n))
+    mst = minimum_spanning_tree(graph)
+    mst = mst + mst.T
+
+    oriented = normals.copy()
+    components = np.full(n, -1, dtype=np.int32)
+    visited = np.zeros(n, dtype=bool)
+    label = 0
+    for seed in range(n):
+        if visited[seed]:
+            continue
+        order, predecessors = breadth_first_order(mst, seed, directed=False,
+                                                  return_predecessors=True)
+        for node in order:
+            visited[node] = True
+            components[node] = label
+            parent = predecessors[node]
+            if parent < 0:
+                continue
+            if float(oriented[:, node] @ oriented[:, parent]) < 0:
+                oriented[:, node] *= -1.0
+        label += 1
+        if visited.all():
+            break
+    return oriented, components
 
 
 def surface_normals(mask: np.ndarray, sigma: float = 1.5) -> np.ndarray:
@@ -153,8 +290,10 @@ def ridge_alignment(
     all_coords = np.argwhere(mask)
     sample_points = coords.astype(np.float32)
     normals = point_normals(all_coords, sample_points)             # (3, N)
+    normals, components = propagate_orientation(sample_points, normals)
     if orient_field is not None:
-        normals = orient_normals(normals, sample_points.T, orient_field)
+        normals = orient_normals(normals, sample_points.T, orient_field,
+                                 components=components)
 
     offsets = np.arange(-radius, radius + step / 2, step, dtype=np.float32)
     base = sample_points.T[:, None, :]                             # (3, 1, N)
@@ -297,6 +436,60 @@ def audit_alignment(
 # --------------------------------------------------------------------------- #
 # aggregated alignment — the estimator that actually works on scroll CT
 # --------------------------------------------------------------------------- #
+def orientation_reference_quality(
+    profiles: np.ndarray, offsets: np.ndarray
+) -> float:
+    """How much a candidate "outward" field actually distinguishes the two sides.
+
+    Returned on 0-1 as the normalised difference between the field's mean on the
+    positive side of the surface and on the negative side.  Zero means the field
+    is symmetric about the surface and cannot tell inside from outside; one means
+    it is entirely on one side.
+
+    This matters because the void class shipped with the Kaggle surface release
+    scores near zero — it wraps the writing surface on *both* sides — so offsets
+    oriented against it carry a sign that flips arbitrarily from patch to patch.
+    """
+    if profiles.size == 0:
+        return 0.0
+    mean = profiles.mean(axis=1)
+    baseline = float(mean.min())
+    positive = float(mean[offsets > 0].mean() - baseline) if (offsets > 0).any() else 0.0
+    negative = float(mean[offsets < 0].mean() - baseline) if (offsets < 0).any() else 0.0
+    denominator = abs(positive) + abs(negative)
+    if denominator < 1e-9:
+        return 0.0
+    return float(abs(positive - negative) / denominator)
+
+
+def orient_by_intensity(
+    image: np.ndarray, points: np.ndarray, normals: np.ndarray,
+    components: Optional[np.ndarray] = None, distance: float = 3.0,
+) -> np.ndarray:
+    """Point every normal toward the denser side of the sheet.
+
+    The releases ship no field that says which way is out — the void class is
+    symmetric about the writing surface, so orienting against it gives a sign
+    that flips arbitrarily from patch to patch.  The scan itself does not have
+    that problem: a writing surface has papyrus on one side and a gap on the
+    other, so "toward the brighter side" is a convention the data defines and
+    every patch can agree on.  Offsets then read consistently as displacement
+    toward, or away from, the body of the sheet.
+    """
+    image = image.astype(np.float32)
+    forward = _sample_at(image, points + normals * distance)
+    backward = _sample_at(image, points - normals * distance)
+    delta = forward - backward
+    oriented = normals.copy()
+    if components is None:
+        return oriented if float(delta.sum()) >= 0 else -oriented
+    for piece in np.unique(components):
+        member = components == piece
+        if float(delta[member].sum()) < 0:
+            oriented[:, member] *= -1.0
+    return oriented
+
+
 def sample_profiles(
     image: np.ndarray,
     mask: np.ndarray,
@@ -324,8 +517,15 @@ def sample_profiles(
     all_coords = np.argwhere(mask)
     points = coords.astype(np.float32)
     normals = point_normals(all_coords, points)
-    if orient_field is not None:
-        normals = orient_normals(normals, points.T, orient_field)
+    normals, components = propagate_orientation(points, normals)
+    if isinstance(orient_field, str):
+        pass                                # explicitly unoriented
+    elif orient_field is not None:
+        normals = orient_normals(normals, points.T, orient_field, components=components)
+    else:
+        # nothing external to anchor to: let the scan decide, so that positive
+        # always means "toward the body of the sheet"
+        normals = orient_by_intensity(image, points.T, normals, components=components)
 
     offsets = np.arange(-radius, radius + step / 2, step, dtype=np.float32)
     walk = points.T[:, None, :] + normals[:, None, :] * offsets[None, :, None]
@@ -475,6 +675,7 @@ def aggregate_alignment(
     step: float = 0.25,
     n_samples: int = 20_000,
     orient_field: Optional[np.ndarray] = None,
+    orient_by: str = "intensity",
     bootstrap: int = 200,
     min_snr: float = 3.0,
     min_global_snr: float = 2.0,
@@ -514,6 +715,12 @@ def aggregate_alignment(
     1.53 voxels.  The raw figure stays available as
     ``global_peak_offset_raw``.
     """
+    if orient_by == "intensity":
+        orient_field = None                 # the scan orients itself
+    elif orient_by == "none":
+        orient_field = "unoriented"
+    elif orient_by != "field":
+        raise ValueError(f"orient_by must be 'intensity', 'field' or 'none', got {orient_by!r}")
     spacing = {}
     if radius == "auto":
         spacing = neighbour_ridge_distance(image, mask, orient_field=orient_field,

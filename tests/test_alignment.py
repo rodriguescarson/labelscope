@@ -121,3 +121,60 @@ def test_empty_mask_is_reported_not_crashed():
     shape = (32, 32, 32)
     result = ridge_alignment(synthetic_sheet(shape, 16.0), np.zeros(shape, bool))
     assert result["n_samples"] == 0
+
+
+def test_orientation_propagation_makes_a_sheet_consistent():
+    """Local PCA returns an axis, not a direction, so a fitted normal field
+    arrives with random signs.  Propagation has to remove them."""
+    from labelscope.alignment import point_normals, propagate_orientation
+
+    rng = np.random.default_rng(0)
+    coords = np.stack(np.meshgrid(np.arange(2), np.arange(24), np.arange(24),
+                                  indexing="ij"), axis=-1).reshape(-1, 3).astype(np.float32)
+    normals = point_normals(coords, coords)
+    flip = rng.random(coords.shape[0]) < 0.5
+    normals[:, flip] *= -1.0                       # scramble the signs
+    before = ((normals * normals.mean(axis=1, keepdims=True)).sum(axis=0) > 0).mean()
+    after_field, _ = propagate_orientation(coords, normals)
+    mean = after_field.mean(axis=1, keepdims=True)
+    after = ((after_field * mean).sum(axis=0) > 0).mean()
+    assert before < 0.75
+    assert after > 0.99
+
+
+def test_orientation_propagation_spans_several_parallel_sheets():
+    """Concentric wraps are separate surfaces, but their normals are parallel,
+    so a single consistent orientation across all of them is both possible and
+    what the measurement needs."""
+    from labelscope.alignment import point_normals, propagate_orientation
+
+    rng = np.random.default_rng(1)
+    sheets = []
+    for z in (4, 18, 32):
+        grid = np.stack(np.meshgrid([z], np.arange(20), np.arange(20), indexing="ij"),
+                        axis=-1).reshape(-1, 3)
+        sheets.append(grid)
+    coords = np.concatenate(sheets).astype(np.float32)
+    normals = point_normals(coords, coords)
+    normals[:, rng.random(coords.shape[0]) < 0.5] *= -1.0
+    oriented, components = propagate_orientation(coords, normals)
+    # bridging must fold the separate wraps into one consistently oriented set,
+    # so that only a single global sign is left to decide
+    assert len(np.unique(components)) == 1
+    mean = oriented.mean(axis=1, keepdims=True)
+    assert ((oriented * mean).sum(axis=0) > 0).mean() > 0.99
+
+
+def test_global_orientation_anchor_beats_a_pointwise_one_far_from_the_reference():
+    """The reference field is reliable in aggregate and useless voxel by voxel
+    once it is far away; the default takes one decision for the whole surface."""
+    from labelscope.alignment import orient_normals, point_normals, propagate_orientation
+
+    shape = (64, 32, 32)
+    coords = np.stack(np.meshgrid([40], np.arange(32), np.arange(32), indexing="ij"),
+                      axis=-1).reshape(-1, 3).astype(np.float32)
+    normals, _ = propagate_orientation(coords, point_normals(coords, coords))
+    reference = np.zeros(shape, dtype=np.float32)
+    reference[:4] = 1.0                            # the void, 36 voxels away
+    globally = orient_normals(normals, coords.T, reference)
+    assert np.allclose(np.abs((globally * globally[:, :1]).sum(axis=0)), 1.0, atol=1e-4)
