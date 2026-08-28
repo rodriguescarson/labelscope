@@ -147,8 +147,8 @@ def test_a_bulky_class_is_skipped_rather_than_measured():
     label[30:32] = 1  # the sheet
     result = audit_label(label)
     assert "skipped" in result["per_class"][2]
-    assert "thickness" not in result["per_class"][2]
-    assert "thickness" in result["per_class"][1]
+    assert "components" not in result["per_class"][2]  # the expensive part
+    assert "components" in result["per_class"][1]
     assert result["surface_class"] == 1
 
 
@@ -159,3 +159,27 @@ def test_the_surface_class_is_still_found_when_it_is_not_index_one():
     result = audit_label(label)
     assert result["surface_class"] == 2
     assert result["surface_thickness_median"] <= 3.0
+
+
+def test_many_thin_sheets_taking_a_third_of_the_patch_are_still_measured():
+    """Dataset059's surface labels reach 30% of a 172-voxel patch: the patches
+    are small, the labels a few voxels thick, and a dozen wraps cross each one.
+    A fraction threshold declared 63 perfectly ordinary volumes to have no
+    surface at all.  Thickness saturation does not, because thin is thin however
+    many sheets there are."""
+    label = np.zeros((64, 64, 64), dtype=np.uint8)
+    for z in range(2, 64, 9):
+        label[z : z + 3] = 1  # 3-voxel sheets every 9 voxels
+    assert float((label > 0).mean()) > 0.3
+    result = audit_label(label)
+    assert result["surface_class"] == 1
+    assert "skipped" not in result["per_class"][1]
+    assert result["surface_thickness_median"] <= 4.0
+
+
+def test_a_region_that_saturates_the_thickness_measure_is_skipped():
+    label = np.zeros((64, 64, 64), dtype=np.uint8)
+    label[4:60, 4:60, 4:60] = 1  # bulky in every direction
+    entry = audit_label(label)["per_class"][1]
+    assert entry["thickness"]["saturated"] >= 0.5
+    assert "skipped" in entry and "components" not in entry

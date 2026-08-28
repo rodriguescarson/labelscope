@@ -98,7 +98,6 @@ def thickness_stats(
         depth = np.zeros(mask.shape, dtype=np.uint8)
         current = mask
         total = int(mask.sum())
-        reached = int(max_thickness)
         for step in range(1, int(max_thickness) + 1):
             depth[current] = step
             # border_value=1 keeps the volume's own faces from acting as
@@ -107,17 +106,18 @@ def thickness_stats(
             current = ndi.binary_erosion(current, _BALL, border_value=1)
             alive = int(current.sum())
             if alive == 0:
-                reached = step
                 break
             if step >= bulk_probe and alive > bulk_fraction * total:
                 # Most of the mask has survived several erosions, so it is not a
                 # sheet and its thickness is not a number anyone wants.  Peeling
                 # a bulky region to the cap is where this measurement spends
                 # nearly all of its time, so stop and say so.
-                reached = step
                 break
         values = 2.0 * depth[mask].astype(np.float32)
-        saturated = float((depth[mask] >= reached).mean())
+        # Saturation is the share still standing when the peeling stopped: those
+        # voxels have a lower bound on their thickness, not a measurement of it.
+        # A mask consumed entirely is not saturated at all, however thin it was.
+        saturated = float(int(current.sum()) / total) if total else 0.0
 
     if values.size > sample:
         rng = np.random.default_rng(seed)
@@ -252,7 +252,7 @@ def audit_label(
     label: np.ndarray,
     deep: bool = False,
     max_classes: int = 4,
-    sheet_fraction_max: float = 0.25,
+    saturation_max: float = 0.5,
 ) -> Dict:
     """Run every label-only metric on one volume, per class.
 
@@ -271,24 +271,35 @@ def audit_label(
         mask = label == value
         fraction = float(mask.mean())
         entry = {"fraction": fraction, "border_touch_fraction": _border_touch_fraction(mask)}
-        # A class occupying a quarter of the patch is a region, not a writing
-        # surface, and every metric below is about sheets.  Skipping it is not a
-        # shortcut: on the Kaggle labels the bulky class costs more to measure
-        # than the sheet, and the answers mean nothing when it is done.
-        if fraction <= sheet_fraction_max:
-            entry["thickness"] = thickness_stats(mask)
+        # Thickness is measured for every class: the erosion ladder bails out
+        # early on anything bulky, so it is cheap even there.  Its saturation is
+        # then what decides whether the expensive metrics are worth running --
+        # a measurement rather than a guess.
+        #
+        # Gating on the foreground fraction instead is tempting and wrong.
+        # Across Dataset059 the surface labels run from 2% to 30% of the patch
+        # with no gap, because those patches are smaller and their labels
+        # thicker, so any fraction threshold cuts through a continuum: at 0.25 it
+        # declared 63 perfectly ordinary volumes to have no surface at all.
+        entry["thickness"] = thickness_stats(mask)
+        if entry["thickness"]["saturated"] < saturation_max:
             entry["components"] = component_stats(mask)
             if deep:
                 entry["junctions"] = junction_density(mask)
         else:
-            entry["skipped"] = f"fraction {fraction:.2f} exceeds sheet_fraction_max"
+            entry["skipped"] = (
+                f"thickness saturated for "
+                f"{entry['thickness']['saturated']:.0%} of voxels: a region, not a sheet"
+            )
         per_class[value] = entry
     result["per_class"] = per_class
 
     # the sheet-like class is the thin one: least median thickness, and not
     # occupying most of the volume
     candidates = [
-        (v, e) for v, e in per_class.items() if e["fraction"] > 1e-5 and "thickness" in e
+        (v, e)
+        for v, e in per_class.items()
+        if e["fraction"] > 1e-5 and e["thickness"]["saturated"] < saturation_max
     ]
     if candidates:
         surface_value, surface = min(candidates, key=lambda kv: kv[1]["thickness"]["median"])
