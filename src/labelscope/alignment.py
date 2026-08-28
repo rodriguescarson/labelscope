@@ -11,8 +11,9 @@ the main unwrapping bottlenecks.  Those are three measurable claims:
                       annotator noise.
 ``ridge_prominence``  how strong a ridge the label is sitting on at all.  Label
                       riding flat CT is label with nothing underneath it.
-``local_contrast``    a label-free difficulty proxy for the patch, standing in
-                      for the "compressed region" haze the post describes.
+``layer_separability`` how strongly the papyrus layers stand out from the voxel
+                      noise here — the measurable form of the "compressed
+                      region" problem the post describes.
 
 Put together they answer a question nobody currently measures: *are the labels
 worse exactly where the scroll is hardest?*
@@ -208,12 +209,18 @@ def ridge_alignment(
 # label-free difficulty
 # --------------------------------------------------------------------------- #
 def local_contrast(image: np.ndarray, sigma: float = 2.0, sample: int = 2_000_000) -> Dict:
-    """A label-free proxy for how separable the papyrus layers are here.
+    """Raw high-frequency energy in the volume.
 
-    Compressed regions are described in the Open Problems post as blurred and
-    foggy — layer boundaries smear into haze.  High-frequency energy relative to
-    the volume's own dynamic range captures that: sharp, well-separated windings
-    score high, haze scores low.
+    .. warning::
+       This is **not** a difficulty proxy, though it is tempting to use as one.
+       High-frequency energy counts voxel noise as readily as it counts sheet
+       structure, so a noisy patch scores *high* while being harder, not easier.
+       Measured across 51 patches of the Kaggle surface release, this quantity
+       correlates **negatively** with actual layer separability
+       (Spearman -0.42).  Use ``global_profile_snr`` from
+       :func:`aggregate_alignment` for separability, and the winding spacing for
+       compression.  This is kept because it is cheap, label-free, and useful as
+       a raw descriptor — not as a verdict.
     """
     image = image.astype(np.float32)
     blurred = ndi.gaussian_filter(image, sigma)
@@ -470,6 +477,7 @@ def aggregate_alignment(
     orient_field: Optional[np.ndarray] = None,
     bootstrap: int = 200,
     min_snr: float = 3.0,
+    min_global_snr: float = 2.0,
     polarity: str = "bright",
     seed: int = 0,
 ) -> Dict:
@@ -495,6 +503,16 @@ def aggregate_alignment(
     search window, or whose peak is weaker than ``min_snr``, are counted and
     excluded rather than assigned the window edge as a number — quoting the edge
     would invent a displacement the data does not contain.
+
+    The same applies to the patch as a whole.  Where the sheet contrast at the
+    labelled surface is below ``min_global_snr`` times the voxel noise, there is
+    nothing to align *to*, and ``global_peak_offset`` is ``None``: on the Kaggle
+    surface release, ungated, the worst patch reads +9.5 voxels, and every such
+    outlier turns out to have a separability near 1 — one of them with a
+    bootstrap interval of [-8.5, +8.4], the estimator flipping between two wraps.
+    Gated at 2.0 the largest offset among the patches that can be measured is
+    1.53 voxels.  The raw figure stays available as
+    ``global_peak_offset_raw``.
     """
     spacing = {}
     if radius == "auto":
@@ -552,16 +570,21 @@ def aggregate_alignment(
         cell_snr.append(snr)
         cell_sizes.append(int(group.size))
 
+    separability = contrast / noise if noise else 0.0
+    reliable = separability >= min_global_snr
     result = {
         "n_samples": int(coords.shape[0]),
         "polarity": polarity,
         "oriented": orient_field is not None,
         "search_radius": radius,
         "noise_sigma": noise,
-        "global_peak_offset": global_peak,
+        "global_peak_offset": global_peak if reliable else None,
+        "global_peak_offset_raw": global_peak,
         "global_peak_ci95": [float(lo), float(hi)],
+        "global_peak_ci95_width": float(hi - lo),
+        "global_offset_reliable": reliable,
         "global_profile_contrast": contrast,
-        "global_profile_snr": contrast / noise if noise else None,
+        "global_profile_snr": separability,
         "n_cells": len(cell_offsets),
         "n_cells_considered": n_cells_total,
         "cell_frac_unresolved": (n_unresolved / n_cells_total) if n_cells_total else 0.0,

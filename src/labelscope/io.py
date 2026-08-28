@@ -12,6 +12,7 @@ without downloading or decoding the voxels.
 from __future__ import annotations
 
 import os
+import time
 from dataclasses import dataclass, field
 from typing import Iterator, Optional, Sequence, Tuple
 
@@ -221,12 +222,10 @@ class HTTPFile:
     """
 
     def __init__(self, url: str, block_size: int = 1 << 20, session=None, timeout: int = 60):
-        import requests
-
         self.url = url
         self.block_size = block_size
         self.timeout = timeout
-        self._session = session or requests.Session()
+        self._session = session or http_session()
         self._blocks: dict = {}
         self._pos = 0
         head = self._session.head(url, allow_redirects=True, timeout=timeout)
@@ -328,6 +327,33 @@ _TIFF_TYPE_SIZE = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8,
                    11: 4, 12: 8, 16: 8, 17: 8, 18: 8}
 
 
+_SESSION = None
+
+
+def http_session():
+    """One pooled, retrying session for the whole process.
+
+    Opening a fresh connection per volume exhausts local ephemeral ports long
+    before a real dataset is inventoried — on macOS it surfaces as
+    ``OSError(49, "Can't assign requested address")`` a few hundred files in.
+    """
+    global _SESSION
+    if _SESSION is None:
+        import requests
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+
+        session = requests.Session()
+        retry = Retry(total=4, backoff_factor=0.5,
+                      status_forcelist=(429, 500, 502, 503, 504),
+                      allowed_methods=frozenset(["GET", "HEAD"]))
+        adapter = HTTPAdapter(max_retries=retry, pool_connections=32, pool_maxsize=32)
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
+        _SESSION = session
+    return _SESSION
+
+
 def probe_volume_http(url: str, session=None, timeout: int = 60) -> VolumeInfo:
     """Inventory a remote 3-D TIFF from roughly one kilobyte of it.
 
@@ -344,17 +370,23 @@ def probe_volume_http(url: str, session=None, timeout: int = 60) -> VolumeInfo:
 
     import requests
 
-    session = session or requests.Session()
+    session = session or http_session()
     info = VolumeInfo(path=url)
-    try:
-        response = session.get(url, headers={"Range": "bytes=0-2047"},
-                               timeout=timeout, allow_redirects=True)
-        response.raise_for_status()
-        head = response.content
-        total = response.headers.get("content-range", "").split("/")[-1]
-        info.file_size = int(total) if total.isdigit() else None
-    except Exception as exc:
-        info.error = f"range request failed: {type(exc).__name__}: {exc}"
+    last = None
+    for attempt in range(4):
+        try:
+            response = session.get(url, headers={"Range": "bytes=0-2047"},
+                                   timeout=timeout, allow_redirects=True)
+            response.raise_for_status()
+            head = response.content
+            total = response.headers.get("content-range", "").split("/")[-1]
+            info.file_size = int(total) if total.isdigit() else None
+            break
+        except Exception as exc:
+            last = exc
+            time.sleep(0.4 * (attempt + 1))
+    else:
+        info.error = f"range request failed: {type(last).__name__}: {last}"
         return info
 
     if len(head) < 8:

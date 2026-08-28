@@ -70,7 +70,7 @@ def test_aggregated_estimator_finds_a_correctly_placed_label_at_zero():
     result = aggregate_alignment(scroll_like(shape), sheet_label(shape, 32),
                                  orient_field=upward(shape), n_samples=8000,
                                  bootstrap=60)
-    assert abs(result["global_peak_offset"]) < 0.4
+    assert abs(result["global_peak_offset_raw"]) < 0.4
     assert result["global_profile_snr"] > 1.0
 
 
@@ -81,7 +81,7 @@ def test_aggregated_estimator_recovers_a_planted_displacement(displacement):
     mask = sheet_label(shape, 32 + displacement)
     result = aggregate_alignment(volume, mask, orient_field=upward(shape),
                                  n_samples=8000, bootstrap=40)
-    assert abs(result["global_peak_offset"] + displacement) < 0.6
+    assert abs(result["global_peak_offset_raw"] + displacement) < 0.6
 
 
 def test_aggregated_estimator_is_stable_across_search_radii():
@@ -91,7 +91,7 @@ def test_aggregated_estimator_is_stable_across_search_radii():
     volume = scroll_like(shape)
     mask = sheet_label(shape, 34)          # 2 voxels off
     peaks = [aggregate_alignment(volume, mask, radius=r, orient_field=upward(shape),
-                                 n_samples=6000, bootstrap=20)["global_peak_offset"]
+                                 n_samples=6000, bootstrap=20)["global_peak_offset_raw"]
              for r in (5, 7, 9)]
     assert max(peaks) - min(peaks) < 0.5
 
@@ -183,4 +183,29 @@ def test_polarity_is_not_inferred_from_a_displaced_label():
     result = aggregate_alignment(volume, displaced, orient_field=upward(shape),
                                  n_samples=8000, bootstrap=20)
     assert result["polarity"] == "bright"       # the default does not fall for it
-    assert abs(result["global_peak_offset"] + 5.0) < 1.0
+    assert abs(result["global_peak_offset_raw"] + 5.0) < 1.0
+
+
+def test_a_patch_with_no_sheet_contrast_reports_no_offset_at_all():
+    """The gate that keeps a +9.5 voxel reading out of a report.  On the Kaggle
+    release every wild global offset came from a patch whose sheet contrast was
+    barely above the voxel noise; one had a bootstrap interval of [-8.5, +8.4],
+    the estimator flipping between two wraps."""
+    shape = (64, 96, 96)
+    noise_only = np.random.default_rng(0).normal(90, 20, shape).astype(np.float32)
+    result = aggregate_alignment(noise_only, sheet_label(shape, 32), radius=6.0,
+                                 orient_field=upward(shape), n_samples=8000,
+                                 bootstrap=20, min_global_snr=2.0)
+    assert result["global_offset_reliable"] is False
+    assert result["global_peak_offset"] is None
+    assert result["global_peak_offset_raw"] is not None      # still available
+
+
+def test_a_clear_sheet_passes_the_reliability_gate():
+    shape = (64, 96, 96)
+    clean = scroll_like(shape, amplitude=60.0, fibre=6.0, noise=3.0)
+    result = aggregate_alignment(clean, sheet_label(shape, 32), radius=6.0,
+                                 orient_field=upward(shape), n_samples=8000,
+                                 bootstrap=20, min_global_snr=2.0)
+    assert result["global_offset_reliable"] is True
+    assert result["global_peak_offset"] == result["global_peak_offset_raw"]
