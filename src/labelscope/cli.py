@@ -53,6 +53,9 @@ def cmd_scan(args: argparse.Namespace) -> int:
         return 2
     _log(f"scanning {len(pairs)} volumes{' over HTTP' if remote else ''}")
 
+    if args.jobs > 1 and not remote:
+        return _cmd_scan_parallel(args, pairs)
+
     records: List[Dict] = []
     failures = 0
     for n, pair in enumerate(pairs, 1):
@@ -102,6 +105,70 @@ def cmd_scan(args: argparse.Namespace) -> int:
             f"carry the error and are excluded from the summary counts"
         )
 
+    os.makedirs(args.out, exist_ok=True)
+    write_csv(records, os.path.join(args.out, "scan.csv"))
+    summary = _summarise_scan(records)
+    write_json(summary, os.path.join(args.out, "scan_summary.json"))
+    _render_scan_html(records, summary, os.path.join(args.out, "scan.html"))
+    _log(f"wrote {args.out}/scan.csv, scan_summary.json, scan.html")
+    for line in summary["headline"]:
+        print(line)
+    return 0
+
+
+def _scan_one(task):
+    """One volume, for the process pool.  Module-level so it can be pickled."""
+    from labelscope.quality import audit_label
+
+    name, image_path, label_path, headers_only, deep = task
+    record: Dict = {
+        "name": name,
+        "has_image": image_path is not None,
+        "has_label": label_path is not None,
+    }
+    if label_path:
+        info = probe_volume(label_path)
+        record.update(
+            {
+                "label_shape": info.shape,
+                "label_plane_shape": info.meta.get("plane_shape"),
+                "label_dtype": info.dtype,
+                "label_compression": info.compression,
+                "label_bytes": info.file_size,
+                "label_header_error": info.error,
+            }
+        )
+    if image_path:
+        info = probe_volume(image_path)
+        record.update(
+            {
+                "image_shape": info.shape,
+                "image_plane_shape": info.meta.get("plane_shape"),
+                "image_dtype": info.dtype,
+                "image_compression": info.compression,
+                "image_bytes": info.file_size,
+                "image_header_error": info.error,
+            }
+        )
+    if label_path and not headers_only:
+        try:
+            record.update(audit_label(read_volume(label_path), deep=deep))
+        except Exception as exc:
+            record["label_read_error"] = f"{type(exc).__name__}: {exc}"
+    return record
+
+
+def _cmd_scan_parallel(args, pairs) -> int:
+    from concurrent.futures import ProcessPoolExecutor
+
+    tasks = [(p.name, p.image, p.label, args.headers_only, args.deep) for p in pairs]
+    records = []
+    _log(f"scanning {len(tasks)} volumes across {args.jobs} processes")
+    with ProcessPoolExecutor(args.jobs) as pool:
+        for n, record in enumerate(pool.map(_scan_one, tasks, chunksize=4), 1):
+            records.append(record)
+            if n % 100 == 0 or n == len(tasks):
+                _log(f"  {n}/{len(tasks)}")
     os.makedirs(args.out, exist_ok=True)
     write_csv(records, os.path.join(args.out, "scan.csv"))
     summary = _summarise_scan(records)
@@ -489,7 +556,6 @@ def cmd_leakage(args: argparse.Namespace) -> int:
 # align
 # --------------------------------------------------------------------------- #
 def cmd_align(args: argparse.Namespace) -> int:
-    from labelscope.alignment import audit_alignment
 
     pairs = [p for p in discover_pairs(args.images, args.labels) if p.complete]
     if not pairs:
@@ -498,6 +564,21 @@ def cmd_align(args: argparse.Namespace) -> int:
     if args.limit:
         pairs = pairs[: args.limit]
     _log(f"aligning {len(pairs)} pairs")
+
+    if args.jobs > 1:
+        records, cache = _align_parallel(args, pairs)
+    else:
+        records, cache = _align_serial(args, pairs)
+
+    if args.overlays:
+        _render_overlays(records, cache, args.out, args.overlays)
+
+    os.makedirs(args.out, exist_ok=True)
+    return _finish_align(args, records)
+
+
+def _align_serial(args, pairs):
+    from labelscope.alignment import audit_alignment
 
     records, cache = [], {}
     for n, pair in enumerate(pairs, 1):
@@ -529,11 +610,72 @@ def cmd_align(args: argparse.Namespace) -> int:
         except Exception as exc:
             records.append({"name": pair.name, "error": f"{type(exc).__name__}: {exc}"})
         _log(f"  {n}/{len(pairs)} {pair.name}")
+    return records, cache
 
-    if args.overlays:
-        _render_overlays(records, cache, args.out, args.overlays)
 
-    os.makedirs(args.out, exist_ok=True)
+def _align_one(task):
+    """One image/label pair, for the process pool."""
+    from labelscope.alignment import audit_alignment
+
+    name, image_path, label_path, surface, orient, radius, samples, cell, per_cell, snr = task
+    try:
+        record = {"name": name}
+        record.update(
+            audit_alignment(
+                read_volume(image_path),
+                read_volume(label_path),
+                surface_class=surface,
+                orient_class=orient,
+                radius=radius,
+                n_samples=samples,
+                cell=cell,
+                min_per_cell=per_cell,
+                min_global_snr=snr,
+            )
+        )
+        return record
+    except Exception as exc:
+        return {"name": name, "error": f"{type(exc).__name__}: {exc}"}
+
+
+def _align_parallel(args, pairs):
+    from concurrent.futures import ProcessPoolExecutor
+
+    radius = args.radius if args.radius == "auto" else float(args.radius)
+    tasks = [
+        (
+            p.name,
+            p.image,
+            p.label,
+            args.surface_class if args.surface_class >= 0 else None,
+            args.orient_class if args.orient_class >= 0 else None,
+            radius,
+            args.samples,
+            args.cell,
+            args.min_per_cell,
+            args.min_global_snr,
+        )
+        for p in pairs
+    ]
+    records, cache = [], {}
+    _log(f"aligning {len(tasks)} pairs across {args.jobs} processes")
+    with ProcessPoolExecutor(args.jobs) as pool:
+        for n, record in enumerate(pool.map(_align_one, tasks, chunksize=1), 1):
+            records.append(record)
+            if args.overlays and "error" not in record:
+                pair = pairs[n - 1]
+                cache[record["name"]] = (
+                    pair.image,
+                    pair.label,
+                    record.get("surface_class"),
+                    record.get("orient_class"),
+                )
+            if n % 25 == 0 or n == len(tasks):
+                _log(f"  {n}/{len(tasks)}")
+    return records, cache
+
+
+def _finish_align(args, records) -> int:
     write_csv(records, os.path.join(args.out, "align.csv"))
     good = [r for r in records if r.get("global_peak_offset") is not None]
     measurable = len(good)
@@ -788,6 +930,12 @@ def main(argv=None) -> int:
         help="newline-separated filenames; required when --labels or --images is a base URL",
     )
     scan.add_argument(
+        "--jobs",
+        type=int,
+        default=1,
+        help="worker processes; volumes are independent",
+    )
+    scan.add_argument(
         "--headers-only", action="store_true", help="probe headers only; never decode voxels"
     )
     scan.add_argument(
@@ -893,6 +1041,12 @@ def main(argv=None) -> int:
     )
     align.add_argument("--samples", type=int, default=40000)
     align.add_argument("--limit", type=int, default=0)
+    align.add_argument(
+        "--jobs",
+        type=int,
+        default=1,
+        help="worker processes; pairs are independent",
+    )
     align.add_argument(
         "--overlays",
         type=int,
