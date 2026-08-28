@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from labelscope.quality import (
     audit_label,
@@ -93,3 +94,45 @@ def test_empty_label_is_handled():
     result = audit_label(np.zeros((16, 16, 16), dtype=np.uint8))
     assert result["foreground_fraction"] == 0.0
     assert result["surface_class"] is None
+
+
+@pytest.mark.parametrize("thickness", [2, 3, 4, 6, 9])
+def test_capped_thickness_agrees_with_the_exact_transform(thickness):
+    """The erosion ladder replaced an exact Euclidean distance transform that
+    cost ~90 s per 320³ volume — the entire budget for auditing a release. It
+    only earns that if it gives the same answer on sheet-like data."""
+    mask = np.zeros((40, 64, 64), dtype=bool)
+    mask[20 : 20 + thickness] = True
+    capped = thickness_stats(mask)
+    exact = thickness_stats(mask, max_thickness=None)
+    assert abs(capped["median"] - exact["median"]) < 0.6
+    assert abs(capped["p95"] - exact["p95"]) < 0.6
+
+
+def test_capped_thickness_agrees_on_a_curved_sheet():
+    """Where the two could diverge: city-block depth against Euclidean distance.
+    Across a thin sheet they do not, because the nearest background voxel lies
+    along the normal."""
+    zz, yy, _ = np.meshgrid(*[np.arange(s) for s in (48, 64, 64)], indexing="ij")
+    radius = np.sqrt((yy - 32.0) ** 2 + (zz - 24.0) ** 2)
+    mask = np.abs(radius - 14) < 1.5
+    capped = thickness_stats(mask)
+    exact = thickness_stats(mask, max_thickness=None)
+    assert abs(capped["median"] - exact["median"]) < 0.6
+    assert abs(capped["p95"] - exact["p95"]) < 0.6
+
+
+def test_a_sheet_leaving_the_volume_is_not_reported_as_thinner():
+    """The volume's own faces are not background: a sheet running out of the
+    patch keeps its thickness."""
+    mask = np.zeros((40, 64, 64), dtype=bool)
+    mask[20:24] = True  # spans the full cross-section
+    assert thickness_stats(mask)["median"] >= 2.0
+
+
+def test_thickness_reports_saturation_rather_than_a_wrong_number():
+    blob = np.zeros((64, 64, 64), dtype=bool)
+    blob[8:56, 8:56, 8:56] = True  # far thicker than the cap
+    stats = thickness_stats(blob, max_thickness=6)
+    assert stats["saturated"] > 0.2
+    assert thickness_stats(np.zeros((8, 8, 8), bool))["saturated"] == 0.0
