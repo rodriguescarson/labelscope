@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labelscope"
+version = "0.1.0"
+description = "A diagnostic scope for Vesuvius Challenge surface-label datasets"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Carson Rodrigues" }]
+keywords = ["vesuvius-challenge", "herculaneum", "segmentation", "data-quality", "nnunet"]
+dependencies = [
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "scikit-image>=0.21",
+  "tifffile>=2023.7",
+  "imagecodecs>=2023.7",
+  "requests>=2.28",
+  "pillow>=9.0",
+]
+
+[project.optional-dependencies]
+zarr = ["zarr>=2.16"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+labelscope = "labelscope.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/rodriguescarson/labelscope"
+
+[tool.setuptools.packages.find]
+where = ["src"]

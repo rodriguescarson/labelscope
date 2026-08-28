@@ -1,0 +1,59 @@
+{
+  "n_patches": 1754,
+  "patch_size": [
+    300,
+    300,
+    300
+  ],
+  "buffer": 0,
+  "overlapping_pairs": 7527,
+  "patches_with_overlapping_neighbour": 1621,
+  "patches_with_overlapping_neighbour_pct": 92.41733181299885,
+  "max_overlap_fraction_median_pct": 36.0,
+  "max_overlap_fraction_max_pct": 57.333333333333336,
+  "random_kfold": {
+    "k": 5,
+    "trials": 200,
+    "val_patches_contaminated_pct_mean": 91.87200684150504,
+    "val_patches_contaminated_pct_sd": 0.17741984513521927,
+    "mean_max_shared_volume_pct": 23.045280217576984
+  },
+  "nnunet_default_split": {
+    "n_val_evaluations": 1754,
+    "val_patches_contaminated": 1612,
+    "val_patches_contaminated_pct": 91.9042189281642,
+    "mean_max_shared_volume_pct": 23.07622761096351,
+    "worst_shared_volume_pct": 57.333333333333336
+  },
+  "blocked_split": {
+    "mode": "block",
+    "k": 5,
+    "buffer": 0,
+    "n_patches": 1754,
+    "n_groups": 150,
+    "largest_group": 75,
+    "val_fold_sizes": [
+      351,
+      351,
+      351,
+      351,
+      350
+    ],
+    "train_fold_sizes": [
+      1099,
+      1137,
+      1152,
+      1126,
+      1055
+    ],
+    "buffer_dropped_per_fold": [
+      304,
+      266,
+      251,
+      277,
+      349
+    ],
+    "buffer_dropped_pct_mean": 16.499429874572407,
+    "residual_leaking_val_patches": 0
+  }
+}

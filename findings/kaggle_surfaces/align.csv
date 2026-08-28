@@ -1,0 +1,3 @@
+name,error
+sample_00002,RuntimeError: invalid shape for coordinate array
+sample_00003,RuntimeError: invalid shape for coordinate array
