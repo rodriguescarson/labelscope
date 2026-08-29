@@ -122,6 +122,8 @@ def test_a_compressed_store_carries_its_codec_through_from_store():
     read from .zarray and applied per chunk instead."""
     import json
 
+    pytest.importorskip("numcodecs")
+
     class MetaStore:
         def get(self, url, timeout=None):
             class R:
@@ -275,7 +277,7 @@ def test_one_cache_directory_serves_two_stores_without_mixing_them():
 def test_a_blosc_compressed_store_reads_the_same_as_a_raw_one():
     """PHerc 0172's scan is blosc-compressed, and that is 53 of the 258
     published surfaces -- a fifth of the corpus, refused outright until now."""
-    import numcodecs
+    numcodecs = pytest.importorskip("numcodecs")
 
     from labelscope.remote_zarr import ChunkedVolume
 
@@ -313,6 +315,8 @@ def test_a_blosc_compressed_store_reads_the_same_as_a_raw_one():
 
 
 def test_a_chunk_that_will_not_decode_is_treated_as_absent():
+    pytest.importorskip("numcodecs")
+
     from labelscope.remote_zarr import ChunkedVolume
 
     class Session:
