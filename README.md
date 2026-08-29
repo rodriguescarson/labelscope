@@ -240,7 +240,9 @@ labelscope sheetswitch --mesh seg/*.tifxyz --volume https://.../volume.zarr \
 
 A displaced surface still lies on papyrus, so nothing about the surface itself
 gives it away. What does is the **seam**: the one line of grid edges that has to
-cross the gap between two wraps, and the gap is dark. The statistic is the depth
+cross the gap between two wraps, and the gap is dark.
+
+![A seam is a whole grid line crossing the gap between two wraps](docs/img/seam.png) The statistic is the depth
 of that trough relative to each edge's own endpoints, averaged along the seam
 direction — a seam is about 1% of a mesh's edges, so judging edges individually
 drowns it.
@@ -257,6 +259,16 @@ It fires at one, two and three windings alike — the periodicity the satisfacti
 metric is blind to.
 
 ### It refuses to answer when it cannot
+
+![A null with no spread in it has no z-scores in it](docs/img/degenerate.png)
+
+**Where the scan is masked out**, the surface reads flat: every edge dips by
+nothing, the spread collapses, and a robust z-score computed on that null will
+report whatever rounding noise it finds. On the published surfaces that produced
+the loudest result in a 56-surface sweep, z = 12.60 from a median line dip of
+0.000. The detector now samples the scan at the surface first and reports
+`dip_degenerate` instead of a seam. See [finding 8](findings/README.md).
+
 
 The seam is only visible if a grid edge normally stays on one wrap. The detector
 measures the winding spacing from the scan and reports `steps_per_winding`; below

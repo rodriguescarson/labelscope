@@ -24,6 +24,7 @@ dependencies = [
 [project.optional-dependencies]
 zarr = ["numcodecs>=0.12", "zarr>=2.16"]
 dev = ["pytest>=7", "ruff>=0.6"]
+figures = ["matplotlib>=3.7"]
 
 [project.scripts]
 labelscope = "labelscope.cli:main"

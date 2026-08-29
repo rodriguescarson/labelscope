@@ -349,6 +349,8 @@ highest score in the whole sweep was **z = 12.60** on
 that passes the resolution gate, and flagged in two places at once. It looked
 like the finding.
 
+![A null with no spread in it has no z-scores in it](../docs/img/degenerate.png)
+
 It was an artifact of a null with no spread in it:
 
 | surface | max z | median line dip, axis 0 | axis 1 |
