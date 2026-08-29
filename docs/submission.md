@@ -10,60 +10,85 @@ Form: https://docs.google.com/forms/d/e/1FAIpQLSev2vJobu521iB6OuyehDktzYTEo131F4
 
 ## Field 5 — how this increases the probability of reading complete scrolls
 
-*(draft; ~400 words)*
+`labelscope` is a CPU tool that measures things the pipeline currently assumes.
+It answers four questions, on data you already have, without a GPU or a training
+run.
 
-The Open Problems post says label quality is now one of the main unwrapping
-bottlenecks, and describes the failure modes in words: labels "may wiggle, may
-drift slightly off the true surface, may avoid the most ambiguous regions."
-Nothing in the pipeline measures any of that. `labelscope` is a CPU tool that
-turns each sentence into a number you can compute on a dataset you already have,
-in minutes, without a GPU or a training run.
+**1. A detector for the failure the spiral satisfaction metric cannot see.**
+The Open Problems bottleneck table lists "Meshes can jump from one wrap to
+another" and asks for conservative failure detection. villa#1621 shows why the
+existing metric cannot give it: it derives its target from the patch's own
+position, so a patch displaced by any whole number of windings scores identically
+to a correct one — a delta of exactly zero. A displaced surface still lies on
+papyrus, so the surface itself gives nothing away. What does is the seam: the one
+line of grid edges that must cross the gap between two wraps, and the gap is
+dark. On a published PHercParis4 surface against its own 2.4 µm scan, with one
+winding planted over half the grid, the seam line's mean darkening goes from 9.1
+to 36.3 — a z-score of 0.4 against 11.5 — and it fires at one, two and three
+windings alike.
 
-Running it on the public surface data produced three things worth acting on.
+It also refuses to answer when it cannot. The seam is only visible if a grid edge
+normally stays on one wrap, so the tool measures the winding spacing from the
+scan and declines below two grid steps per winding. That requirement is per
+scroll: PHercParis4 needs 2.4 µm, and PHerc0500P2 fails it even at 9.362 µm
+because its wraps are physically about 3.5× tighter. My own first fleet run was
+at 45.5 µm and was flagging seams that were the scan's ordinary roughness.
 
-**1. The surface labels mark a face, not a centre-line.** On the Kaggle
-surface-detection release, 48 of 51 patches have enough sheet contrast at the
-labelled surface to measure. In those 48 the sheet's local CT density maximum is
-not under the label: median |offset| **2.34 voxels**, IQR 1.79–3.02, ≥1 voxel in
-45 of 48 patches, per-patch 95% bootstrap intervals around ±0.05, against sheets
-7.5–9.3 voxels thick and a winding spacing of 10.5–29 voxels. That is not an error — a
-writing surface *is* a face — but anything treating these labels as a sheet
-centre-line inherits a systematic ~2.3 voxel bias, and ink sampling symmetric in
-±t about the label is not symmetric about the sheet. Locally the wander is larger
-than the systematic part: per 64³ cube, median |offset| 2.43 voxels, p90 4.66.
+It reads a surface out of an 81 TB volume by fetching only the chunks the surface
+passes through — about 4 GB per segment, against roughly 50 GB for its bounding
+box.
 
-**2. `Dataset059`, the surface training set cited in villa#191, is not what its
-filenames imply.** It ships four patch sizes — 170³, 172³, 236³, 300³ — plus one
-364³, and nothing in a filename or in `dataset.json` says which is which. I know
-this trap is easy to fall into because I fell into it: assuming a uniform 300³
-turned 28 overlapping patch pairs into 7,527 and a 1.5% train/validation leak
-into 91.9%. The tool now reads every volume's real shape by default, and both
-that retraction and a second one — eight volumes I reported as malformed turned
-out to be truncated by my own downloader — are written into the findings rather
-than quietly dropped.
+**2. The surface labels mark a face, not a centre-line, in both public
+releases.** Measuring the offset from the labelled surface to the local CT
+density maximum along the surface normal:
 
-**3. Fifteen gigabytes of the Kaggle release is uncompressed padding** — 487 of
-892 label volumes at `COMPRESSION.NONE`, 15.52 GB of a 45 GB release, where the
-compressed half of the same release averages 0.87 MB. Establishing that cost
-about 1.8 MB of transfer: `labelscope scan --headers-only` inventories a remote
-release from roughly a kilobyte per volume, so a multi-terabyte set can be
-checked before it is pulled.
+| | Kaggle surface release | Dataset059 |
+|---|---|---|
+| pairs | 892 | 1,754 |
+| measurable | 836 (93.7%) | 1,732 (98.7%) |
+| median \|offset\| | **2.285 vx** | **2.576 vx** |
+| ≥ 1 voxel | 89% | 98% |
 
-The estimator behind (1) is the substance. The obvious version — walk the normal
-from each labelled voxel, take the nearest intensity maximum — fails silently on
-carbonised papyrus, and its answer tracks the search radius rather than any
-displacement. Four separate traps had to be fixed before the number meant
-anything; all four are documented, and all four are regression tests, on a
-synthetic built to fail the naive measure the way real data does.
+2,568 pairs, two independently produced releases, the same answer to within a
+third of a voxel, against sheets 7.5–9.3 voxels thick. This is not an error — a
+writing surface is a face — but anything treating these labels as a sheet
+centre-line inherits a systematic ~2.3 voxel bias over a winding period whose
+median is 19 voxels, and ink sampling symmetric in ±t about the label is not
+symmetric about the sheet.
+
+The estimator behind it is the substance. The obvious version — walk the normal,
+take the nearest intensity maximum — fails silently on carbonised papyrus: its
+answer tracks the search radius rather than any displacement (median |offset|
+0.70 vx at R=2, 3.09 at R=9 on the same fixed label). Four separate traps had to
+be fixed before the number meant anything, all four now regression tests.
+
+**3. Data facts worth one line of a release script.** 487 of 892 labels in the
+Kaggle release ship uncompressed — 15.52 GB of a 45 GB release, where the
+compressed half averages 0.87 MB against 32.82 MB. Established from about 1.8 MB
+of header reads, because `scan --headers-only` inventories a remote release from
+roughly a kilobyte per volume. `Dataset059` ships five patch sizes (170³, 172³,
+236³, 300³, 364³) with nothing in a filename saying which; one Kaggle volume,
+`sample_00833`, has no class 2 at all.
+
+**4. Two retractions, kept in the findings.** I reported a 92% train/validation
+leak in `Dataset059` that was really 1.5% — I had assumed a uniform 300³ patch
+size — and eight "malformed" volumes that my own downloader had truncated. Both
+mistakes are now checks in the tool: it reads every volume's real shape, and the
+fetcher verifies what it wrote rather than what was promised.
+
+Everything is MIT, CPU-only, and validated against planted ground truth rather
+than eyeballed. 121 tests, CI on Python 3.9, 3.11 and 3.12.
 
 ---
 
 ## Checklist before submitting
 
-- [ ] repo public at github.com/rodriguescarson/labelscope, MIT licence present
-- [ ] `pytest -q` green on a clean clone
-- [ ] `pip install -e .` works from the published repo
-- [ ] findings/ committed, including the retraction in §0
-- [ ] upstream issues filed on ScrollPrize/villa (docs/upstream/)
+- [x] repo public at github.com/rodriguescarson/labelscope, MIT
+- [x] CI green on 3.9 / 3.11 / 3.12 plus lint
+- [x] `pytest -q` green on a clean clone, no data download required
+- [x] findings/ committed, including both retractions
+- [x] full-population results for both releases (2,568 pairs)
+- [ ] fleet-wide sheet-switch sweep over published PHercParis4 surfaces
+- [ ] upstream issues filed on ScrollPrize/villa (drafts in docs/upstream/)
 - [ ] posted in the Vesuvius Discord
 - [ ] form submitted before 2026-08-31 23:59 PT (2026-09-01 12:29 IST)
