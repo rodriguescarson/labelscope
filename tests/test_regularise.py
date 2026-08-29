@@ -9,10 +9,10 @@ patch whose cells disagree must come back agreeing.
 
 import numpy as np
 import pytest
-from tests.test_aggregate import scroll_like, sheet_label, upward
 
 from labelscope.alignment import aggregate_alignment
 from labelscope.regularise import delta_field, regularise_label
+from test_aggregate import scroll_like, sheet_label, upward
 
 
 def wobbled(shape=(64, 96, 96), base=32, shift=3, band=slice(32, 64)):

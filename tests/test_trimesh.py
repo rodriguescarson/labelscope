@@ -8,10 +8,10 @@ component of flagged edges instead of a grid line -- keeps that behaviour.
 
 import numpy as np
 import pytest
-from tests.test_mesh import mesh_on_sheet, wrapped_volume
 
 from labelscope import trimesh as tm
 from labelscope.mesh import QuadMesh
+from test_mesh import mesh_on_sheet, wrapped_volume
 
 
 def write_obj(path, points_zyx, faces):
