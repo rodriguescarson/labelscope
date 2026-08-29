@@ -1,6 +1,6 @@
 checking 1 surfaces
 /Users/carson/Projects/vesuvius-label-audit/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
   warnings.warn(
-  1/1 20231005123336-on-20260411134726-2.4um.tifxyz: max z 4.8, 0 seam(s)
-wrote findings/fleet_p4/20231005123336-on-20260411134726-2.4um.tifxyz/sheetswitch.csv, sheetswitch_summary.json
+  1/1 20231016151002-on-20260411134726-2.4um.tifxyz: max z 3.4, 0 seam(s)
+wrote findings/fleet_p4/20231016151002-on-20260411134726-2.4um.tifxyz/sheetswitch.csv, sheetswitch_summary.json
 1 surfaces checked, 0 carry a seam at z >= 5.0

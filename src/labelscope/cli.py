@@ -924,6 +924,7 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
     """Look for places where a traced surface jumps to a neighbouring wrap."""
 
     from labelscope import trimesh as tri_mod
+    from labelscope.mesh import displace as _quad_displace
     from labelscope.mesh import find_sheet_switches, read_tifxyz
 
     meshes = sorted(args.mesh)
@@ -973,6 +974,31 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
             records.append({"name": name, "error": f"volume unreadable: {exc}"})
             continue
 
+        planted = None
+        if args.plant:
+            # The control: displace half the surface by a whole winding, which
+            # is the case villa's satisfaction metric scores as no change at
+            # all.  Measuring the winding from the scan first means the plant
+            # is in this surface's own units, not a guessed voxel count.
+            from labelscope.mesh import winding_spacing as _quad_spacing
+
+            spacing = (
+                tri_mod.winding_spacing(mesh, volume, origin=origin)
+                if triangular
+                else _quad_spacing(mesh, volume, origin=origin)
+            )
+            if math.isnan(spacing):  # nothing to plant against
+                records.append(
+                    {"name": name, "error": "cannot plant: winding spacing unmeasurable"}
+                )
+                continue
+            planted = float(args.plant) * spacing
+            mesh = (
+                tri_mod.displace(mesh, planted)
+                if triangular
+                else _quad_displace(mesh, planted)
+            )
+
         if triangular:
             result = tri_mod.find_sheet_switches(
                 mesh,
@@ -988,6 +1014,8 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
             )
         result["name"] = name
         result["kind"] = "trimesh" if triangular else "tifxyz"
+        result["planted_windings"] = args.plant
+        result["planted_voxels"] = planted
         result["valid_fraction"] = 1.0 if triangular else float(mesh.valid.mean())
         if args.remote:
             result["chunks_fetched"] = getattr(volume, "chunks_fetched", None)
@@ -1309,7 +1337,17 @@ def main(argv=None) -> int:
         "keeps it while cutting the sampling cost (tifxyz only).  Note it does "
         "NOT cut the streaming cost: the surviving vertices sit further apart, "
         "so their normal walks touch more distinct chunks, not fewer -- "
-        "measured at +40% of chunks per step of N.  Use --window for that",
+        "measured at +40%% of chunks per step of N.  Use --window for that",
+    )
+    switch.add_argument(
+        "--plant",
+        type=float,
+        default=0.0,
+        metavar="N",
+        help="displace half of each surface by N windings before measuring, "
+        "using the winding spacing read from the scan.  This is the control: "
+        "a surface that scores like a planted switch is one the detector can "
+        "see, and the gap between planted and unplanted is the operating point",
     )
     switch.add_argument(
         "--min-span",

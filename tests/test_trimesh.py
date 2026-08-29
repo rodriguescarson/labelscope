@@ -200,3 +200,50 @@ def test_a_compact_dark_patch_is_not_reported_as_a_seam():
     out = tm.find_sheet_switches(tri, damaged, z_threshold=5.0)
     assert out["max_z"] > 10.0  # the edges over the damage are flagged
     assert out["n_seams"] == 0  # but the component does not cross the surface
+
+
+def test_plant_reproduces_an_externally_displaced_surface(tmp_path):
+    """`--plant 1` has to land where an explicit whole-winding displacement does.
+
+    The plant measures the winding from the scan rather than taking a voxel
+    count on trust, so this also checks that measurement: the fixture's sheets
+    are 24 voxels apart.
+    """
+    import tifffile
+
+    from labelscope.cli import main
+
+    volume = wrapped_volume(spacing=24.0)
+    tifffile.imwrite(str(tmp_path / "vol.tif"), volume.astype(np.uint8))
+    tri = tm.from_quad(mesh_on_sheet(rows=40, cols=40, step=3.0))
+    for name, m in (("clean", tri), ("switched", tm.displace(tri, 24.0))):
+        write_obj(tmp_path / f"{name}.obj", m.points, m.faces)
+
+    def run(mesh, *extra):
+        out = tmp_path / f"out_{mesh}_{'_'.join(extra) or 'plain'}"
+        main(
+            [
+                "sheetswitch",
+                "--mesh",
+                str(tmp_path / f"{mesh}.obj"),
+                "--volume",
+                str(tmp_path / "vol.tif"),
+                "--out",
+                str(out),
+                *extra,
+            ]
+        )
+        import csv
+
+        return list(csv.DictReader(open(out / "sheetswitch.csv")))[0]
+
+    plain = run("clean")
+    planted = run("clean", "--plant", "1")
+    explicit = run("switched")
+
+    assert float(planted["planted_voxels"]) == pytest.approx(24.0, abs=1.0)
+    assert int(plain["n_seams"]) == 0
+    assert int(planted["n_seams"]) == 1
+    assert float(planted["max_z"]) == pytest.approx(float(explicit["max_z"]), rel=0.01)
+    # the operating point: the plant stands far above the clean surface's tail
+    assert float(planted["max_z"]) > 5 * float(plain["max_z"])

@@ -1,0 +1,2 @@
+grid_shape,grid_step,winding_spacing,steps_per_winding,resolution_adequate,z_threshold,axis0_max_z,axis0_median_dip,axis1_max_z,axis1_median_dip,n_seams,max_z,name,kind,valid_fraction,chunks_fetched,mb_fetched,seam_lines
+"[64, 64]",19.39313507080078,66.9063949584961,3.4500040717621525,True,5.0,1.787819504737854,4.166558265686035,3.3615989685058594,3.679182529449463,0,3.3615989685058594,20231016151002-on-20260411134726-2.4um.tifxyz,tifxyz,1.0,164,343.9,

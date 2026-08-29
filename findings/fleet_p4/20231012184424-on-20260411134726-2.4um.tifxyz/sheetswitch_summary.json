@@ -1,0 +1,14 @@
+{
+  "n_meshes": 1,
+  "n_readable": 1,
+  "n_resolution_adequate": 1,
+  "n_flagged": 1,
+  "z_threshold": 5.0,
+  "flagged": [
+    {
+      "name": "20231012184424-on-20260411134726-2.4um.tifxyz",
+      "max_z": 6.046655654907227,
+      "seams": "0:19@6.0"
+    }
+  ]
+}
