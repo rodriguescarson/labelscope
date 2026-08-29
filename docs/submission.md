@@ -11,110 +11,133 @@ form on 2026-08-29.
 |---|---|
 | Email | rodriguescarson@gmail.com (pre-filled; tick "record this email") |
 | Your full name | Carson Conception Rodrigues |
-| Team description | Individual — no team. |
-| URL | the three below |
-| Short description | field 5 |
+| Team description | Individual — not a team. |
+| URL | the four below |
+| Short description | field 5, below |
 | Terms and Conditions | Yes, I agree |
 
 **URL:**
-- https://github.com/rodriguescarson/labelscope (the tool, MIT)
-- Issues filed on ScrollPrize/villa: #1640, #1641, #1642, #1643
-- PRs opened on ScrollPrize/villa: #1644, #1645, #1646 (+ a fourth pending)
+- https://github.com/rodriguescarson/labelscope — the tool, MIT, CI on 3.9/3.11/3.12
+- Issues filed on ScrollPrize/villa: #1640, #1641, #1642, #1643, #1649
+- PRs opened on ScrollPrize/villa: #1644, #1645, #1646
+- Fix for #1482 posted with its branch (PR creation is blocked for my account)
 
 ---
 
 ## Field 5 — how this increases the probability of reading complete scrolls
 
-`labelscope` is a CPU tool that measures things the pipeline currently assumes.
-It answers four questions, on data you already have, without a GPU or a training
-run.
+`labelscope` is a CPU tool that measures things the unwrapping pipeline currently
+assumes. It runs on a laptop, needs no GPU and no training, and reads the
+standard formats: Zarr/OME-Zarr, tifxyz quad meshes, and `.obj`/`.ply`
+triangular meshes.
 
-**1. A detector for the failure the spiral satisfaction metric cannot see.**
-The Open Problems bottleneck table lists "Meshes can jump from one wrap to
+**1. A detector for the failure the spiral satisfaction metric cannot see, run
+over the whole published corpus — and the control that says whether it works.**
+
+The Open Problems bottleneck table lists "meshes can jump from one wrap to
 another" and asks for conservative failure detection. villa#1621 shows why the
 existing metric cannot give it: it derives its target from the patch's own
-position, so a patch displaced by any whole number of windings scores identically
-to a correct one — a delta of exactly zero. A displaced surface still lies on
-papyrus, so the surface itself gives nothing away. What does is the seam: the one
-line of grid edges that must cross the gap between two wraps, and the gap is
-dark. On a published PHercParis4 surface against its own 2.4 µm scan, with one
-winding planted over half the grid, the seam line's mean darkening goes from 9.1
-to 36.3 — a z-score of 0.4 against 11.5 — and it fires at one, two and three
-windings alike.
+position, so a surface displaced by any whole number of windings scores
+identically to a correct one — a delta of exactly zero. A displaced surface still
+lies on papyrus, so the surface itself gives nothing away. What does is the seam:
+the one line of grid edges that must cross the gap between two wraps, and the gap
+is dark.
 
-It takes tifxyz quad meshes and, since the seam argument never needed a grid,
-`.obj` and `.ply` triangular meshes as well — the three surface formats the
-project exchanges. Without a grid the conservatism has to be stated
-geometrically: flagged edges are grouped into connected components, and a
-component is a seam only if it reaches across at least 0.4 of the surface's own
-largest extent, because a sheet switch cuts across the surface and damage does
-not. On the planted fixture the real seam spans 1.00, the largest noise component
-0.15, and a compact dark blob of damage 0.16 — the blob drives `max_z` to 21.1
-and is still correctly reported as no seam.
+CORPUS_TABLE_HERE
 
-It also refuses to answer when it cannot. The seam is only visible if a grid edge
-normally stays on one wrap, so the tool measures the winding spacing from the
-scan and declines below two grid steps per winding. That requirement is per
-scroll: PHercParis4 needs 2.4 µm, and PHerc0500P2 fails it even at 9.362 µm
-because its wraps are physically about 3.5× tighter. My own first fleet run was
-at 45.5 µm and was flagging seams that were the scan's ordinary roughness.
+Then the same surfaces again, each with a whole winding planted in half of it —
+the case the satisfaction metric scores as no change at all. That pairing is the
+part that matters, and it is what a fleet pass without a control cannot tell you:
 
-It reads a surface out of an 81 TB volume by fetching only the chunks the surface
-passes through — about 4 GB per segment, against roughly 50 GB for its bounding
-box.
+CORPUS_PAIRED_HERE
 
-**2. The surface labels mark a face, not a centre-line, in both public
+**2. Running the full population found a defect in my own detector, and it was
+the loudest result in the sweep.**
+
+On the first pass the highest score anywhere was z = 12.60, on a surface that
+passed the resolution gate and was flagged on two axes. Its median line dip was
+**0.000 grey levels on both axes**. The published volumes are masked — the air
+around the scroll is absent from the store and reads as zero — and a mesh can be
+perfectly well-formed over a region the scan does not cover. Every edge dipped by
+nothing, the robust spread collapsed, and a fallback to the standard deviation
+turned a quarter of a grey level into the highest z in the run. Eleven of 56
+surfaces sat in that regime.
+
+The detector now samples the scan at the surface before scoring, reports
+`dip_degenerate`, and refuses. `_line_scores` returns zeros on a degenerate
+spread instead of manufacturing one. This is the second time in this project that
+masked-out regions have broken an estimator built on robust statistics, so the
+rule is written down rather than just the fix: **a scale estimate of zero is a
+refusal, not a small number.**
+
+Both refusals — the resolution gate and this one — are reported as data, so the
+count of surfaces the tool *declines* to judge is itself a result about where
+this class of check can run at all.
+
+**3. The surface labels mark a face, not a centre-line, in both public
 releases.** Measuring the offset from the labelled surface to the local CT
-density maximum along the surface normal:
+density maximum along the surface normal, over 2,568 pairs in two independently
+produced releases:
 
 | | Kaggle surface release | Dataset059 |
 |---|---|---|
 | pairs | 892 | 1,754 |
 | measurable | 836 (93.7%) | 1,732 (98.7%) |
 | median \|offset\| | **2.285 vx** | **2.576 vx** |
-| ≥ 1 voxel | 89% | 98% |
 
-2,568 pairs, two independently produced releases, the same answer to within a
-third of a voxel, against sheets 7.5–9.3 voxels thick. This is not an error — a
-writing surface is a face — but anything treating these labels as a sheet
-centre-line inherits a systematic ~2.3 voxel bias over a winding period whose
-median is 19 voxels, and ink sampling symmetric in ±t about the label is not
-symmetric about the sheet.
+The same answer to within a third of a voxel, against sheets 7.5–9.3 voxels
+thick. This is not an error — a writing surface is a face — and a member of the
+team has said as much on villa#1640, along with the sharper point that intensity
+peaks will not reliably localise it. I agree with both, and the measurement is
+reported here as a quantification of an intended convention rather than a bug:
+anything treating these labels as a sheet centre-line inherits a systematic ~2.3
+voxel bias, and ink sampling symmetric in ±t about the label is not symmetric
+about the sheet.
 
-The estimator behind it is the substance. The obvious version — walk the normal,
-take the nearest intensity maximum — fails silently on carbonised papyrus: its
-answer tracks the search radius rather than any displacement (median |offset|
-0.70 vx at R=2, 3.09 at R=9 on the same fixed label). Four separate traps had to
-be fixed before the number meant anything, all four now regression tests.
+What the estimator is good for is *consistency*: cells of the same patch
+disagreeing with each other is not a convention. `labelscope regularise` removes
+that disagreement while preserving the convention — every cell's target is the
+patch's own global offset, never zero, so a patch labelled consistently 2.3
+voxels off comes back byte-identical. On all 1,754 `Dataset059` patches it
+changed 1,735, left 19 alone where the measurement was unreliable, and errored on
+none; median shift 0.84 voxels over 36% of surface voxels.
 
-**3. Data facts worth one line of a release script.** 487 of 892 labels in the
-Kaggle release ship uncompressed — 15.52 GB of a 45 GB release, where the
-compressed half averages 0.87 MB against 32.82 MB. Established from about 1.8 MB
-of header reads, because `scan --headers-only` inventories a remote release from
-roughly a kilobyte per volume. `Dataset059` ships five patch sizes (170³, 172³,
-236³, 300³, 364³) with nothing in a filename saying which; one Kaggle volume,
-`sample_00833`, has no class 2 at all.
+TRACK_A_RESULT_HERE
 
-**4. Four fixes upstream, each with a regression that fails on `main`.**
+**4. Data facts worth one line of a release script.** 487 of 892 labels in the
+Kaggle release ship uncompressed — 15.52 GB of a 45 GB release, established from
+about 1.8 MB of header reads. `Dataset059` ships five patch sizes (170³, 172³,
+236³, 300³, 364³) with nothing in a filename saying which. And 55 of the 81
+published `PHercParis4` meshes are traced on volume `20230205180739`, which is
+not in the S3 open-data bucket in any form (villa#1649) — it exists only as a
+TIFF stack on the legacy server, while every other Scroll 1 mesh tier has its
+zarr published.
+
+**5. Fixes upstream, each with a regression that fails on `main`.**
 
 | PR | fixes | what `main` does |
 |---|---|---|
-| #1644 | #1488 | the standalone dice loss consumes raw logits; at mu=-1.0 it returns **1.2e+11**, and at mu=-0.10 it flips sign to +0.54 — a gradient pointing the wrong way |
-| #1645 | #1507 | native inference feeds the network depth **3** where training feeds 5, dropping the checkpoint's `input_pad_depth_to` |
-| #1646 | #1481 | robust flat normalization runs over the reader's zero padding; the padded planes come out at **-2.2659** instead of 0, shifting every real CT voxel |
-| pending | #1482 | the native patch retry walks a deterministic cycle and **never terminates** — the test suite had to be killed after 45 s |
+| #1644 | #1488 | the standalone dice loss consumes raw logits; at mu=-1.0 it returns **1.2e+11**, and at mu=-0.10 it flips sign — a gradient pointing the wrong way |
+| #1645 | #1507 | native inference feeds the network depth **3** where training feeds 5 |
+| #1646 | #1481 | robust flat normalization runs over the reader's zero padding; padded planes read **-2.2659** instead of 0 |
+| branch | #1482 | the native patch retry walks a deterministic cycle and **never terminates** |
 
-Each pairs its regression with a control that passes on both branches, so the
-pair distinguishes the fix rather than asserting current behaviour.
+Each pairs its regression with a control that passes on both branches. The fourth
+is written and tested but GitHub refuses `CreatePullRequest` from my account into
+this repository — for nine hours across eight attempts, while issue comments and
+issue creation work normally and PR creation into my own fork succeeds — so it is
+posted on #1482 with its public branch instead of being sat on.
 
-**5. Two retractions, kept in the findings.** I reported a 92% train/validation
-leak in `Dataset059` that was really 1.5% — I had assumed a uniform 300 cubed
-patch size — and eight "malformed" volumes that my own downloader had truncated.
-Both mistakes are now checks in the tool: it reads every volume's real shape, and
-the fetcher verifies what it wrote rather than what was promised.
+**6. Three retractions, kept in the findings.** A 92% train/validation leak that
+was really 1.5% (I assumed a uniform patch size); eight "malformed" volumes that
+my own downloader had truncated; and the z = 12.60 above. All three are now
+checks in the tool: it reads every volume's real shape, the fetcher verifies what
+it wrote rather than what was promised, and the detector refuses a null with no
+spread in it.
 
-Everything is MIT, CPU-only, and validated against planted ground truth rather
-than eyeballed. 127 tests, CI on Python 3.9, 3.11 and 3.12.
+Everything is MIT, CPU-only, containerised, and validated against planted ground
+truth rather than eyeballed. TEST_COUNT_HERE tests, CI on Python 3.9, 3.11 and
+3.12.
 
 ---
 
@@ -123,11 +146,14 @@ than eyeballed. 127 tests, CI on Python 3.9, 3.11 and 3.12.
 - [x] repo public at github.com/rodriguescarson/labelscope, MIT
 - [x] CI green on 3.9 / 3.11 / 3.12 plus lint
 - [x] `pytest -q` green on a clean clone, no data download required
-- [x] findings/ committed, including both retractions
-- [x] triangular mesh input (.obj, .ply) — the third format the integration bar names
-- [x] full-population results for both releases (2,568 pairs)
-- [ ] fleet-wide sheet-switch sweep over published PHercParis4 surfaces
-- [x] upstream issues filed: #1640, #1641, #1642, #1643
-- [x] upstream PRs opened: #1644, #1645, #1646 (fourth pending a GitHub rate limit)
+- [x] Dockerfile built and run end-to-end on the committed sample
+- [x] figures generated by running the tool, not drawn
+- [x] findings/ committed, including all three retractions
+- [x] triangular mesh input (.obj, .ply), and compressed zarr stores
+- [x] full-population results for both label releases (2,568 pairs)
+- [ ] corpus sheet-switch sweep + planted control across all scrolls
+- [ ] label-free evaluation of the regularised-label retrain
+- [x] upstream issues filed: #1640, #1641, #1642, #1643, #1649
+- [x] upstream PRs opened: #1644, #1645, #1646 (+ #1482 fix posted with branch)
 - [ ] posted in the Vesuvius Discord
 - [ ] form submitted before 2026-08-31 23:59 PT (2026-09-01 12:29 IST)
