@@ -35,7 +35,17 @@ labelscope --version
 ```
 
 Optional extras: `.[zarr]` to read Zarr and OME-Zarr as well as 3-D TIFF, `.[dev]`
-for the test suite.
+for the test suite, `.[figures]` to regenerate the plots.
+
+Or run it in a container, which needs nothing but Docker:
+
+```bash
+docker build -t labelscope .
+docker run --rm -v "$PWD/sample:/data:ro" -v "$PWD/out:/out" \
+  labelscope scan --labels /data/labelsTr --images /data/imagesTr --out /out
+```
+
+See [docs/quickstart.md](docs/quickstart.md) for what each command answers.
 
 ```bash
 pytest -q          # 110 tests, well under a minute, no data download required

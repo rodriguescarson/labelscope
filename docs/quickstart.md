@@ -14,9 +14,26 @@ labelscope --version
 Or without touching your environment:
 
 ```bash
-docker build -t labelscope .
-docker run --rm -v "$PWD/data:/data" labelscope --help
+docker build -t labelscope .          # ~970 MB, CPU only
+docker run --rm -v "$PWD/sample:/data:ro" -v "$PWD/out:/out" \
+  labelscope scan --labels /data/labelsTr --images /data/imagesTr --out /out
 ```
+
+On the six volumes committed in `sample/`, that prints:
+
+```
+volumes: 6
+distinct label shapes: 4  {'(300, 300, 300)': 1, '(172, 172, 172)': 1,
+                           '(236, 236, 236)': 2, '(170, 170, 170)': 2}
+label compressions: {'LZW': 6}
+modal class scheme: [0, 1] (6/6)
+detected surface class: {'1': 6}
+```
+
+and writes `scan.csv`, `scan_summary.json` and a single-file `scan.html` you can
+open offline. Four different patch shapes in six volumes is
+[finding 2](../findings/README.md) in miniature — it is the reason this command
+exists.
 
 ## 1. Is the validation score real?
 
