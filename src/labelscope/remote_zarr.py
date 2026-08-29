@@ -13,6 +13,7 @@ chunk rather than one per sample.
 
 from __future__ import annotations
 
+import hashlib
 import os
 import tempfile
 from typing import Dict, Optional, Tuple
@@ -43,7 +44,16 @@ class ChunkedVolume:
         self.shape = tuple(int(s) for s in shape)
         self.chunks = tuple(int(c) for c in chunks)
         self.dtype = np.dtype(dtype)
-        self.cache_dir = cache_dir
+        # The cache is keyed by chunk index, which is only unique *within* one
+        # store.  A corpus pass sweeps several scrolls through one cache
+        # directory, and without this namespace chunk (12, 4, 7) of PHerc0139
+        # would be served as chunk (12, 4, 7) of Scroll 1 -- silently, and with
+        # a plausible-looking result.
+        self.cache_dir = (
+            os.path.join(cache_dir, hashlib.sha1(self.base_url.encode()).hexdigest()[:12])
+            if cache_dir
+            else None
+        )
         self.max_cached = max_cached
         self._blocks: Dict[Tuple[int, int, int], np.ndarray] = {}
         self._missing = set()
@@ -54,8 +64,8 @@ class ChunkedVolume:
 
             session = http_session()
         self._session = session
-        if cache_dir:
-            os.makedirs(cache_dir, exist_ok=True)
+        if self.cache_dir:
+            os.makedirs(self.cache_dir, exist_ok=True)
 
     # -- construction ------------------------------------------------------
     @classmethod

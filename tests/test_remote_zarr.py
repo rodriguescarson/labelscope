@@ -186,4 +186,49 @@ def test_two_readers_can_share_one_cache_directory(tmp_path, monkeypatch):
     for t in threads:
         t.join()
     assert not errors, errors
-    assert not [p for p in os.listdir(os.path.join(cache, "0", "0")) if p.endswith(".part")]
+    leftovers = [
+        name for root, _, names in os.walk(cache) for name in names if name.endswith(".part")
+    ]
+    assert not leftovers
+
+
+def test_one_cache_directory_serves_two_stores_without_mixing_them():
+    """A corpus pass sweeps several scrolls through one cache.
+
+    Chunk indices are only unique within a store, so without a per-store
+    namespace chunk (0, 0, 0) of the second volume would be served from the
+    first one's cached bytes -- silently, and with a plausible result.
+    """
+    import tempfile as tf
+
+    from labelscope.remote_zarr import ChunkedVolume
+
+    def store(fill):
+        class Session:
+            def get(self, url, timeout=None):
+                class R:
+                    status_code = 200
+                    content = np.full((8, 8, 8), fill, np.uint8).tobytes()
+
+                    def raise_for_status(self):
+                        pass
+
+                return R()
+
+        return Session()
+
+    with tf.TemporaryDirectory() as cache:
+        a = ChunkedVolume(
+            "http://scroll-a", (16, 16, 16), (8, 8, 8), cache_dir=cache, session=store(11)
+        )
+        b = ChunkedVolume(
+            "http://scroll-b", (16, 16, 16), (8, 8, 8), cache_dir=cache, session=store(22)
+        )
+        assert a._fetch((0, 0, 0))[0, 0, 0] == 11
+        assert b._fetch((0, 0, 0))[0, 0, 0] == 22
+        # and a fresh reader on the same store still hits the cache, not the wire
+        again = ChunkedVolume(
+            "http://scroll-a", (16, 16, 16), (8, 8, 8), cache_dir=cache, session=None
+        )
+        assert again._fetch((0, 0, 0))[0, 0, 0] == 11
+        assert again.chunks_fetched == 0
