@@ -276,8 +276,13 @@ def main(argv=None) -> int:
         }
         history.append(row)
         print(json.dumps(row), flush=True)
-        with open(os.path.join(out, "history.json"), "w") as handle:
+        # Rewritten every epoch, so it is written to a temp file and renamed:
+        # opening the real path with "w" truncates it, and anything reading the
+        # run while it trains sees an empty file rather than the last epoch.
+        tmp = os.path.join(out, "history.json.tmp")
+        with open(tmp, "w") as handle:
             json.dump(history, handle, indent=2)
+        os.replace(tmp, os.path.join(out, "history.json"))
         if row["val_loss"] < best:
             best = row["val_loss"]
             torch.save(
