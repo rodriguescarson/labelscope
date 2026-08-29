@@ -166,8 +166,16 @@ class ChunkedVolume:
         return block
 
     def _remember(self, key, block) -> None:
-        if len(self._blocks) >= self.max_cached:
-            self._blocks.pop(next(iter(self._blocks)))
+        # prefetch runs 24 threads through here, so the eviction is a
+        # check-then-act race: two threads pick the same oldest key, the first
+        # pops it and the second raises KeyError and takes the surface down.
+        # Only large meshes reach the cap, so it surfaced on a 1.16M-edge OBJ
+        # and not on any windowed grid.
+        while len(self._blocks) >= self.max_cached:
+            try:
+                self._blocks.pop(next(iter(self._blocks)))
+            except (KeyError, StopIteration):
+                break
         self._blocks[key] = block
 
     def prefetch(self, points: np.ndarray, workers: int = 24) -> int:

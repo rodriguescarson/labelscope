@@ -338,3 +338,46 @@ def test_a_chunk_that_will_not_decode_is_treated_as_absent():
         session=Session(),
     )
     assert vol._fetch((0, 0, 0)) is None
+
+
+def test_eviction_survives_concurrent_prefetch():
+    """The cap is only reached by large meshes, which is why this hid.
+
+    prefetch runs a thread pool through _remember, and the eviction was a
+    check-then-act race: two threads choose the same oldest key, the first pops
+    it, the second raises KeyError and the whole surface fails.
+    """
+    import threading
+
+    from labelscope.remote_zarr import ChunkedVolume
+
+    class Session:
+        def get(self, url, timeout=None):
+            class R:
+                status_code = 200
+                content = np.zeros(8 * 8 * 8, np.uint8).tobytes()
+
+                def raise_for_status(self):
+                    pass
+
+            return R()
+
+    vol = ChunkedVolume(
+        "http://x", (512, 512, 512), (8, 8, 8), max_cached=16, session=Session()
+    )
+    errors = []
+
+    def hammer(base):
+        try:
+            for i in range(200):
+                vol._fetch((base, i % 64, (i * 7) % 64))
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    threads = [threading.Thread(target=hammer, args=(t,)) for t in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert not errors, errors
+    assert len(vol._blocks) <= 16
