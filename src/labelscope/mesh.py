@@ -176,7 +176,7 @@ def winding_spacing(
     the mesh's own grid step is already comparable to the distance between wraps,
     every edge crosses gaps and there is no seam to find.
     """
-    sample, _ = _sampler(volume, origin)
+    sample, remote = _sampler(volume, origin)
     idx = np.argwhere(mesh.valid)
     if len(idx) == 0:
         return float("nan")
@@ -191,7 +191,14 @@ def winding_spacing(
     span = max(reach * step, 40.0)
     offsets = np.arange(-span, span + 1.0, max(span / 120.0, 0.5), dtype=np.float32)
     walk = base[None] + nrm[None] * offsets[:, None, None]
-    values = sample(walk.reshape(-1, 3)).reshape(offsets.size, -1)
+    flat = walk.reshape(-1, 3)
+    # Without this the gate fetches its chunks one at a time.  Over a remote
+    # store that is latency, not bandwidth: on a 2.4 um scroll most of the walk
+    # lands in masked-out air whose chunks the store simply omits, so the cost
+    # is thousands of serial round trips for chunks that turn out to be empty.
+    if remote and hasattr(volume, "prefetch"):
+        volume.prefetch(flat - (np.zeros(3) if origin is None else np.asarray(origin)))
+    values = sample(flat).reshape(offsets.size, -1)
     profile = ndi.gaussian_filter1d(values.mean(1), 3.0)
     peaks = [
         i

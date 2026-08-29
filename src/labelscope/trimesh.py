@@ -361,7 +361,7 @@ def winding_spacing(
     """
     from scipy import ndimage as ndi
 
-    sample, _ = _sampler(volume, origin)
+    sample, remote = _sampler(volume, origin)
     rng = np.random.default_rng(seed)
     idx = np.arange(mesh.n_vertices)
     if idx.size == 0:
@@ -375,7 +375,10 @@ def winding_spacing(
     span = max(reach * step, 40.0)
     offsets = np.arange(-span, span + 1.0, max(span / 120.0, 0.5), dtype=np.float32)
     walk = base[None] + nrm[None] * offsets[:, None, None]
-    values = sample(walk.reshape(-1, 3)).reshape(offsets.size, -1)
+    flat = walk.reshape(-1, 3)
+    if remote and hasattr(volume, "prefetch"):
+        volume.prefetch(flat - (np.zeros(3) if origin is None else np.asarray(origin)))
+    values = sample(flat).reshape(offsets.size, -1)
     profile = ndi.gaussian_filter1d(values.mean(1), 3.0)
     peaks = [
         i
