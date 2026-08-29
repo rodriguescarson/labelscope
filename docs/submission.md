@@ -2,9 +2,12 @@
 
 Form: https://docs.google.com/forms/d/e/1FAIpQLSev2vJobu521iB6OuyehDktzYTEo131F4iUGwt3Qxa9a1fk6A/viewform
 
-**Full name:** Carson Rodrigues
+**Full name:** Carson Conception Rodrigues
 **Team:** individual
-**URL:** https://github.com/rodriguescarson/labelscope (MIT)
+**URL:**
+- https://github.com/rodriguescarson/labelscope (the tool, MIT)
+- Issues filed on ScrollPrize/villa: #1640, #1641, #1642, #1643
+- PRs opened on ScrollPrize/villa: #1644, #1645, #1646 (+ a fourth pending)
 
 ---
 
@@ -70,11 +73,23 @@ roughly a kilobyte per volume. `Dataset059` ships five patch sizes (170³, 172³
 236³, 300³, 364³) with nothing in a filename saying which; one Kaggle volume,
 `sample_00833`, has no class 2 at all.
 
-**4. Two retractions, kept in the findings.** I reported a 92% train/validation
-leak in `Dataset059` that was really 1.5% — I had assumed a uniform 300³ patch
-size — and eight "malformed" volumes that my own downloader had truncated. Both
-mistakes are now checks in the tool: it reads every volume's real shape, and the
-fetcher verifies what it wrote rather than what was promised.
+**4. Four fixes upstream, each with a regression that fails on `main`.**
+
+| PR | fixes | what `main` does |
+|---|---|---|
+| #1644 | #1488 | the standalone dice loss consumes raw logits; at mu=-1.0 it returns **1.2e+11**, and at mu=-0.10 it flips sign to +0.54 — a gradient pointing the wrong way |
+| #1645 | #1507 | native inference feeds the network depth **3** where training feeds 5, dropping the checkpoint's `input_pad_depth_to` |
+| #1646 | #1481 | robust flat normalization runs over the reader's zero padding; the padded planes come out at **-2.2659** instead of 0, shifting every real CT voxel |
+| pending | #1482 | the native patch retry walks a deterministic cycle and **never terminates** — the test suite had to be killed after 45 s |
+
+Each pairs its regression with a control that passes on both branches, so the
+pair distinguishes the fix rather than asserting current behaviour.
+
+**5. Two retractions, kept in the findings.** I reported a 92% train/validation
+leak in `Dataset059` that was really 1.5% — I had assumed a uniform 300 cubed
+patch size — and eight "malformed" volumes that my own downloader had truncated.
+Both mistakes are now checks in the tool: it reads every volume's real shape, and
+the fetcher verifies what it wrote rather than what was promised.
 
 Everything is MIT, CPU-only, and validated against planted ground truth rather
 than eyeballed. 121 tests, CI on Python 3.9, 3.11 and 3.12.
@@ -89,6 +104,7 @@ than eyeballed. 121 tests, CI on Python 3.9, 3.11 and 3.12.
 - [x] findings/ committed, including both retractions
 - [x] full-population results for both releases (2,568 pairs)
 - [ ] fleet-wide sheet-switch sweep over published PHercParis4 surfaces
-- [ ] upstream issues filed on ScrollPrize/villa (drafts in docs/upstream/)
+- [x] upstream issues filed: #1640, #1641, #1642, #1643
+- [x] upstream PRs opened: #1644, #1645, #1646 (fourth pending a GitHub rate limit)
 - [ ] posted in the Vesuvius Discord
 - [ ] form submitted before 2026-08-31 23:59 PT (2026-09-01 12:29 IST)

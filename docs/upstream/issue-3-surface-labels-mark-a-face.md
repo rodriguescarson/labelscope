@@ -9,20 +9,33 @@ Surface labels sit ~2.3 voxels off the sheet's density maximum — they mark the
 ### Body
 
 Measuring the offset between the labelled writing surface and the local CT
-density maximum, along the surface normal, on 51 patches of the Kaggle
-surface-detection release (`hf://buckets/scrollprize/datasets/surfaces/kaggle`):
+density maximum, along the surface normal, over **both public surface releases in
+full** — 2,568 image/label pairs:
 
-* 48 of 51 patches have enough sheet contrast at the labelled surface to measure
-  at all (contrast ≥ 2× voxel noise).
-* In those 48 the density maximum is not under the label: median |offset|
-  **2.34 voxels**, interquartile range 1.79 to 3.02, ≥1 voxel in 45 of 48
-  patches, per-patch 95% bootstrap intervals typically ±0.05.
-* The sign is a convention — normals are oriented toward the denser side, since
-  the release ships no field that can say which way is out — so "positive in
-  47 of 48" is close to tautological and is not the evidence. The evidence is the
-  magnitude, its consistency, and a signal-to-noise of 2.0-14.8.
-* Sheets are 7.5–9.3 voxels thick (FWHM of the mean profile), and the local
-  winding spacing measured from the scans runs 10.5–29.0 voxels.
+| | Kaggle surface-detection release | `Dataset059` |
+|---|---|---|
+| pairs | 892 | 1,754 |
+| measurable (sheet contrast ≥ 2x voxel noise) | 836 (93.7%) | 1,732 (98.7%) |
+| median \|offset\| | **2.285 vx** | **2.576 vx** |
+| interquartile range | 1.69 – 2.83 | 1.88 – 3.79 |
+| ≥ 1 voxel | 89% | 98% |
+| ≥ 2 voxels | 63% | 70% |
+| per-cell \|offset\|, median | 2.30 vx | 2.62 vx |
+| median winding spacing | 19.0 vx | 21.0 vx |
+
+Two independently produced releases, different scrolls, different patch sizes,
+and the same answer to within a third of a voxel. Per-patch 95% bootstrap
+intervals are typically ±0.05. Sheets are 7.5–9.3 voxels thick (FWHM of the mean
+profile).
+
+The sign is a convention — normals are oriented toward the denser side, because
+the release ships no field that can say which way is out (the void class wraps the
+surface on *both* sides and scores 0.009–0.281 out of 1 on an asymmetry measure).
+So "positive nearly everywhere" is close to tautological and is not the evidence;
+the magnitude and its consistency are, at a signal-to-noise of 2.0 to 20.9. Two
+tests check the convention cannot manufacture it: a label centred on a symmetric
+synthetic sheet still reads under 0.5 voxels across four seeds, and an asymmetric
+sheet measures the same when the volume is mirrored.
 
 So the offset is about half a sheet thickness, in a consistent direction. That is
 what a label on the recto *face* should look like, and I do not think it is an
