@@ -6,6 +6,8 @@ chunks, samples correctly, and treats a chunk the store omits as void rather
 than as an error.
 """
 
+import os
+
 import numpy as np
 import pytest
 
@@ -137,3 +139,51 @@ def test_a_compressed_store_is_refused():
 
     with pytest.raises(ValueError, match="uncompressed"):
         ChunkedVolume.from_store("http://x", session=MetaStore())
+
+
+def test_two_readers_can_share_one_cache_directory(tmp_path, monkeypatch):
+    """The fleet configuration: several workers, one cache.
+
+    Both readers fetching the same chunk used to write the same "<chunk>.part";
+    whichever renamed second raised FileNotFoundError and took its whole surface
+    down with it.  This drives the same collision deterministically.
+    """
+    import threading
+
+    from labelscope.remote_zarr import ChunkedVolume
+
+    block = np.arange(8 * 8 * 8, dtype=np.uint8).reshape(8, 8, 8)
+
+    class Session:
+        def get(self, url, timeout=None):
+            class R:
+                status_code = 200
+                content = block.tobytes()
+
+                def raise_for_status(self):
+                    pass
+
+            return R()
+
+    cache = str(tmp_path / "cache")
+    readers = [
+        ChunkedVolume("http://x", (16, 16, 16), (8, 8, 8), cache_dir=cache, session=Session())
+        for _ in range(4)
+    ]
+    errors = []
+
+    def pull(reader):
+        try:
+            for _ in range(20):
+                reader._blocks.clear()
+                assert reader._fetch((0, 0, 0)) is not None
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    threads = [threading.Thread(target=pull, args=(r,)) for r in readers]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert not errors, errors
+    assert not [p for p in os.listdir(os.path.join(cache, "0", "0")) if p.endswith(".part")]

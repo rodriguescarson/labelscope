@@ -14,6 +14,7 @@ chunk rather than one per sample.
 from __future__ import annotations
 
 import os
+import tempfile
 from typing import Dict, Optional, Tuple
 
 import numpy as np
@@ -114,9 +115,23 @@ class ChunkedVolume:
             return None
         if path:
             os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path + ".part", "wb") as handle:
-                handle.write(data)
-            os.replace(path + ".part", path)
+            # The temporary name has to be unique per *writer*, not per process.
+            # A fleet pass shares one cache across workers and prefetches with a
+            # thread pool inside each, so two writers fetching the same chunk both
+            # wrote "<chunk>.part": the first rename moved it away and the second
+            # raised FileNotFoundError, which killed 21 of 77 surfaces in a run
+            # that was otherwise fine.  mkstemp is unique across both.
+            handle_fd, tmp = tempfile.mkstemp(
+                dir=os.path.dirname(path), prefix=os.path.basename(path) + ".", suffix=".part"
+            )
+            try:
+                with os.fdopen(handle_fd, "wb") as handle:
+                    handle.write(data)
+                os.replace(tmp, path)
+            except BaseException:
+                if os.path.exists(tmp):
+                    os.unlink(tmp)
+                raise
         block = np.frombuffer(data, self.dtype).reshape(self.chunks)
         self._remember(key, block)
         return block
