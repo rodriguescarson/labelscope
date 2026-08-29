@@ -20,6 +20,9 @@ JOBS="${JOBS:-1}"
 # sweep re-fetches every byte, and the chunks a neighbouring surface needs
 # overlap heavily with the ones already pulled.
 CACHE="${CACHE:-.cache/chunks}"
+# Set PLANT=N to run the control instead: N windings displaced into half of
+# each surface before it is measured.
+PLANT="${PLANT:-0}"
 
 # Read the list from a file rather than relying on word splitting: zsh does not
 # split unquoted parameters, which silently passed every path as one argument,
@@ -42,7 +45,7 @@ one_surface() {
   name=$(basename "$m")
   echo "[$(date +%H:%M:%S)] start $name" >> "$OUT/progress.log"
   "$LS" sheetswitch --mesh "$m" --volume "$VOL" --remote --window "$WINDOW" \
-      --cache "$CACHE" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+      --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
   echo "[$(date +%H:%M:%S)] done  $name rc=$?" >> "$OUT/progress.log"
 }
 
