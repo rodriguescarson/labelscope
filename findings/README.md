@@ -335,3 +335,67 @@ because both look reasonable:
   papyrus, and only the seam crosses a gap — about 1% of a mesh's edges. Real
   versus one-winding-displaced: 12.29% against 11.72% of edges dipping past
   threshold. Nothing.
+
+---
+
+## 8. The detector's loudest result was made of nothing
+
+A third retraction, and the most useful one, because it was only visible once the
+detector was pointed at every published surface rather than a validated example.
+
+Running `sheetswitch` over the published `PHercParis4` surfaces at 2.4 µm, the
+highest score in the whole sweep was **z = 12.60** on
+`20260701183139-w098-100` — comfortably past the z ≥ 5 threshold, on a surface
+that passes the resolution gate, and flagged in two places at once. It looked
+like the finding.
+
+It was an artifact of a null with no spread in it:
+
+| surface | max z | median line dip, axis 0 | axis 1 |
+|---|---|---|---|
+| `20260701183139-w098-100` | **12.60** | **0.000** | **0.000** |
+| `20260623160554-w098-100` | 8.43 | 5.972 | 5.131 |
+| `20260623141924-w010-027` | 7.24 | 6.387 | 5.106 |
+| `20231221180251` | 6.86 | 5.385 | 5.684 |
+| *(median over all 56 measured surfaces)* | | 5.404 | 5.124 |
+
+The published volumes are **masked**: the air around the scroll is absent from
+the store and reads as zero. A mesh can be perfectly well-formed over a region
+the scan does not cover — this window was 100% valid vertices, 160 edges on every
+grid line — and then every edge dips by nothing. The line means were all `0.00`
+except one at `0.25`. The median was 0, the median absolute deviation was 0, and
+the code fell back to a standard deviation of about 0.02, which turned a quarter
+of a grey level into z = 12.6.
+
+**Eleven of the 56 measured surfaces sat in that regime**, median line dip under
+one grey level on both axes.
+
+### The fix, in two parts
+
+`_line_scores` now returns zeros when the spread is degenerate rather than
+substituting a standard deviation. A null with no spread has no z-scores in it,
+and manufacturing one is how a measurement invents a result.
+
+And the detector samples the scan at the surface itself before scoring. Below
+`--min-dip` the result is marked `dip_degenerate`, the seams move to
+`seams_degenerate`, and none are reported — the same shape as the existing
+resolution refusal, for a different reason. The triangular detector carries the
+same guard.
+
+```bash
+labelscope sheetswitch --mesh surface.tifxyz --volume scan.zarr --remote \
+                       --min-dip 1.0 --out audit/
+```
+
+### Why this keeps happening
+
+This is the second time in this project that **masked-out regions have broken an
+estimator built on robust statistics** — the first cost a noise estimator its
+sanity on 51 crops, and produced an SNR of 4.4 × 10⁷. Both times the failure was
+invisible on a validated example and obvious across the full population. Both
+times the robust statistic did exactly what it was asked: MAD is zero when the
+data is constant, and every rule for "what to do when the scale estimate is zero"
+is a decision about what to invent.
+
+The general lesson, stated so the next estimator here inherits it: **a scale
+estimate of zero is a refusal, not a small number.**
