@@ -116,7 +116,10 @@ def test_prefetch_warms_the_cache_so_sampling_fetches_nothing():
     assert len(store.requests) == before
 
 
-def test_a_compressed_store_is_refused():
+def test_a_compressed_store_carries_its_codec_through_from_store():
+    """Compressed stores used to be refused outright.  PHerc 0172's scan is
+    blosc-compressed and is a fifth of the published corpus, so the codec is
+    read from .zarray and applied per chunk instead."""
     import json
 
     class MetaStore:
@@ -128,7 +131,13 @@ def test_a_compressed_store_is_refused():
                         "shape": [8, 8, 8],
                         "chunks": [4, 4, 4],
                         "dtype": "|u1",
-                        "compressor": {"id": "blosc"},
+                        "order": "C",
+                        "compressor": {
+                            "id": "blosc",
+                            "cname": "zstd",
+                            "clevel": 3,
+                            "shuffle": 1,
+                        },
                     }
                 )
 
@@ -137,7 +146,36 @@ def test_a_compressed_store_is_refused():
 
             return R()
 
-    with pytest.raises(ValueError, match="uncompressed"):
+    vol = ChunkedVolume.from_store("http://x", session=MetaStore())
+    assert vol.compressor["id"] == "blosc"
+    assert vol._codec is not None
+
+
+def test_a_fortran_order_store_is_refused():
+    """Order is the assumption that is still load-bearing: every chunk is
+    reshaped as C-order, so an F-order store would decode into nonsense."""
+    import json
+
+    class MetaStore:
+        def get(self, url, timeout=None):
+            class R:
+                status_code = 200
+                text = json.dumps(
+                    {
+                        "shape": [8, 8, 8],
+                        "chunks": [4, 4, 4],
+                        "dtype": "|u1",
+                        "order": "F",
+                        "compressor": None,
+                    }
+                )
+
+                def raise_for_status(self):
+                    pass
+
+            return R()
+
+    with pytest.raises(ValueError, match="C-order"):
         ChunkedVolume.from_store("http://x", session=MetaStore())
 
 
@@ -232,3 +270,67 @@ def test_one_cache_directory_serves_two_stores_without_mixing_them():
         )
         assert again._fetch((0, 0, 0))[0, 0, 0] == 11
         assert again.chunks_fetched == 0
+
+
+def test_a_blosc_compressed_store_reads_the_same_as_a_raw_one():
+    """PHerc 0172's scan is blosc-compressed, and that is 53 of the 258
+    published surfaces -- a fifth of the corpus, refused outright until now."""
+    import numcodecs
+
+    from labelscope.remote_zarr import ChunkedVolume
+
+    block = (np.arange(8 * 8 * 8, dtype=np.uint8) % 251).reshape(8, 8, 8)
+    codec = {"id": "blosc", "cname": "zstd", "clevel": 3, "shuffle": 1}
+    packed = numcodecs.get_codec(codec).encode(block.tobytes())
+
+    class Session:
+        def __init__(self, payload):
+            self.payload = payload
+
+        def get(self, url, timeout=None):
+            payload = self.payload
+
+            class R:
+                status_code = 200
+                content = payload
+
+                def raise_for_status(self):
+                    pass
+
+            return R()
+
+    raw = ChunkedVolume(
+        "http://raw", (16, 16, 16), (8, 8, 8), session=Session(block.tobytes())
+    )
+    comp = ChunkedVolume(
+        "http://comp", (16, 16, 16), (8, 8, 8), compressor=codec, session=Session(packed)
+    )
+    np.testing.assert_array_equal(raw._fetch((0, 0, 0)), comp._fetch((0, 0, 0)))
+    np.testing.assert_array_equal(comp._fetch((0, 0, 0)), block)
+    # and sampling agrees, not just the raw block
+    points = np.array([[1.5, 2.5, 3.5], [0.0, 0.0, 0.0]], np.float32)
+    np.testing.assert_allclose(raw.sample(points), comp.sample(points))
+
+
+def test_a_chunk_that_will_not_decode_is_treated_as_absent():
+    from labelscope.remote_zarr import ChunkedVolume
+
+    class Session:
+        def get(self, url, timeout=None):
+            class R:
+                status_code = 200
+                content = b"not blosc at all"
+
+                def raise_for_status(self):
+                    pass
+
+            return R()
+
+    vol = ChunkedVolume(
+        "http://x",
+        (16, 16, 16),
+        (8, 8, 8),
+        compressor={"id": "blosc", "cname": "zstd", "clevel": 3, "shuffle": 1},
+        session=Session(),
+    )
+    assert vol._fetch((0, 0, 0)) is None

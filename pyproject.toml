@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-zarr = ["zarr>=2.16"]
+zarr = ["numcodecs>=0.12", "zarr>=2.16"]
 dev = ["pytest>=7", "ruff>=0.6"]
 
 [project.scripts]

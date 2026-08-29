@@ -24,10 +24,11 @@ import numpy as np
 class ChunkedVolume:
     """Random access to a large Zarr array, one chunk at a time.
 
-    Only uncompressed stores are supported, which is what the Vesuvius open-data
-    volumes are: ``"compressor": null`` and a raw C-order block per chunk.  A
-    chunk that does not exist is void — the masked-out air around the scroll —
-    and reads as zeros, which is what the store itself means by it.
+    Most of the Vesuvius open-data volumes are raw — ``"compressor": null`` and a
+    C-order block per chunk — but not all of them: PHerc 0172's scan is
+    blosc-compressed, and that is 53 of the 258 published surfaces.  Both are
+    read here.  A chunk that does not exist is void — the masked-out air around
+    the scroll — and reads as zeros, which is what the store itself means by it.
     """
 
     def __init__(
@@ -36,6 +37,7 @@ class ChunkedVolume:
         shape: Tuple[int, int, int],
         chunks: Tuple[int, int, int],
         dtype: str = "|u1",
+        compressor: Optional[dict] = None,
         cache_dir: Optional[str] = None,
         session=None,
         max_cached: int = 4096,
@@ -44,6 +46,12 @@ class ChunkedVolume:
         self.shape = tuple(int(s) for s in shape)
         self.chunks = tuple(int(c) for c in chunks)
         self.dtype = np.dtype(dtype)
+        self.compressor = compressor
+        self._codec = None
+        if compressor:
+            import numcodecs
+
+            self._codec = numcodecs.get_codec(compressor)
         # The cache is keyed by chunk index, which is only unique *within* one
         # store.  A corpus pass sweeps several scrolls through one cache
         # directory, and without this namespace chunk (12, 4, 7) of PHerc0139
@@ -80,13 +88,14 @@ class ChunkedVolume:
         response = session.get(url, timeout=60)
         response.raise_for_status()
         meta = json.loads(response.text)
-        if meta.get("compressor") is not None:
-            raise ValueError(f"{url}: only uncompressed zarr stores are supported")
+        if meta.get("order", "C") != "C":
+            raise ValueError(f"{url}: only C-order zarr stores are supported")
         return cls(
             base_url=f"{base_url.rstrip('/')}/{level}",
             shape=meta["shape"],
             chunks=meta["chunks"],
             dtype=meta["dtype"],
+            compressor=meta.get("compressor"),
             session=session,
             **kwargs,
         )
@@ -119,7 +128,17 @@ class ChunkedVolume:
         data = response.content
         self.bytes_fetched += len(data)
         self.chunks_fetched += 1
+        if self._codec is not None:
+            try:
+                data = self._codec.decode(data)
+            except Exception:
+                # a chunk that will not decode is a broken chunk, not a void one,
+                # but either way there is nothing to sample from it
+                self._missing.add(key)
+                return None
         expected = int(np.prod(self.chunks)) * self.dtype.itemsize
+        # the cache holds decoded blocks, so a store's compression never changes
+        # what a cached chunk means
         if len(data) != expected:
             self._missing.add(key)
             return None
