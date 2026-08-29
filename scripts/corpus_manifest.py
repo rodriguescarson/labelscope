@@ -44,6 +44,7 @@ def main(argv=None) -> int:
     ap.add_argument("raw", help="scroll<TAB>um<TAB>mesh_key<TAB>volume_key per line")
     ap.add_argument("--out", required=True, help="mesh_key<TAB>volume_url per line")
     ap.add_argument("--local-root", default="", help="prefix local mesh paths with this")
+    ap.add_argument("--keys", help="also write local_path<TAB>bucket_key, for fetching")
     ap.add_argument("--skip-scroll", action="append", default=[])
     args = ap.parse_args(argv)
 
@@ -68,15 +69,19 @@ def main(argv=None) -> int:
     picked = [choose(rows) for rows in by_segment.values()]
     picked.sort(key=lambda r: (r["scroll"], r["mesh"]))
 
+    def local_path(row):
+        name = row["mesh"].split("/segments/")[1].replace("/mesh/", "__")
+        if not args.local_root:
+            return row["mesh"]
+        return f"{args.local_root.rstrip('/')}/{row['scroll']}__{name}"
+
     with open(args.out, "w") as handle:
         for row in picked:
-            name = row["mesh"].split("/segments/")[1].replace("/mesh/", "__")
-            local = (
-                f"{args.local_root.rstrip('/')}/{row['scroll']}__{name}"
-                if args.local_root
-                else row["mesh"]
-            )
-            handle.write(f"{local}\t{BUCKET}/{row['volume']}\n")
+            handle.write(f"{local_path(row)}\t{BUCKET}/{row['volume']}\n")
+    if args.keys:
+        with open(args.keys, "w") as handle:
+            for row in picked:
+                handle.write(f"{local_path(row)}\t{row['mesh']}\n")
 
     per_scroll = defaultdict(lambda: defaultdict(int))
     for row in picked:
