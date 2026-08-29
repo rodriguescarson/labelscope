@@ -23,7 +23,11 @@ JOBS="${JOBS:-1}"
 # A disk cache is not optional over a slow link: without it an interrupted
 # sweep re-fetches every byte, and the chunks a neighbouring surface needs
 # overlap heavily with the ones already pulled.
-CACHE="${CACHE:-.cache/chunks}"
+# Set CACHE="" to stream without a disk cache.  A corpus pass touches a
+# different part of the scroll for every surface, so the cache buys almost
+# nothing across surfaces and costs hundreds of gigabytes -- 234 GB into a
+# 300 GB volume, which is what stopped a run mid-sweep.
+CACHE="${CACHE-.cache/chunks}"
 # Set PLANT=N to run the control instead: N windings displaced into half of
 # each surface before it is measured.
 PLANT="${PLANT:-0}"
@@ -62,8 +66,13 @@ one_surface() {
   v="$2"
   name=$(basename "$m")
   echo "[$(date +%H:%M:%S)] start $name" >> "$OUT/progress.log"
-  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" \
-      --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+  if [ -n "$CACHE" ]; then
+    "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" \
+        --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+  else
+    "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" \
+        --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+  fi
   echo "[$(date +%H:%M:%S)] done  $name rc=$?" >> "$OUT/progress.log"
 }
 
