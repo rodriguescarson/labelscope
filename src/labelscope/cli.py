@@ -1157,10 +1157,20 @@ def cmd_regularise(args: argparse.Namespace) -> int:
     ]
     records = []
     if args.jobs > 1:
+        import multiprocessing
         from concurrent.futures import ProcessPoolExecutor
 
+        # "spawn", not the Linux default "fork": forking a parent that has
+        # already initialised numpy/scipy's threaded native libraries kills the
+        # child, and the pool reports it only as BrokenProcessPool.  Each worker
+        # is also pinned to one thread, since 24 workers each starting a thread
+        # per core is 2,300 threads fighting over 96 of them.
+        for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+            os.environ.setdefault(var, "1")
         _log(f"across {args.jobs} processes")
-        with ProcessPoolExecutor(args.jobs) as pool:
+        with ProcessPoolExecutor(
+            args.jobs, mp_context=multiprocessing.get_context("spawn")
+        ) as pool:
             for n, record in enumerate(pool.map(_regularise_one, tasks, chunksize=1), 1):
                 records.append(record)
                 if n % 25 == 0 or n == len(tasks):
