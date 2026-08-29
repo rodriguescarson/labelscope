@@ -422,3 +422,42 @@ def test_a_failed_noise_estimate_is_never_called_reliable():
     assert result["noise_estimate_failed"] is True
     assert result["global_offset_reliable"] is False
     assert result["global_peak_offset"] is None
+
+
+def test_return_cells_localises_the_region_that_moved():
+    """An aggregate that cannot say *where* the label wanders cannot correct it.
+
+    The label sits on the sheet everywhere except one band of y, where it is
+    three voxels off.  The cells covering that band have to be the ones that
+    report it, and the rest have to stay near zero.
+    """
+    shape = (64, 96, 96)
+    volume = scroll_like(shape, sheet_z=32.0)
+    mask = sheet_label(shape, 32)
+    band = slice(32, 64)
+    mask[:, band, :] = False
+    mask[35, band, :] = True
+
+    result = aggregate_alignment(
+        volume,
+        mask,
+        cell=32,
+        min_per_cell=100,
+        orient_field=upward(shape),
+        orient_by="field",
+        n_samples=12000,
+        bootstrap=20,
+        return_cells=True,
+    )
+    cells = result["cells"]
+    assert len(cells) == result["n_cells"] >= 4
+    assert all(set(c) == {"key", "centre_zyx", "offset", "snr", "n"} for c in cells)
+
+    moved = [c for c in cells if c["key"][1] == 1]
+    still = [c for c in cells if c["key"][1] != 1]
+    assert moved and still
+    assert np.median([abs(c["offset"]) for c in moved]) > 2.0
+    assert np.median([abs(c["offset"]) for c in still]) < 1.0
+    # the key and the reported centre have to agree
+    for c in cells:
+        assert c["centre_zyx"][1] == (c["key"][1] + 0.5) * 32

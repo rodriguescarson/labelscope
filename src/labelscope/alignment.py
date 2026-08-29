@@ -740,6 +740,7 @@ def aggregate_alignment(
     min_global_snr: float = 2.0,
     polarity: str = "bright",
     seed: int = 0,
+    return_cells: bool = False,
 ) -> Dict:
     """Label-to-ridge offset, measured where the measurement has power.
 
@@ -828,10 +829,15 @@ def aggregate_alignment(
 
     edge = radius - 2 * step
     cell_offsets, cell_snr, cell_sizes = [], [], []
+    # The cell key is carried alongside the offset rather than discarded: an
+    # aggregate that cannot say *where* the surface wanders can describe a
+    # dataset but cannot correct one.
+    cell_keys = []
     n_cells_total = n_unresolved = n_low_snr = 0
     for group in groups:
         if group.size < min_per_cell:
             continue
+        key = tuple(int(v) for v in keys[group[0]])
         n_cells_total += 1
         mean_profile = profiles[:, group].mean(axis=1)
         spread = float(mean_profile.max() - mean_profile.min())
@@ -848,6 +854,7 @@ def aggregate_alignment(
         cell_offsets.append(peak)
         cell_snr.append(snr)
         cell_sizes.append(int(group.size))
+        cell_keys.append(key)
 
     separability = contrast / noise if noise else 0.0
     # A noise estimate pinned at the floor means the estimate failed, not that
@@ -890,4 +897,15 @@ def aggregate_alignment(
                 "cell_voxels_median": float(np.median(cell_sizes)),
             }
         )
+    if return_cells:
+        result["cells"] = [
+            {
+                "key": list(key),
+                "centre_zyx": [float((k + 0.5) * cell) for k in key],
+                "offset": float(offset),
+                "snr": float(snr),
+                "n": int(size),
+            }
+            for key, offset, snr, size in zip(cell_keys, cell_offsets, cell_snr, cell_sizes)
+        ]
     return result
