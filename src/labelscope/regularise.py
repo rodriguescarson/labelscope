@@ -140,20 +140,50 @@ def regularise_label(
         report["voxels_after"] = report["voxels_before"]
         return mask.copy(), report
 
-    normals = _dense_normals(image, mask, orient_field=orient_field)
+    # Everything below is done inside the band the label can actually reach.
+    # A 364 cubed patch would otherwise need a (3, 364, 364, 364) index array
+    # for the nearest-neighbour normals and two more for the warp, which is
+    # several GB per patch and what broke a 32-way parallel run.
+    box = _band_box(mask, int(np.ceil(max_shift)) + 2)
+    sub_mask = mask[box]
+    sub_image = image[box]
+    sub_field = field[box]
 
-    coords = np.indices(mask.shape, dtype=np.float32)
+    normals = _dense_normals(sub_image, sub_mask, orient_field=_crop(orient_field, box))
+
+    coords = np.indices(sub_mask.shape, dtype=np.float32)
     # new(p) = old(p - d(p) n(p)): a cell whose label reads +d relative to the
     # patch is pulled back by d along its own normal.
-    source = coords - normals * field[None]
+    source = coords - normals * sub_field[None]
+    del coords, normals
     warped = ndi.map_coordinates(
-        mask.astype(np.float32), source.reshape(3, -1), order=1, mode="constant", cval=0.0
-    ).reshape(mask.shape)
-    out = warped >= threshold
+        sub_mask.astype(np.float32),
+        source.reshape(3, -1),
+        order=1,
+        mode="constant",
+        cval=0.0,
+    ).reshape(sub_mask.shape)
+    del source
+    out = np.zeros_like(mask)
+    out[box] = warped >= threshold
     report["changed"] = bool((out != mask).any())
     report["voxels_after"] = int(out.sum())
     report["voxels_moved"] = int((out != mask).sum())
     return out, report
+
+
+def _band_box(mask: np.ndarray, margin: int):
+    """Bounding box of the label, grown by the furthest it may be moved."""
+    idx = np.argwhere(mask)
+    if idx.size == 0:
+        return tuple(slice(0, s) for s in mask.shape)
+    lo = np.maximum(idx.min(0) - margin, 0)
+    hi = np.minimum(idx.max(0) + margin + 1, mask.shape)
+    return tuple(slice(int(a), int(b)) for a, b in zip(lo, hi))
+
+
+def _crop(field, box):
+    return None if field is None else field[box]
 
 
 def _dense_normals(
