@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import statistics
 import sys
@@ -922,6 +923,7 @@ def _render_align_html(records, summary, path) -> None:
 def cmd_sheetswitch(args: argparse.Namespace) -> int:
     """Look for places where a traced surface jumps to a neighbouring wrap."""
 
+    from labelscope import trimesh as tri_mod
     from labelscope.mesh import find_sheet_switches, read_tifxyz
 
     meshes = sorted(args.mesh)
@@ -933,19 +935,24 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
     records = []
     for n, directory in enumerate(meshes, 1):
         name = os.path.basename(directory.rstrip("/"))
+        triangular = os.path.splitext(directory)[1].lower() in (".obj", ".ply")
         try:
-            mesh = read_tifxyz(directory)
+            mesh = tri_mod.read_trimesh(directory) if triangular else read_tifxyz(directory)
         except Exception as exc:
             records.append({"name": name, "error": f"{type(exc).__name__}: {exc}"})
             continue
-        if not mesh.valid.any():
-            records.append({"name": name, "error": "no valid vertices"})
-            continue
-
-        if args.window:
-            mesh = _best_window(mesh, args.window)
-        if args.decimate > 1:
-            mesh = _decimate(mesh, args.decimate)
+        if triangular:
+            if mesh.n_vertices == 0:
+                records.append({"name": name, "error": "no vertices"})
+                continue
+        else:
+            if not mesh.valid.any():
+                records.append({"name": name, "error": "no valid vertices"})
+                continue
+            if args.window:
+                mesh = _best_window(mesh, args.window)
+            if args.decimate > 1:
+                mesh = _decimate(mesh, args.decimate)
         try:
             if args.remote:
                 from labelscope.remote_zarr import ChunkedVolume
@@ -953,24 +960,48 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
                 volume = ChunkedVolume.from_store(args.volume, cache_dir=args.cache)
                 origin = None
             else:
-                lo, hi = mesh.bounds(margin=args.margin)
+                # The resolution gate walks the normal far enough to meet the
+                # neighbouring wrap, so the window has to hold that walk.  A
+                # margin that only covers the surface makes winding_spacing
+                # read zero padding, come back NaN, and the tool then refuses
+                # to answer a question it could have answered.
+                step = mesh.edge_length() if triangular else mesh.grid_step()
+                probe = max(6.0 * (step if step == step else 3.0), 40.0) + 2.0
+                lo, hi = mesh.bounds(margin=max(args.margin, int(math.ceil(probe))))
                 volume, origin = _load_window(args.volume, lo, hi)
         except Exception as exc:
             records.append({"name": name, "error": f"volume unreadable: {exc}"})
             continue
 
-        result = find_sheet_switches(
-            mesh, volume, origin=origin, z_threshold=args.z_threshold, steps=args.steps
-        )
+        if triangular:
+            result = tri_mod.find_sheet_switches(
+                mesh,
+                volume,
+                origin=origin,
+                z_threshold=args.z_threshold,
+                steps=args.steps,
+                min_span=args.min_span,
+            )
+        else:
+            result = find_sheet_switches(
+                mesh, volume, origin=origin, z_threshold=args.z_threshold, steps=args.steps
+            )
         result["name"] = name
-        result["valid_fraction"] = float(mesh.valid.mean())
+        result["kind"] = "trimesh" if triangular else "tifxyz"
+        result["valid_fraction"] = 1.0 if triangular else float(mesh.valid.mean())
         if args.remote:
             result["chunks_fetched"] = getattr(volume, "chunks_fetched", None)
             result["mb_fetched"] = round(getattr(volume, "bytes_fetched", 0) / 1e6, 1)
         seams = result.pop("seams")
-        result["seam_lines"] = ";".join(
-            f"{s['axis']}:{s['line']}@{s['z']:.1f}" for s in seams[:8]
-        )
+        if triangular:
+            result["seam_lines"] = ";".join(
+                f"{s['edges']}e/span{s['span_fraction']:.2f}@{s['z_max']:.1f}"
+                for s in seams[:8]
+            )
+        else:
+            result["seam_lines"] = ";".join(
+                f"{s['axis']}:{s['line']}@{s['z']:.1f}" for s in seams[:8]
+            )
         records.append(result)
         _log(
             f"  {n}/{len(meshes)} {name}: max z {result['max_z']:.1f}, "
@@ -1226,7 +1257,11 @@ def main(argv=None) -> int:
         help="find where a traced surface jumps to a neighbouring wrap",
     )
     switch.add_argument(
-        "--mesh", nargs="+", required=True, help="one or more tifxyz directories"
+        "--mesh",
+        nargs="+",
+        required=True,
+        help="one or more surfaces: tifxyz directories, or triangular meshes "
+        "as .obj / .ply files",
     )
     switch.add_argument(
         "--volume",
@@ -1264,14 +1299,22 @@ def main(argv=None) -> int:
         metavar="N",
         help="measure the most complete NxN patch of each grid rather than the "
         "whole surface; streaming cost scales with how much scroll the surface "
-        "spans, so a window is what makes a fleet-wide pass affordable",
+        "spans, so a window is what makes a fleet-wide pass affordable (tifxyz only)",
     )
     switch.add_argument(
         "--decimate",
         type=int,
         default=1,
         help="use every Nth grid line; a seam spans a whole line, so decimating "
-        "keeps it while cutting the sampling cost",
+        "keeps it while cutting the sampling cost (tifxyz only)",
+    )
+    switch.add_argument(
+        "--min-span",
+        type=float,
+        default=0.4,
+        help="triangular meshes only: how far a run of darkened edges must reach "
+        "across the surface, as a fraction of its largest extent, before it is "
+        "called a seam rather than damage",
     )
     switch.set_defaults(func=cmd_sheetswitch)
 

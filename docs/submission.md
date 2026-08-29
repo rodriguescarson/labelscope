@@ -92,7 +92,7 @@ Both mistakes are now checks in the tool: it reads every volume's real shape, an
 the fetcher verifies what it wrote rather than what was promised.
 
 Everything is MIT, CPU-only, and validated against planted ground truth rather
-than eyeballed. 121 tests, CI on Python 3.9, 3.11 and 3.12.
+than eyeballed. 110 tests, CI on Python 3.9, 3.11 and 3.12.
 
 ---
 

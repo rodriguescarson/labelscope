@@ -22,7 +22,7 @@ It answers three questions:
 | Is my train/validation split honest? | `labelscope leakage` | leak percentage + a drop-in `splits_final.json` that removes it |
 | Are the labels internally consistent? | `labelscope scan` | class-scheme, shape, encoding and topology census; ranked worst volumes |
 | Do the labels sit where the CT says the surface is? | `labelscope align` | signed offset from the label to the scan's own ridge, in voxels |
-| Has this traced surface jumped to a neighbouring wrap? | `labelscope sheetswitch` | the grid lines where it does, and a refusal when the resolution cannot tell |
+| Has this traced surface jumped to a neighbouring wrap? | `labelscope sheetswitch` | the grid lines (or, on a triangular mesh, the cut) where it does, and a refusal when the resolution cannot tell |
 
 ---
 
@@ -38,7 +38,7 @@ Optional extras: `.[zarr]` to read Zarr and OME-Zarr as well as 3-D TIFF, `.[dev
 for the test suite.
 
 ```bash
-pytest -q          # 88 tests, well under a minute, no data download required
+pytest -q          # 110 tests, well under a minute, no data download required
 ```
 
 Every test builds its own synthetic volumes, so the suite runs on a clean clone
@@ -278,6 +278,39 @@ against roughly 50 GB for the box, and the size of the full array — 75784 × 3
 follows how much scroll a surface spans, not how many vertices are sampled, so
 decimating a whole segment does not make it cheap and a contiguous window does.
 
+### Triangular meshes, without a grid to lean on
+
+`--mesh` also takes `.obj` and `.ply` files, the other formats surfaces are
+exchanged in. The observation the detector rests on does not need a grid: two
+vertices on the same sheet are joined by an edge that stays on papyrus, two
+vertices on different wraps by an edge that crosses the dark gap. What the grid
+provided was only a way to require the darkening be *collective*.
+
+Without a grid that requirement has to be stated geometrically. Flagged edges are
+grouped into connected components, and a component counts as a seam only if it
+reaches across at least `--min-span` of the surface's own largest extent
+(default 0.4) — **a sheet switch cuts across the surface; damage does not.**
+
+The separation is not marginal. On the planted-displacement fixture:
+
+| | largest component, edges | span fraction | `max_z` |
+|---|---|---|---|
+| a planted whole-winding switch | 95 | **1.00** | 84.4 |
+| the same surface, clean | 13 | 0.15 | 11.3 |
+| the same surface over a dark blob of damage | 16 | 0.16 | 21.1 |
+
+The damage blob drives `max_z` to 21.1 — every edge crossing it is flagged — and
+is still reported as no seam, which is the false positive the rule exists to
+reject. The two detectors are
+tested against each other on the same surface: both find the planted switch, both
+report the clean surface clean.
+
+```bash
+labelscope sheetswitch --mesh surface.obj --volume scan.zarr --remote --out audit/
+```
+
+`--window` and `--decimate` are grid operations and apply to tifxyz only.
+
 ---
 
 ## Findings
@@ -293,7 +326,8 @@ the exact commands used. See [findings/README.md](findings/README.md).
 * **Header-only mode.** `scan --headers-only` inventories a release without
   decoding a voxel, so a multi-terabyte set can be checked before it is pulled.
 * **Standard formats in, standard formats out.** Reads 3-D TIFF stacks
-  (nnU-Net `imagesTr`/`labelsTr`) and Zarr/OME-Zarr; writes CSV, JSON, nnU-Net
+  (nnU-Net `imagesTr`/`labelsTr`), Zarr/OME-Zarr, tifxyz quad meshes and
+  triangular meshes (`.obj`, `.ply`); writes CSV, JSON, nnU-Net
   `splits_final.json`, and a single-file HTML report with no external assets.
 * **Nothing is assumed about class indices.** The surface class is detected.
 * **Unpaired volumes are reported, not skipped.** A missing label is a finding.
