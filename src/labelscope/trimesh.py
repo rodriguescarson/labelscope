@@ -417,6 +417,7 @@ def find_sheet_switches(
     steps: int = 17,
     min_edges: int = 4,
     min_span: float = 0.4,
+    min_dip: float = 1.0,
     check_resolution: bool = True,
 ) -> Dict:
     """Locate seams on a triangular surface.
@@ -438,6 +439,9 @@ def find_sheet_switches(
     )
     adequate = bool(np.isfinite(spacing) and step <= 0.5 * spacing)
 
+    from labelscope.mesh import surface_intensity
+
+    level, intensity_spread = surface_intensity(mesh, volume, origin=origin)
     dip = edge_dip(mesh, volume, origin=origin, steps=steps)
     edges = mesh.edges()
     finite = np.isfinite(dip)
@@ -452,18 +456,26 @@ def find_sheet_switches(
         "z_threshold": z_threshold,
         "min_edges": min_edges,
         "min_span": min_span,
+        "min_dip": min_dip,
+        "surface_intensity_median": level,
+        "surface_intensity_mad": intensity_spread,
+        "dip_degenerate": bool(level < min_dip),
         "seams": [],
         "max_z": 0.0,
         "median_dip": 0.0,
     }
-    if finite.sum() < 4:
+    if finite.sum() < 4 or result["dip_degenerate"]:
+        # Same degenerate null as the quad detector: a surface over masked-out
+        # air has no dip distribution to score against.
         result["n_seams"] = 0
         return result
 
     centre = float(np.median(dip[finite]))
     spread = 1.4826 * float(np.median(np.abs(dip[finite] - centre)))
     if spread < 1e-6:
-        spread = float(np.std(dip[finite])) or 1.0
+        result["dip_degenerate"] = True
+        result["n_seams"] = 0
+        return result
     scores = np.zeros_like(dip)
     scores[finite] = (dip[finite] - centre) / spread
     result["median_dip"] = centre

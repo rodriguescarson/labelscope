@@ -177,3 +177,57 @@ def test_an_adequate_resolution_is_recognised():
     result = find_sheet_switches(mesh, volume)
     assert result["resolution_adequate"] is True
     assert result["steps_per_winding"] > 4.0
+
+
+def masked_volume(shape=(160, 96, 320), spacing=24.0, seed=0):
+    """A scan that is masked out where this surface lies.
+
+    The published volumes are masked: the air around the scroll is simply absent
+    from the store and reads as zero.  A mesh can be perfectly well-formed over a
+    region the scan does not cover, and then every edge dips by nothing.
+    """
+    volume = wrapped_volume(shape=shape, spacing=spacing, seed=seed)
+    volume[:, :, 160:] = 0.0  # the scan covers the left half only
+    return volume
+
+
+def test_a_surface_over_masked_air_is_refused_not_scored():
+    """The loudest false positive in a 56-surface sweep came from this case.
+
+    Every line mean was 0.00, the robust spread collapsed, and a 0.25 grey-level
+    wobble was reported as z = 12.6 -- the highest score in the whole run, made
+    of nothing.
+    """
+    volume = masked_volume()
+    mesh = mesh_on_sheet(rows=40, cols=40, step=3.0)
+    # move the whole grid into the masked half
+    mesh = QuadMesh(
+        points=mesh.points + np.array([0.0, 0.0, 170.0], np.float32),
+        valid=mesh.valid.copy(),
+        meta={},
+    )
+    out = find_sheet_switches(mesh, volume, z_threshold=5.0)
+    assert out["dip_degenerate"] is True
+    assert out["surface_intensity_median"] < 1.0
+    assert out["n_seams"] == 0
+    assert "seams_degenerate" in out
+
+
+def test_a_surface_on_real_signal_is_still_scored():
+    """The guard must not silence a surface the scan actually covers."""
+    volume = masked_volume()
+    mesh = mesh_on_sheet(rows=40, cols=40, step=3.0)  # sits in the covered half
+    out = find_sheet_switches(displace(mesh, 24.0), volume, z_threshold=5.0)
+    assert out["dip_degenerate"] is False
+    assert out["surface_intensity_median"] > 1.0
+    assert out["n_seams"] >= 1
+
+
+def test_a_collapsed_spread_scores_zero_rather_than_falling_back():
+    """A degenerate null has no z-scores in it."""
+    from labelscope.mesh import _line_scores
+
+    dip = np.zeros((8, 8))
+    dip[3, :] = 0.25  # one line barely above a floor of exact zeros
+    scores = _line_scores(dip, along=1)
+    assert np.all(scores == 0.0)

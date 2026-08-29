@@ -155,7 +155,13 @@ def _line_scores(dip: np.ndarray, along: int) -> np.ndarray:
     centre = np.median(means[finite])
     spread = 1.4826 * np.median(np.abs(means[finite] - centre))
     if spread < 1e-6:
-        spread = float(np.std(means[finite])) or 1.0
+        # No usable spread.  This happens on a masked volume, where the window
+        # sits in the air around the scroll and every edge reads zero: the line
+        # means are all 0.00 and a fallback to the standard deviation turns a
+        # 0.25 grey-level wobble into z = 12.6.  That was the highest score in a
+        # 56-surface sweep and it was made of nothing.  A degenerate null has no
+        # z-scores in it, so say so instead of inventing them.
+        return np.zeros_like(means)
     scores = (means - centre) / spread
     scores[~finite] = 0.0
     return scores
@@ -215,12 +221,33 @@ def winding_spacing(
     return min(others) if others else float("nan")
 
 
+def surface_intensity(mesh, volume, origin=None, n_samples: int = 4000, seed: int = 0):
+    """Median and robust spread of the scan *at* the surface.
+
+    The check this exists for: a masked volume reads zero in the air around the
+    scroll, and a mesh can be perfectly well-formed over a region the scan does
+    not cover.  Every edge then dips by nothing, the line means are all 0.00,
+    and a robust z-score computed on that null reports a seam made of nothing.
+    """
+    sample, _ = _sampler(volume, origin)
+    points = mesh.points[mesh.valid] if hasattr(mesh, "valid") else mesh.points
+    if len(points) == 0:
+        return 0.0, 0.0
+    rng = np.random.default_rng(seed)
+    if len(points) > n_samples:
+        points = points[rng.choice(len(points), n_samples, replace=False)]
+    values = sample(np.asarray(points, np.float32))
+    centre = float(np.median(values))
+    return centre, float(1.4826 * np.median(np.abs(values - centre)))
+
+
 def find_sheet_switches(
     mesh: QuadMesh,
     volume,
     origin=None,
     z_threshold: float = 5.0,
     steps: int = 17,
+    min_dip: float = 1.0,
     check_resolution: bool = True,
 ) -> Dict:
     """Locate seams where the surface appears to jump to a neighbouring wrap.
@@ -267,6 +294,18 @@ def find_sheet_switches(
         result[f"axis{axis}_max_z"] = float(scores.max()) if scores.size else 0.0
         result[f"axis{axis}_median_dip"] = float(np.nanmedian(means)) if means.size else 0.0
     result["seams"].sort(key=lambda s: -s["z"])
+    # A z-score is a statement about a distribution, so the distribution has to
+    # exist.  Where the scan is masked out the whole surface reads flat and the
+    # dip is a fraction of a grey level; 11 of 56 published surfaces sat in that
+    # regime, and the loudest false positive in the sweep came from it.
+    level, spread = surface_intensity(mesh, volume, origin=origin)
+    result["surface_intensity_median"] = level
+    result["surface_intensity_mad"] = spread
+    result["min_dip"] = min_dip
+    result["dip_degenerate"] = bool(level < min_dip)
+    if result["dip_degenerate"]:
+        result["seams_degenerate"] = result.pop("seams")
+        result["seams"] = []
     if not adequate:
         # report the measurement, refuse the conclusion
         result["seams_unreliable"] = result.pop("seams")
