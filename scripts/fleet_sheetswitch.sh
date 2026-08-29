@@ -16,6 +16,10 @@ VOL="${VOL:-https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHer
 OUT="${OUT:-findings/fleet_p4}"
 WINDOW="${WINDOW:-160}"
 JOBS="${JOBS:-1}"
+# A disk cache is not optional over a slow link: without it an interrupted
+# sweep re-fetches every byte, and the chunks a neighbouring surface needs
+# overlap heavily with the ones already pulled.
+CACHE="${CACHE:-.cache/chunks}"
 
 # Read the list from a file rather than relying on word splitting: zsh does not
 # split unquoted parameters, which silently passed every path as one argument,
@@ -38,7 +42,7 @@ one_surface() {
   name=$(basename "$m")
   echo "[$(date +%H:%M:%S)] start $name" >> "$OUT/progress.log"
   "$LS" sheetswitch --mesh "$m" --volume "$VOL" --remote --window "$WINDOW" \
-      --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+      --cache "$CACHE" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
   echo "[$(date +%H:%M:%S)] done  $name rc=$?" >> "$OUT/progress.log"
 }
 

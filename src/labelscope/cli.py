@@ -1306,7 +1306,10 @@ def main(argv=None) -> int:
         type=int,
         default=1,
         help="use every Nth grid line; a seam spans a whole line, so decimating "
-        "keeps it while cutting the sampling cost (tifxyz only)",
+        "keeps it while cutting the sampling cost (tifxyz only).  Note it does "
+        "NOT cut the streaming cost: the surviving vertices sit further apart, "
+        "so their normal walks touch more distinct chunks, not fewer -- "
+        "measured at +40% of chunks per step of N.  Use --window for that",
     )
     switch.add_argument(
         "--min-span",

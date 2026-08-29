@@ -278,6 +278,20 @@ against roughly 50 GB for the box, and the size of the full array — 75784 × 3
 follows how much scroll a surface spans, not how many vertices are sampled, so
 decimating a whole segment does not make it cheap and a contiguous window does.
 
+`--decimate` is the trap. It cuts the number of samples, so it looks like a
+saving — but the surviving vertices sit further apart, their normal walks touch
+more distinct chunks, and the transfer goes **up**. Counted on a published
+PHercParis4 surface, chunks needed for one pass:
+
+| | `--window 96` | `--window 64` |
+|---|---|---|
+| `--decimate 1` | 1,127 (2.3 GB) | **539 (1.1 GB)** |
+| `--decimate 2` | 1,579 (3.2 GB) | 736 (1.5 GB) |
+| `--decimate 3` | 1,960 (3.9 GB) | 940 (1.9 GB) |
+
+So `--window` is the lever for a fleet pass, and `--decimate` only helps when the
+volume is already local.
+
 ### Triangular meshes, without a grid to lean on
 
 `--mesh` also takes `.obj` and `.ply` files, the other formats surfaces are
