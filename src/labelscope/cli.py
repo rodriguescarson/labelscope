@@ -1062,6 +1062,145 @@ def cmd_sheetswitch(args: argparse.Namespace) -> int:
     return 0
 
 
+def _regularise_one(task):
+    """One patch, in its own process.  Module level so it can be pickled."""
+    import numpy as np
+    import tifffile
+
+    from labelscope.quality import audit_label
+    from labelscope.regularise import regularise_label
+
+    (
+        name,
+        image_path,
+        label_path,
+        out_dir,
+        surface_class,
+        cell,
+        smooth,
+        max_shift,
+        min_per_cell,
+        samples,
+        min_global_snr,
+    ) = task
+    record = {"name": name}
+    try:
+        image = read_volume(image_path)
+        label = read_volume(label_path)
+        scheme = audit_label(label)
+        if surface_class is None:
+            surface_class = scheme.get("surface_class")
+        if surface_class is None:
+            record["error"] = "no sheet-like class found"
+            return record
+        others = {
+            v: e["fraction"]
+            for v, e in scheme.get("per_class", {}).items()
+            if v != surface_class
+        }
+        orient_class = max(others, key=others.get) if others else None
+        mask = label == surface_class
+        orient_field = (
+            (label == orient_class).astype(np.float32) if orient_class is not None else None
+        )
+        new_mask, report = regularise_label(
+            image,
+            mask,
+            cell=cell,
+            smooth=smooth,
+            max_shift=max_shift,
+            orient_field=orient_field,
+            min_per_cell=min_per_cell,
+            n_samples=samples,
+            min_global_snr=min_global_snr,
+        )
+        out = label.copy()
+        out[mask] = 0
+        out[new_mask] = surface_class
+        tifffile.imwrite(
+            os.path.join(out_dir, os.path.basename(label_path)), out, compression="zlib"
+        )
+        record.update(report)
+        record["surface_class"] = surface_class
+    except Exception as exc:  # a patch that cannot be corrected is reported
+        record["error"] = f"{type(exc).__name__}: {exc}"
+    return record
+
+
+def cmd_regularise(args: argparse.Namespace) -> int:
+    """Write a copy of a label set with the per-patch wobble taken out."""
+
+    pairs = [p for p in discover_pairs(args.images, args.labels) if p.complete]
+    if not pairs:
+        _log("no complete image/label pairs found")
+        return 2
+    if args.limit:
+        pairs = pairs[: args.limit]
+    os.makedirs(args.out, exist_ok=True)
+    _log(f"regularising {len(pairs)} pairs into {args.out}")
+
+    tasks = [
+        (
+            p.name,
+            p.image,
+            p.label,
+            args.out,
+            args.surface_class if args.surface_class >= 0 else None,
+            args.cell,
+            args.smooth,
+            args.max_shift,
+            args.min_per_cell,
+            args.samples,
+            args.min_global_snr,
+        )
+        for p in pairs
+    ]
+    records = []
+    if args.jobs > 1:
+        from concurrent.futures import ProcessPoolExecutor
+
+        _log(f"across {args.jobs} processes")
+        with ProcessPoolExecutor(args.jobs) as pool:
+            for n, record in enumerate(pool.map(_regularise_one, tasks, chunksize=1), 1):
+                records.append(record)
+                if n % 25 == 0 or n == len(tasks):
+                    _log(f"  {n}/{len(tasks)}")
+    else:
+        for n, task in enumerate(tasks, 1):
+            records.append(_regularise_one(task))
+            if n % 25 == 0 or n == len(tasks):
+                _log(f"  {n}/{len(tasks)}")
+
+    write_csv(records, os.path.join(args.out, "manifest.csv"))
+    changed = [r for r in records if r.get("changed")]
+    shifts = [r["mean_abs_shift_on_label"] for r in records if "mean_abs_shift_on_label" in r]
+    summary = {
+        "n_pairs": len(records),
+        "n_changed": len(changed),
+        "n_errors": len([r for r in records if r.get("error")]),
+        "n_left_alone": len([r for r in records if r.get("reason")]),
+        "cell": args.cell,
+        "smooth": args.smooth,
+        "max_shift": args.max_shift,
+        "mean_abs_shift_median": float(statistics.median(shifts)) if shifts else 0.0,
+        "reasons": _counted([r.get("reason") for r in records if r.get("reason")]),
+    }
+    write_json(summary, os.path.join(args.out, "regularise_summary.json"))
+    _log(f"wrote {args.out}/manifest.csv, regularise_summary.json")
+    print(
+        f"{summary['n_pairs']} pairs, {summary['n_changed']} changed, "
+        f"{summary['n_left_alone']} left alone, {summary['n_errors']} errors"
+    )
+    return 0
+
+
+def _counted(values):
+    out: Dict[str, int] = {}
+    for v in values:
+        out[v] = out.get(v, 0) + 1
+    return out
+
+
 def _best_window(mesh, size: int):
     """The most complete size x size patch of the grid.
 
@@ -1279,6 +1418,36 @@ def main(argv=None) -> int:
         help="render CT/label overlay and drift-map PNGs for the N worst-aligned patches",
     )
     align.set_defaults(func=cmd_align)
+
+    reg = sub.add_parser(
+        "regularise",
+        help="write a copy of a label set with each patch's own wobble removed",
+    )
+    reg.add_argument("--images", required=True)
+    reg.add_argument("--labels", required=True)
+    reg.add_argument("--out", required=True)
+    reg.add_argument("--cell", type=int, default=64)
+    reg.add_argument(
+        "--smooth",
+        type=float,
+        default=0.5,
+        help="smoothing of the correction field, in cells.  Higher is gentler "
+        "and costs signal; see the measured curve in regularise.py",
+    )
+    reg.add_argument(
+        "--max-shift",
+        type=float,
+        default=4.0,
+        help="voxels a label may be moved; a larger correction than this is a "
+        "sign the measurement is wrong, not that the label is",
+    )
+    reg.add_argument("--min-per-cell", type=int, default=200)
+    reg.add_argument("--samples", type=int, default=20000)
+    reg.add_argument("--min-global-snr", type=float, default=2.0)
+    reg.add_argument("--surface-class", type=int, default=-1)
+    reg.add_argument("--limit", type=int, default=0)
+    reg.add_argument("--jobs", type=int, default=1)
+    reg.set_defaults(func=cmd_regularise)
 
     switch = sub.add_parser(
         "sheetswitch",
