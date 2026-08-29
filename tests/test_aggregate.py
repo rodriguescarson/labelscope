@@ -461,3 +461,21 @@ def test_return_cells_localises_the_region_that_moved():
     # the key and the reported centre have to agree
     for c in cells:
         assert c["centre_zyx"][1] == (c["key"][1] + 0.5) * 32
+
+
+def test_bootstrap_zero_skips_the_interval_instead_of_raising():
+    """Measuring thousands of predictions costs more in intervals than estimates.
+
+    ``bootstrap=0`` used to reach ``np.percentile`` with an empty list and raise
+    IndexError from inside numpy, which reads as a bug in the caller.
+    """
+    shape = (64, 96, 96)
+    result = aggregate_alignment(
+        scroll_like(shape),
+        sheet_label(shape, 32),
+        orient_field=upward(shape),
+        n_samples=6000,
+        bootstrap=0,
+    )
+    assert abs(result["global_peak_offset_raw"]) < 0.5
+    assert all(np.isnan(v) for v in result["global_peak_ci95"])

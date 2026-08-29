@@ -819,7 +819,11 @@ def aggregate_alignment(
     for _ in range(bootstrap):
         pick = rng.integers(0, profiles.shape[1], profiles.shape[1])
         boot.append(_peak_of(profiles[:, pick].mean(axis=1), offsets))
-    lo, hi = np.percentile(boot, [2.5, 97.5])
+    # bootstrap=0 is a legitimate request -- it is what a caller measuring
+    # thousands of predictions asks for, since the interval costs more than the
+    # estimate does -- and it used to reach np.percentile with an empty list and
+    # raise IndexError from inside numpy.
+    lo, hi = np.percentile(boot, [2.5, 97.5]) if boot else (float("nan"), float("nan"))
 
     keys = coords // cell
     order = np.lexsort((keys[:, 2], keys[:, 1], keys[:, 0]))
