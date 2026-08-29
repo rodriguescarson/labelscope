@@ -2,8 +2,20 @@
 
 Form: https://docs.google.com/forms/d/e/1FAIpQLSev2vJobu521iB6OuyehDktzYTEo131F4iUGwt3Qxa9a1fk6A/viewform
 
-**Full name:** Carson Conception Rodrigues
-**Team:** individual
+The Progress Prize submission is the form and nothing else — five fields, no
+attachments, no upload, no email (the `grandprize@scrollprize.org` address is for
+the Grand Prize, First Letters and Title prizes only). Verified against the live
+form on 2026-08-29.
+
+| field | answer |
+|---|---|
+| Email | rodriguescarson@gmail.com (pre-filled; tick "record this email") |
+| Your full name | Carson Conception Rodrigues |
+| Team description | Individual — no team. |
+| URL | the three below |
+| Short description | field 5 |
+| Terms and Conditions | Yes, I agree |
+
 **URL:**
 - https://github.com/rodriguescarson/labelscope (the tool, MIT)
 - Issues filed on ScrollPrize/villa: #1640, #1641, #1642, #1643
@@ -29,6 +41,16 @@ dark. On a published PHercParis4 surface against its own 2.4 µm scan, with one
 winding planted over half the grid, the seam line's mean darkening goes from 9.1
 to 36.3 — a z-score of 0.4 against 11.5 — and it fires at one, two and three
 windings alike.
+
+It takes tifxyz quad meshes and, since the seam argument never needed a grid,
+`.obj` and `.ply` triangular meshes as well — the three surface formats the
+project exchanges. Without a grid the conservatism has to be stated
+geometrically: flagged edges are grouped into connected components, and a
+component is a seam only if it reaches across at least 0.4 of the surface's own
+largest extent, because a sheet switch cuts across the surface and damage does
+not. On the planted fixture the real seam spans 1.00, the largest noise component
+0.15, and a compact dark blob of damage 0.16 — the blob drives `max_z` to 21.1
+and is still correctly reported as no seam.
 
 It also refuses to answer when it cannot. The seam is only visible if a grid edge
 normally stays on one wrap, so the tool measures the winding spacing from the
@@ -92,7 +114,7 @@ Both mistakes are now checks in the tool: it reads every volume's real shape, an
 the fetcher verifies what it wrote rather than what was promised.
 
 Everything is MIT, CPU-only, and validated against planted ground truth rather
-than eyeballed. 110 tests, CI on Python 3.9, 3.11 and 3.12.
+than eyeballed. 127 tests, CI on Python 3.9, 3.11 and 3.12.
 
 ---
 
@@ -102,6 +124,7 @@ than eyeballed. 110 tests, CI on Python 3.9, 3.11 and 3.12.
 - [x] CI green on 3.9 / 3.11 / 3.12 plus lint
 - [x] `pytest -q` green on a clean clone, no data download required
 - [x] findings/ committed, including both retractions
+- [x] triangular mesh input (.obj, .ply) — the third format the integration bar names
 - [x] full-population results for both releases (2,568 pairs)
 - [ ] fleet-wide sheet-switch sweep over published PHercParis4 surfaces
 - [x] upstream issues filed: #1640, #1641, #1642, #1643
