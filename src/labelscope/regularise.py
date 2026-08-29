@@ -187,7 +187,11 @@ def _crop(field, box):
 
 
 def _dense_normals(
-    image: np.ndarray, mask: np.ndarray, orient_field: Optional[np.ndarray] = None
+    image: np.ndarray,
+    mask: np.ndarray,
+    orient_field: Optional[np.ndarray] = None,
+    n_normals: int = 20_000,
+    seed: int = 0,
 ) -> np.ndarray:
     """A (3, Z, Y, X) normal field, defined everywhere, not only on the label.
 
@@ -205,7 +209,19 @@ def _dense_normals(
     the places it was already worst.
     """
     coords = np.argwhere(mask)
-    points = coords.astype(np.float32)
+    # Normals are estimated on a subsample, exactly as the measurement does.
+    # Estimating one per labelled voxel and then running the MST orientation
+    # over all of them is what made this three minutes a patch on real data --
+    # a real Dataset059 surface carries millions of voxels, not the tens of
+    # thousands a synthetic fixture has.  The local PCA still sees the whole
+    # point cloud; only the evaluation points are subsampled.
+    rng = np.random.default_rng(seed)
+    picked = (
+        coords
+        if len(coords) <= n_normals
+        else coords[rng.choice(len(coords), n_normals, replace=False)]
+    )
+    points = picked.astype(np.float32)
     normals = point_normals(coords, points)
     normals, components = propagate_orientation(points, normals)
     if orient_field is not None:
@@ -213,8 +229,10 @@ def _dense_normals(
     else:
         normals = orient_by_intensity(image, points.T, normals, components=components)
 
-    nearest = ndi.distance_transform_edt(~mask, return_distances=False, return_indices=True)
-    lookup = -np.ones(mask.shape, dtype=np.int64)
-    lookup[coords[:, 0], coords[:, 1], coords[:, 2]] = np.arange(len(coords))
+    seeds = np.zeros(mask.shape, dtype=bool)
+    seeds[picked[:, 0], picked[:, 1], picked[:, 2]] = True
+    nearest = ndi.distance_transform_edt(~seeds, return_distances=False, return_indices=True)
+    lookup = -np.ones(mask.shape, dtype=np.int32)
+    lookup[picked[:, 0], picked[:, 1], picked[:, 2]] = np.arange(len(picked), dtype=np.int32)
     index = lookup[tuple(nearest)]
     return np.asarray(normals, dtype=np.float32)[:, index]
