@@ -81,7 +81,17 @@ def measure(image: np.ndarray, mask: np.ndarray, seed: int = 0) -> dict:
     if mask.sum() < 2000:
         return {"error": "prediction too small to measure", "voxels": int(mask.sum())}
     result = aggregate_alignment(
-        image, mask, cell=64, min_per_cell=200, n_samples=20_000, bootstrap=0, seed=seed
+        image,
+        mask,
+        cell=64,
+        min_per_cell=200,
+        n_samples=20_000,
+        bootstrap=0,
+        seed=seed,
+        # without this the per-cell list is not returned and cell_offset_spread
+        # comes back None for every patch -- the metric silently disappears from
+        # the comparison instead of failing, which is worse
+        return_cells=True,
     )
     if result.get("n_cells", 0) < 2:
         return {"error": "too few resolved cells", "n_cells": result.get("n_cells", 0)}
