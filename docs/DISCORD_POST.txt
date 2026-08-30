@@ -1,0 +1,24 @@
+================================================================================
+STEP 1 — POST THIS TO DISCORD  (do this FIRST, before the form)
+Channel: #tools if it exists, otherwise #general (you have it open)
+Copy everything between the lines. It is 1,764 characters — under Discord's 2,000 limit.
+================================================================================
+--------------------------------------------------------------------------------
+**labelscope — a CPU tool for checking surface labels and traced surfaces against the scan itself**
+
+https://github.com/rodriguescarson/labelscope (MIT)
+
+Runs on a laptop, no GPU, no training. Reads Zarr/OME-Zarr, tifxyz, and .obj/.ply.
+
+It answers four questions: is my train/val split honest (and here is a fixed one); do the labels sit where the scan says the surface is; has this traced surface jumped to a neighbouring wrap; and can I correct what I found.
+
+Two things I'd rather lead with than the feature list.
+
+**It refuses to answer, twice, and reports the refusals as data.** Below two grid steps per winding there is no seam to see, and it says so. Where the scan is masked out the surface reads flat, the spread collapses, and a robust z-score on that null reports whatever rounding noise it finds — so it checks the scan at the surface first.
+
+**That second refusal exists because the tool's loudest result was wrong.** Sweeping every published surface I could find — 253 surfaces, 7 scrolls — the highest score anywhere was z = 12.60, past threshold and past the resolution gate. Its median line dip was 0.000 grey levels. It was a window sitting in masked-out air. 11 of 56 surfaces were in the same state. Full write-up in findings/, with two earlier retractions.
+
+I also ran all 253 again with a whole winding deliberately planted in half of each. Planting raises the score on 107 of 112 usable surfaces, 2.93x — but the planted minimum still sits below the unplanted maximum, so a fixed threshold does not transfer between surfaces.
+
+Bug reports and disagreement very welcome. Particularly: **if you have a surface you know jumps wraps, I'd love it** — every validation so far is against a planted displacement, never a confirmed one in the wild.
+--------------------------------------------------------------------------------
