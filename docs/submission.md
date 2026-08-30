@@ -43,13 +43,50 @@ lies on papyrus, so the surface itself gives nothing away. What does is the seam
 the one line of grid edges that must cross the gap between two wraps, and the gap
 is dark.
 
-CORPUS_TABLE_HERE
+I ran that over **every published surface of every scroll that has one — 253
+surfaces, one per segment, across 7 scrolls, 0 errors** — streaming from the
+open-data volumes at 0.5–4.0 GB per surface.
+
+| scroll | surfaces | can be checked | over masked scan | flagged | steps/winding |
+|---|---|---|---|---|---|
+| PHercParis4 | 81 | 42 | 15 | 9 | 2.28 |
+| PHerc0172 | 53 | **1** | 0 | 0 | **0.90** |
+| PHerc0500P2 | 39 | 22 | 1 | 4 | 2.05 |
+| PHerc0139 | 38 | 26 | 0 | 8 | 2.22 |
+| PHerc1667 | 20 | 13 | 0 | 1 | 2.45 |
+| PHerc0814 | 14 | 7 | 0 | 1 | 1.98 |
+| PHerc0343P | 8 | 5 | 0 | 0 | 2.60 |
+| **total** | **253** | **116** | **16** | **23** | |
+
+**Less than half the published corpus can be checked at all, and that is the most
+useful line in the table.** 116 of 253 surfaces clear the resolution gate; 16 more
+sit over scan that is masked out. `PHerc0172` is 1 of 53 — its surfaces are traced
+on a 7.91 µm scan and at that voxel size no seam exists to find. If sheet-switch
+QA matters for that scroll it needs a finer scan first, which is a checkable
+request rather than an opinion.
 
 Then the same surfaces again, each with a whole winding planted in half of it —
 the case the satisfaction metric scores as no change at all. That pairing is the
 part that matters, and it is what a fleet pass without a control cannot tell you:
 
-CORPUS_PAIRED_HERE
+On the 112 surfaces where both passes produced a usable answer:
+
+| | min | median | max |
+|---|---|---|---|
+| as published | 2.47 | 3.87 | 9.94 |
+| one winding planted | 3.60 | 11.71 | 39.12 |
+
+Planting raises the score on **107 of 112** surfaces, by **2.93×** (95% bootstrap
+CI 2.62–3.26). The detector has real, measured power.
+
+**And a fixed threshold still cannot use it.** The planted minimum sits *below*
+the unplanted maximum, so no single z cut separates the two populations across
+surfaces; on 5 of 112, planting a whole winding *lowered* the score. So
+`sheetswitch` should not be run as "flag everything above z = 5" over a fleet — it
+should be run per surface against that surface's own planted control, which is
+what `--plant` is for. A threshold tuned on one validated example does not
+transfer, and the only reason anyone knows that is that the control was run on all
+of them.
 
 **2. Running the full population found a defect in my own detector, and it was
 the loudest result in the sweep.**
@@ -102,7 +139,28 @@ voxels off comes back byte-identical. On all 1,754 `Dataset059` patches it
 changed 1,735, left 19 alone where the measurement was unreliable, and errored on
 none; median shift 0.84 voxels over 36% of surface voxels.
 
-TRACK_A_RESULT_HERE
+**A negative result on whether that helps, and the way it fails is the useful
+part.** The same compact 3-D U-Net trained on the original and corrected labels,
+two seeds each, identical budget, split from the leakage-free `splits_final.json`,
+then evaluated label-free on 351 held-out patches per seed — predict, binarise,
+measure the prediction's *own* placement against the CT, because Dice against
+either label set is circular.
+
+| metric (corrected minus original) | seed 0 | seed 1 |
+|---|---|---|
+| `cell_abs_offset_p90` (lower better) | **+0.052** | **−0.365** |
+| `cell_frac_ge_1vx` (lower better) | **+0.023** | **−0.164** |
+| `global_profile_snr` (higher better) | **−0.750** | **−0.772** |
+
+Every one of those 95% bootstrap intervals excludes zero. The two localisation
+metrics **flip sign between seeds** — a single seed would have produced a
+confident answer, and which answer depended on the seed. The per-patch bootstrap
+measures precision *within* a run and says nothing about reproducibility across
+runs. The one metric that agrees across seeds says the corrected arm is worse.
+
+So the per-region wobble is **not** the binding constraint on this model. That is
+worth knowing before anyone spends a GPU month relabelling, and it is a direct
+answer to a question the project has asked out loud.
 
 **4. Data facts worth one line of a release script.** 487 of 892 labels in the
 Kaggle release ship uncompressed — 15.52 GB of a 45 GB release, established from
@@ -136,7 +194,7 @@ it wrote rather than what was promised, and the detector refuses a null with no
 spread in it.
 
 Everything is MIT, CPU-only, containerised, and validated against planted ground
-truth rather than eyeballed. TEST_COUNT_HERE tests, CI on Python 3.9, 3.11 and
+truth rather than eyeballed. 146 tests, CI on Python 3.9, 3.11 and
 3.12.
 
 ---
@@ -151,8 +209,8 @@ truth rather than eyeballed. TEST_COUNT_HERE tests, CI on Python 3.9, 3.11 and
 - [x] findings/ committed, including all three retractions
 - [x] triangular mesh input (.obj, .ply), and compressed zarr stores
 - [x] full-population results for both label releases (2,568 pairs)
-- [ ] corpus sheet-switch sweep + planted control across all scrolls
-- [ ] label-free evaluation of the regularised-label retrain
+- [x] corpus sheet-switch sweep + planted control across all scrolls (253 surfaces, 7 scrolls, 0 errors)
+- [x] label-free evaluation of the regularised-label retrain (351 patches x 2 seeds; negative, reported as such)
 - [x] upstream issues filed: #1640, #1641, #1642, #1643, #1649
 - [x] upstream PRs opened: #1644, #1645, #1646 (+ #1482 fix posted with branch)
 - [ ] posted in the Vesuvius Discord
