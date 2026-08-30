@@ -1,0 +1,73 @@
+================================================================================
+VESUVIUS CHALLENGE — AUGUST 2026 PROGRESS PRIZE
+Form: https://docs.google.com/forms/d/e/1FAIpQLSev2vJobu521iB6OuyehDktzYTEo131F4iUGwt3Qxa9a1fk6A/viewform
+Deadline: Aug 31 23:59 PT  =  Sep 1, 12:29 IST
+Five fields, no attachments. Copy each block below into the matching field.
+================================================================================
+
+
+-------- FIELD 1: Email --------------------------------------------------------
+Already pre-filled as rodriguescarson@gmail.com.
+Tick "Record rodriguescarson@gmail.com as the email to be included with my response".
+
+
+-------- FIELD 2: Your full name -----------------------------------------------
+Carson Conception Rodrigues
+
+
+-------- FIELD 3: Team description ---------------------------------------------
+Individual — not a team.
+
+
+-------- FIELD 4: URL to your open source / publicly available contribution -----
+https://github.com/rodriguescarson/labelscope
+
+Upstream on ScrollPrize/villa —
+Issues: #1640, #1641, #1642, #1643, #1649
+PRs: #1644, #1645, #1646
+Fix for #1482 posted on the issue with its public branch (GitHub refuses PR creation from my account into that repo)
+
+
+-------- FIELD 5: Short description --------------------------------------------
+(paste everything between the lines)
+--------------------------------------------------------------------------------
+labelscope (https://github.com/rodriguescarson/labelscope, MIT) is a CPU tool that measures things the unwrapping pipeline currently assumes. No GPU, no training, runs on a laptop, reads Zarr/OME-Zarr, tifxyz, and .obj/.ply.
+
+WHAT I RAN
+
+The Open Problems table asks for conservative detection of meshes jumping between wraps. villa#1621 shows why the spiral satisfaction metric cannot give it: a surface displaced by a whole winding scores a delta of exactly zero. What does give it away is the seam - the one line of grid edges that must cross the dark gap between wraps.
+
+I ran that over every published surface of every scroll that has one: 253 surfaces, one per segment, 7 scrolls, 0 errors, streaming 0.5-4.0 GB per surface out of volumes up to 81 TB. Then all 253 again with a whole winding deliberately planted in half of each, because a sweep that reports nothing is worthless unless the same surfaces would have shown something.
+
+THREE RESULTS, TWO OF THEM UNCOMFORTABLE
+
+1. Less than half the published corpus can be checked at all. 116 of 253 surfaces clear the resolution gate; 16 more sit over scan that is masked out. PHerc0172 is 1 of 53 - its surfaces are traced on a 7.91 um scan and at that voxel size no seam exists to find. That is a checkable request for a finer scan, not an opinion.
+
+2. The control works; the threshold does not. On the 112 surfaces where both passes gave a usable answer, planting a winding raises the score on 107, by 2.93x (95% bootstrap CI 2.62-3.26). But the planted minimum (3.60) sits below the unplanted maximum (9.94), so no fixed z cut separates the populations across surfaces, and on 5 of 112 planting a winding LOWERED the score. So this must be run per surface against its own planted control (--plant), never as a fleet-wide threshold. A cut tuned on one validated example does not transfer.
+
+3. The loudest result in the first sweep was made of nothing. z = 12.60, past threshold, past the gate, flagged twice - and its median line dip was 0.000 grey levels on both axes. The published volumes are masked, the window sat in air, every edge dipped by nothing, and a fallback standard deviation turned a quarter of a grey level into the highest score in the run. 11 of 56 surfaces were in that state. The detector now samples the scan at the surface and refuses. This is the second time masked regions have broken a robust estimator here, so the rule is in the findings: a scale estimate of zero is a refusal, not a small number.
+
+LABELS
+
+Over 2,568 pairs in two independent public releases, surface labels sit 2.285 and 2.576 voxels off the CT density maximum - the same answer to within a third of a voxel. That is the recto-face convention, not an error (pmh47 confirmed as much on villa#1640, and also that intensity peaks will not reliably localise it - I agree with both). What is not convention is cells of the same patch disagreeing. labelscope regularise removes that while preserving the convention: 1,754 patches, 1,735 changed, 19 refused, 0 errors.
+
+Does it help? No, and how it fails matters. Same net, two label sets, two seeds, identical budget, evaluated label-free on 351 held-out patches per seed (Dice against either label set is circular). The two localisation metrics flip sign between seeds with every 95% interval excluding zero - a single seed would have given a confident answer determined by the seed. The one metric that agrees across seeds says the corrected arm is worse. So the per-region wobble is not the binding constraint on this model - worth knowing before anyone spends a GPU month relabelling.
+
+UPSTREAM
+
+Five issues (#1640-1643, #1649) and four fixes, each pairing a regression that fails on main with a control that passes on both. #1644: the standalone dice loss eats raw logits and returns 1.2162e+11 at mu=-1.0, flipping sign at mu=-0.10 (before/after logs posted on the PR). #1645: native inference feeds depth 3 where training feeds 5. #1646: robust normalisation runs over zero padding, so padded planes read -2.2659 instead of 0. The fourth (#1482, a retry loop that never terminates) is written and tested but GitHub refuses CreatePullRequest from my account into this repo - eight attempts over nine hours while issue comments work - so it is posted on the issue with its public branch rather than sat on. #1649: 55 of 81 PHercParis4 meshes are traced on volume 20230205180739, which is in no form in the open-data bucket.
+
+Everything is MIT, CPU-only, containerised (Dockerfile built and run end to end), 146 tests, CI on 3.9/3.11/3.12, figures generated by running the tool rather than drawn. findings/ carries three retractions with the commands to reproduce each, because they are mistakes anyone auditing this data can make.
+--------------------------------------------------------------------------------
+
+
+-------- FIELD 6: Terms and Conditions -----------------------------------------
+Tick "Yes, I agree".
+
+
+-------- THEN --------------------------------------------------------------------
+Press Submit.
+
+After the form goes in (not before), the Discord post is drafted in
+docs/discord-post.md — you already have Discord open.
+================================================================================
