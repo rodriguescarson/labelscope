@@ -401,3 +401,118 @@ is a decision about what to invent.
 
 The general lesson, stated so the next estimator here inherits it: **a scale
 estimate of zero is a refusal, not a small number.**
+
+---
+
+## 9. Every published surface of seven scrolls, and the control that judges it
+
+The sheet-switch detector run over the whole published corpus: **253 surfaces,
+one per segment, across 7 scrolls, 0 errors**. Then the same 253 again with a
+whole winding planted in half of each — the case villa's satisfaction metric
+scores as no change at all — because a sweep that reports nothing is worthless
+unless the same surfaces would have shown something.
+
+```bash
+python scripts/corpus_manifest.py corpus_raw.tsv --out manifest.tsv --keys keys.tsv
+CACHE=cache JOBS=8 WINDOW=160          scripts/fleet_sheetswitch.sh --pairs manifest.tsv
+CACHE=cache JOBS=8 WINDOW=160 PLANT=1  scripts/fleet_sheetswitch.sh --pairs manifest.tsv
+python scripts/corpus_report.py --real corpus_real --plant corpus_plant --out findings/corpus
+```
+
+| scroll | surfaces | gate passes | degenerate | flagged | steps/winding | GB each |
+|---|---|---|---|---|---|---|
+| PHercParis4 | 81 | 42 | **15** | 9 | 2.28 | 2.8 |
+| PHerc0172 | 53 | **1** | 0 | 0 | **0.90** | 0.5 |
+| PHerc0500P2 | 39 | 22 | 1 | 4 | 2.05 | 2.5 |
+| PHerc0139 | 38 | 26 | 0 | 8 | 2.22 | 4.0 |
+| PHerc1667 | 20 | 13 | 0 | 1 | 2.45 | 3.0 |
+| PHerc0814 | 14 | 7 | 0 | 1 | 1.98 | 3.9 |
+| PHerc0343P | 8 | 5 | 0 | 0 | 2.60 | 3.3 |
+| **total** | **253** | **116** | **16** | **23** | | |
+
+**Less than half the published corpus can be checked at all**, and that is the
+most useful number here. 116 of 253 surfaces clear the resolution gate; 16 more
+sit over scan that is masked out. The rest are not failures of the data — they
+are surfaces whose grid step is comparable to the distance between wraps, so no
+seam exists to find.
+
+`PHerc0172` is the extreme case: **1 of 53**, median 0.90 steps per winding. Its
+published surfaces are traced on a 7.91 µm scan, and at that voxel size the
+detector cannot speak to them at all. If sheet-switch QA matters for that scroll,
+it needs a finer scan first — which is a concrete, checkable request rather than
+an opinion.
+
+### The control, and what it says about the threshold
+
+On the 112 surfaces where both passes produced a usable answer:
+
+| | min | median | max |
+|---|---|---|---|
+| as published | 2.47 | 3.87 | 9.94 |
+| one winding planted | 3.60 | 11.71 | 39.12 |
+
+Planting raises the score on **107 of 112** surfaces, by a median factor of
+**3.11×** — bootstrap over the log ratio, **2.93× (95% CI 2.62–3.26)**. The
+detector has real, measurable power.
+
+**And a fixed threshold still cannot use it.** The planted minimum (3.60) sits
+below the unplanted maximum (9.94), so no single z cut separates the two
+populations across surfaces. On 5 of 112 surfaces planting a whole winding
+*lowered* the score.
+
+That is the actionable conclusion. `sheetswitch` should not be run as "flag
+everything above z = 5" over a fleet; it should be run per surface against that
+surface's own planted control, which is what `--plant` exists for. A global
+threshold tuned on one validated example does not transfer, and the only reason
+we know that is that the control was run on all of them.
+
+---
+
+## 10. Regularising the labels did not produce a better surface model
+
+An honest negative, and the way it fails is more interesting than the result.
+
+`labelscope regularise` corrected all 1,754 `Dataset059` patches — 1,735 changed,
+19 left alone where the global measurement was unreliable, 0 errors, median shift
+0.84 voxels over 36% of surface voxels. The same compact 3-D U-Net then trained
+on the original and the corrected labels, two seeds each, identical budget (all
+four runs reached epoch 36 and stopped together), split from the leakage-free
+`splits_final.json`.
+
+Evaluated on 351 held-out patches per seed, **label-free**: predict, binarise,
+and measure the *prediction's own* placement against the CT. Dice against either
+label set is circular and is reported only as such.
+
+| metric | seed 0 | seed 1 |
+|---|---|---|
+| `cell_abs_offset_p90` (lower better) | **+0.052** [+0.023, +0.080] | **−0.365** [−0.406, −0.327] |
+| `cell_frac_ge_1vx` (lower better) | **+0.023** [+0.009, +0.036] | **−0.164** [−0.187, −0.142] |
+| `global_profile_snr` (higher better) | **−0.750** [−0.885, −0.611] | **−0.772** [−0.861, −0.679] |
+| Dice vs original labels *(circular)* | +0.011 | +0.020 |
+| Dice vs corrected labels *(circular)* | +0.012 | +0.021 |
+
+Paired per-patch differences, corrected arm minus original, 95% bootstrap
+intervals. **Every interval excludes zero.**
+
+Read the first two rows again. The two localisation metrics **flip sign between
+seeds**, and both intervals exclude zero in both directions. A single seed would
+have produced a confident result — and which result depended entirely on which
+seed was run. The per-patch bootstrap measures precision *within* a run; it says
+nothing about reproducibility *across* runs, and on this comparison the
+seed-to-seed variation is larger than the effect.
+
+The one metric that agrees across seeds is `global_profile_snr`, and it agrees
+that the corrected arm is **worse** (−0.750 and −0.772). The regularised labels
+did not yield a model whose predictions sit better on the scan.
+
+So: **the per-region wobble is not the binding constraint on this model.** That
+is worth knowing before anyone spends a GPU month on relabelling, and it is the
+answer to a question the project has been asking out loud.
+
+Two limitations stated rather than buried. The runs stopped at epoch 36 of a
+40-epoch cosine schedule when the volume filled — identically across all four, so
+the comparison stays paired, but it is not the schedule that was designed. And a
+fourth label-free metric, `cell_offset_spread`, was silently unavailable in this
+run: the evaluation called the estimator without `return_cells=True`, so the
+metric came back `None` for every patch and dropped out of the table as `n/a`
+instead of failing. Fixed, not re-run.
