@@ -1,0 +1,19 @@
+{
+  "images": "/workspace/d059/imagesTr",
+  "labels": "/workspace/d059/labelsTr_reg",
+  "splits": "/workspace/labelscope/findings/full/d059_leakage/splits_final.json",
+  "fold": 0,
+  "tag": "reg",
+  "seed": 0,
+  "epochs": 40,
+  "steps": 200,
+  "batch": 2,
+  "crop": 128,
+  "lr": 0.001,
+  "workers": 8,
+  "out": "/workspace/runs",
+  "device": "cuda",
+  "n_train": 1401,
+  "n_val": 351,
+  "torch": "2.8.0+cu128"
+}

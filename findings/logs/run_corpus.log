@@ -1,0 +1,41 @@
+corpus: 258 surfaces across 7 scrolls  start 19:44
+[19:44] real PHerc0139: 38 surfaces
+[19:57] real PHerc0139 done, cache 55G
+[19:58] real PHerc0172: 53 surfaces
+[20:24] real PHerc0172 done, cache 59G
+[20:24] real PHerc0343P: 8 surfaces
+[20:31] real PHerc0343P done, cache 19G
+[20:31] real PHerc0500P2: 39 surfaces
+[20:58] real PHerc0500P2 done, cache 98G
+[20:59] real PHerc0814: 19 surfaces
+./scripts/fleet_sheetswitch.sh: line 64: 681347 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 693442 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 683700 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 699867 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 681902 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+[22:53] real PHerc0814 done, cache 134G
+[22:53] real PHerc1667: 20 surfaces
+[23:02] real PHerc1667 done, cache 48G
+[23:02] real PHercParis4: 81 surfaces
+[23:30] real PHercParis4 done, cache 185G
+REAL PASS DONE 23:31
+[23:31] plant PHerc0139: 38 surfaces
+[23:47] plant PHerc0139 done, cache 64G
+[23:47] plant PHerc0172: 53 surfaces
+[23:48] plant PHerc0172 done, cache 
+[23:48] plant PHerc0343P: 8 surfaces
+[23:51] plant PHerc0343P done, cache 19G
+[23:51] plant PHerc0500P2: 39 surfaces
+[00:11] plant PHerc0500P2 done, cache 102G
+[00:11] plant PHerc0814: 19 surfaces
+./scripts/fleet_sheetswitch.sh: line 64: 1033015 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 1033894 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 1034508 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 1035007 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+./scripts/fleet_sheetswitch.sh: line 64: 1033380 Killed                  "$LS" sheetswitch --mesh "$m" --volume "$v" --remote --window "$WINDOW" --cache "$CACHE" --plant "$PLANT" --out "$OUT/$name" > "$OUT/$name.out" 2>&1
+[02:14] plant PHerc0814 done, cache 138G
+[02:15] plant PHerc1667: 20 surfaces
+[02:25] plant PHerc1667 done, cache 50G
+[02:26] plant PHercParis4: 81 surfaces
+[03:00] plant PHercParis4 done, cache 191G
+PLANT PASS DONE 03:01

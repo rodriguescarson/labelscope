@@ -1,0 +1,2 @@
+grid_shape,grid_step,winding_spacing,steps_per_winding,resolution_adequate,z_threshold,axis0_max_z,axis0_median_dip,axis1_max_z,axis1_median_dip,surface_intensity_median,surface_intensity_mad,min_dip,dip_degenerate,seams_degenerate,seams_unreliable,n_seams,max_z,name,kind,planted_windings,planted_voxels,valid_fraction,chunks_fetched,mb_fetched,seam_lines
+"[160, 160]",19.747032165527344,nan,nan,False,5.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,True,[],[],0,0.0,PHercParis4__20260701183147-w120-121__20260701183147-on-20260411134726-2.4um.tifxyz,tifxyz,0.0,,1.0,0,0.0,
