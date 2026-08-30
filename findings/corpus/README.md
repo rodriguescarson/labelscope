@@ -65,3 +65,19 @@ because adjacent windings share chunks.
 
 The whole thing — corpus sweep both passes, 1,754-patch regularisation, four
 training runs, two evaluations — ran for about $14 of GPU and disk.
+
+## Open, for the next round
+
+* **The triangular-mesh detector has never completed a run against a real
+  volume.** The reader is verified on a real published OBJ (`PHerc0172`,
+  386,108 vertices, 774,400 faces, edge length 20.13 voxels) and the detector is
+  tested against planted displacements on synthetic triangular meshes, but the
+  end-to-end run on `20250917143559-w062_..._normalized.obj` was interrupted three
+  times and never produced a result. The natural next step is that run plus a
+  cross-format agreement check: the same physical surface as tifxyz and as OBJ
+  should score the same.
+* **Nothing has been run on a confirmed sheet switch.** Every validation is
+  against a displacement we planted ourselves. A surface someone *knows* jumps
+  wraps is the single most valuable thing this tool has not been tested against.
+* **The five surfaces where planting a winding lowered the score** deserve a look;
+  they are the clearest lead on where the seam statistic breaks down.
