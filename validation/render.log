@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/workspace/render_crosssections.py", line 127, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/render_crosssections.py", line 91, in main
+    mesh = read_tifxyz(args.mesh)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/labelscope/src/labelscope/mesh.py", line 74, in read_tifxyz
+    raise FileNotFoundError(f"{directory} is not a tifxyz surface: no {axis}.tif")
+FileNotFoundError: /workspace/segments/*/ is not a tifxyz surface: no x.tif
+auto_grown_20260831151707201: grid (562, 562), 14 cross-sections -> /workspace/strips
+  streamed 6816 MB
+auto_grown_20260831161650006: grid (562, 562), 14 cross-sections -> /workspace/strips
+  streamed 7835 MB
+auto_grown_20260831174114799: grid (562, 562), 14 cross-sections -> /workspace/strips
+  streamed 7510 MB
+auto_grown_20260831184350405: grid (562, 562), 14 cross-sections -> /workspace/strips
+  streamed 7462 MB

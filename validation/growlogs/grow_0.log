@@ -1,0 +1,852 @@
+zarr dataset size for scale group 0 [75784, 32693, 32693]
+chunk shape shape [256, 256, 256]
+mode: seed
+step size: 20
+min_area_cm: 0.05
+voxelsize: 2.4
+tgt_overlap_count: 20
+seed location [15937, 22826, 69274] value is 255
+NOTE: running with 96 OpenMP threads; tracing does not scale past a few threads. Set "thread_limit" in the params JSON (VC3D uses 1) or OMP_NUM_THREADS to cap it.
+GrowPatch loss weights:
+  DIST: 1 STRAIGHT: 0.2 DIRECTION: 1 SNAP: 0.1 NORMAL: 10 NORMAL3DLINE: 0 REFERENCE_RAY: 0 SURFACE_SDT: 0 SPACELINE: 0 SDIR: 1
+empty space tracing
+seed val [15937, 22826, 69274] 255
+search & optimization ...lets go! 
+lets start fringe: 4
+gen 2 processing 12 fringe cands (total done 0 fringe: 4)
+cands 12
+-> done 12 | fringe 12 | area 0.03 mm^2 (0.000000 m^2) | avg speed 0.07 mm^2/s (0.005896 m^2/day) | current speed 0.07 mm^2/s
+gen 3 processing 20 fringe cands (total done 12 fringe: 12)
+cands 20
+-> done 32 | fringe 20 | area 0.07 mm^2 (0.000000 m^2) | avg speed 0.12 mm^2/s (0.010093 m^2/day) | current speed 0.20 mm^2/s
+gen 4 processing 28 fringe cands (total done 32 fringe: 20)
+cands 28
+-> done 60 | fringe 28 | area 0.14 mm^2 (0.000000 m^2) | avg speed 0.17 mm^2/s (0.014582 m^2/day) | current speed 0.34 mm^2/s
+gen 5 processing 36 fringe cands (total done 60 fringe: 28)
+cands 36
+-> done 96 | fringe 36 | area 0.22 mm^2 (0.000000 m^2) | avg speed 0.22 mm^2/s (0.018676 m^2/day) | current speed 0.41 mm^2/s
+gen 6 processing 44 fringe cands (total done 96 fringe: 36)
+cands 44
+-> done 140 | fringe 44 | area 0.32 mm^2 (0.000000 m^2) | avg speed 0.27 mm^2/s (0.022944 m^2/day) | current speed 0.53 mm^2/s
+gen 7 processing 52 fringe cands (total done 140 fringe: 44)
+cands 52
+-> done 192 | fringe 52 | area 0.44 mm^2 (0.000000 m^2) | avg speed 0.34 mm^2/s (0.028992 m^2/day) | current speed 1.16 mm^2/s
+gen 8 processing 60 fringe cands (total done 192 fringe: 52)
+cands 60
+local solve radius 290 Ceres Solver Report: Iterations: 20, Initial cost: 1.708993e-01, Final cost: 1.706387e-01, Termination: CONVERGENCE
+-> done 252 | fringe 60 | area 0.58 mm^2 (0.000001 m^2) | avg speed 0.22 mm^2/s (0.018627 m^2/day) | current speed 0.10 mm^2/s
+gen 9 processing 68 fringe cands (total done 252 fringe: 60)
+cands 68
+-> done 320 | fringe 68 | area 0.74 mm^2 (0.000001 m^2) | avg speed 0.26 mm^2/s (0.022630 m^2/day) | current speed 1.29 mm^2/s
+gen 10 processing 76 fringe cands (total done 320 fringe: 68)
+cands 76
+-> done 396 | fringe 76 | area 0.91 mm^2 (0.000001 m^2) | avg speed 0.30 mm^2/s (0.026079 m^2/day) | current speed 0.84 mm^2/s
+gen 11 processing 84 fringe cands (total done 396 fringe: 76)
+cands 84
+-> done 480 | fringe 84 | area 1.11 mm^2 (0.000001 m^2) | avg speed 0.34 mm^2/s (0.029017 m^2/day) | current speed 0.72 mm^2/s
+gen 12 processing 92 fringe cands (total done 480 fringe: 84)
+cands 92
+-> done 572 | fringe 92 | area 1.32 mm^2 (0.000001 m^2) | avg speed 0.37 mm^2/s (0.032352 m^2/day) | current speed 0.94 mm^2/s
+gen 13 processing 100 fringe cands (total done 572 fringe: 92)
+cands 100
+-> done 672 | fringe 100 | area 1.55 mm^2 (0.000002 m^2) | avg speed 0.42 mm^2/s (0.035919 m^2/day) | current speed 1.13 mm^2/s
+gen 14 processing 108 fringe cands (total done 672 fringe: 100)
+cands 108
+-> done 780 | fringe 108 | area 1.80 mm^2 (0.000002 m^2) | avg speed 0.38 mm^2/s (0.033134 m^2/day) | current speed 0.26 mm^2/s
+gen 15 processing 116 fringe cands (total done 780 fringe: 108)
+cands 116
+-> done 896 | fringe 116 | area 2.06 mm^2 (0.000002 m^2) | avg speed 0.33 mm^2/s (0.028746 m^2/day) | current speed 0.18 mm^2/s
+gen 16 processing 124 fringe cands (total done 896 fringe: 116)
+cands 124
+-> done 1020 | fringe 124 | area 2.35 mm^2 (0.000002 m^2) | avg speed 0.37 mm^2/s (0.031546 m^2/day) | current speed 1.23 mm^2/s
+gen 17 processing 132 fringe cands (total done 1020 fringe: 124)
+cands 132
+-> done 1152 | fringe 132 | area 2.65 mm^2 (0.000003 m^2) | avg speed 0.40 mm^2/s (0.034183 m^2/day) | current speed 1.12 mm^2/s
+gen 18 processing 140 fringe cands (total done 1152 fringe: 132)
+cands 140
+-> done 1292 | fringe 140 | area 2.98 mm^2 (0.000003 m^2) | avg speed 0.40 mm^2/s (0.034215 m^2/day) | current speed 0.40 mm^2/s
+gen 19 processing 148 fringe cands (total done 1292 fringe: 140)
+cands 148
+-> done 1440 | fringe 148 | area 3.32 mm^2 (0.000003 m^2) | avg speed 0.38 mm^2/s (0.032542 m^2/day) | current speed 0.26 mm^2/s
+gen 20 processing 156 fringe cands (total done 1440 fringe: 148)
+cands 156
+-> done 1596 | fringe 156 | area 3.68 mm^2 (0.000004 m^2) | avg speed 0.40 mm^2/s (0.034879 m^2/day) | current speed 1.20 mm^2/s
+gen 21 processing 164 fringe cands (total done 1596 fringe: 156)
+cands 164
+-> done 1760 | fringe 164 | area 4.06 mm^2 (0.000004 m^2) | avg speed 0.43 mm^2/s (0.037583 m^2/day) | current speed 1.77 mm^2/s
+gen 22 processing 172 fringe cands (total done 1760 fringe: 164)
+cands 172
+-> done 1932 | fringe 172 | area 4.45 mm^2 (0.000004 m^2) | avg speed 0.44 mm^2/s (0.037683 m^2/day) | current speed 0.45 mm^2/s
+gen 23 processing 180 fringe cands (total done 1932 fringe: 172)
+cands 180
+-> done 2112 | fringe 180 | area 4.87 mm^2 (0.000005 m^2) | avg speed 0.42 mm^2/s (0.036252 m^2/day) | current speed 0.30 mm^2/s
+gen 24 processing 188 fringe cands (total done 2112 fringe: 180)
+cands 188
+-> done 2300 | fringe 188 | area 5.30 mm^2 (0.000005 m^2) | avg speed 0.45 mm^2/s (0.038677 m^2/day) | current speed 1.80 mm^2/s
+gen 25 processing 196 fringe cands (total done 2300 fringe: 188)
+cands 196
+-> done 2496 | fringe 196 | area 5.75 mm^2 (0.000006 m^2) | avg speed 0.47 mm^2/s (0.041027 m^2/day) | current speed 1.66 mm^2/s
+gen 26 processing 204 fringe cands (total done 2496 fringe: 196)
+cands 204
+-> done 2700 | fringe 204 | area 6.22 mm^2 (0.000006 m^2) | avg speed 0.49 mm^2/s (0.041953 m^2/day) | current speed 0.67 mm^2/s
+gen 27 processing 212 fringe cands (total done 2700 fringe: 204)
+cands 212
+-> done 2912 | fringe 212 | area 6.71 mm^2 (0.000007 m^2) | avg speed 0.47 mm^2/s (0.040818 m^2/day) | current speed 0.35 mm^2/s
+gen 28 processing 220 fringe cands (total done 2912 fringe: 212)
+cands 220
+-> done 3132 | fringe 220 | area 7.22 mm^2 (0.000007 m^2) | avg speed 0.50 mm^2/s (0.042981 m^2/day) | current speed 1.67 mm^2/s
+gen 29 processing 228 fringe cands (total done 3132 fringe: 220)
+cands 228
+-> done 3360 | fringe 228 | area 7.74 mm^2 (0.000008 m^2) | avg speed 0.53 mm^2/s (0.045402 m^2/day) | current speed 2.32 mm^2/s
+gen 30 processing 236 fringe cands (total done 3360 fringe: 228)
+cands 236
+-> done 3596 | fringe 236 | area 8.29 mm^2 (0.000008 m^2) | avg speed 0.53 mm^2/s (0.046134 m^2/day) | current speed 0.69 mm^2/s
+gen 31 processing 244 fringe cands (total done 3596 fringe: 236)
+cands 244
+-> done 3840 | fringe 244 | area 8.85 mm^2 (0.000009 m^2) | avg speed 0.51 mm^2/s (0.044195 m^2/day) | current speed 0.32 mm^2/s
+gen 32 processing 252 fringe cands (total done 3840 fringe: 244)
+cands 252
+-> done 4092 | fringe 252 | area 9.43 mm^2 (0.000009 m^2) | avg speed 0.54 mm^2/s (0.046250 m^2/day) | current speed 1.84 mm^2/s
+gen 33 processing 260 fringe cands (total done 4092 fringe: 252)
+cands 260
+-> done 4352 | fringe 260 | area 10.03 mm^2 (0.000010 m^2) | avg speed 0.56 mm^2/s (0.048305 m^2/day) | current speed 1.86 mm^2/s
+gen 34 processing 268 fringe cands (total done 4352 fringe: 260)
+cands 268
+-> done 4620 | fringe 268 | area 10.64 mm^2 (0.000011 m^2) | avg speed 0.57 mm^2/s (0.048900 m^2/day) | current speed 0.71 mm^2/s
+gen 35 processing 276 fringe cands (total done 4620 fringe: 268)
+cands 276
+-> done 4896 | fringe 276 | area 11.28 mm^2 (0.000011 m^2) | avg speed 0.55 mm^2/s (0.047553 m^2/day) | current speed 0.38 mm^2/s
+gen 36 processing 284 fringe cands (total done 4896 fringe: 276)
+cands 284
+-> done 5180 | fringe 284 | area 11.93 mm^2 (0.000012 m^2) | avg speed 0.57 mm^2/s (0.049566 m^2/day) | current speed 2.12 mm^2/s
+gen 37 processing 292 fringe cands (total done 5180 fringe: 284)
+cands 292
+-> done 5472 | fringe 292 | area 12.61 mm^2 (0.000013 m^2) | avg speed 0.60 mm^2/s (0.051633 m^2/day) | current speed 2.30 mm^2/s
+gen 38 processing 300 fringe cands (total done 5472 fringe: 292)
+cands 300
+-> done 5772 | fringe 300 | area 13.30 mm^2 (0.000013 m^2) | avg speed 0.61 mm^2/s (0.052420 m^2/day) | current speed 0.84 mm^2/s
+gen 39 processing 308 fringe cands (total done 5772 fringe: 300)
+cands 308
+-> done 6080 | fringe 308 | area 14.01 mm^2 (0.000014 m^2) | avg speed 0.59 mm^2/s (0.051064 m^2/day) | current speed 0.40 mm^2/s
+gen 40 processing 316 fringe cands (total done 6080 fringe: 308)
+cands 316
+-> done 6396 | fringe 316 | area 14.74 mm^2 (0.000015 m^2) | avg speed 0.61 mm^2/s (0.053016 m^2/day) | current speed 2.32 mm^2/s
+gen 41 processing 324 fringe cands (total done 6396 fringe: 316)
+cands 324
+-> done 6720 | fringe 324 | area 15.48 mm^2 (0.000015 m^2) | avg speed 0.64 mm^2/s (0.055012 m^2/day) | current speed 2.48 mm^2/s
+gen 42 processing 332 fringe cands (total done 6720 fringe: 324)
+cands 332
+-> done 7052 | fringe 332 | area 16.25 mm^2 (0.000016 m^2) | avg speed 0.64 mm^2/s (0.055476 m^2/day) | current speed 0.77 mm^2/s
+gen 43 processing 340 fringe cands (total done 7052 fringe: 332)
+cands 340
+-> done 7392 | fringe 340 | area 17.03 mm^2 (0.000017 m^2) | avg speed 0.62 mm^2/s (0.053880 m^2/day) | current speed 0.39 mm^2/s
+gen 44 processing 348 fringe cands (total done 7392 fringe: 340)
+cands 348
+-> done 7740 | fringe 348 | area 17.83 mm^2 (0.000018 m^2) | avg speed 0.65 mm^2/s (0.055779 m^2/day) | current speed 2.57 mm^2/s
+gen 45 processing 356 fringe cands (total done 7740 fringe: 348)
+cands 356
+-> done 8096 | fringe 356 | area 18.65 mm^2 (0.000019 m^2) | avg speed 0.67 mm^2/s (0.057542 m^2/day) | current speed 2.13 mm^2/s
+gen 46 processing 364 fringe cands (total done 8096 fringe: 356)
+cands 364
+-> done 8460 | fringe 364 | area 19.49 mm^2 (0.000019 m^2) | avg speed 0.68 mm^2/s (0.058345 m^2/day) | current speed 0.98 mm^2/s
+gen 47 processing 372 fringe cands (total done 8460 fringe: 364)
+cands 372
+-> done 8832 | fringe 372 | area 20.35 mm^2 (0.000020 m^2) | avg speed 0.65 mm^2/s (0.056537 m^2/day) | current speed 0.38 mm^2/s
+gen 48 processing 380 fringe cands (total done 8832 fringe: 372)
+cands 380
+-> done 9212 | fringe 380 | area 21.22 mm^2 (0.000021 m^2) | avg speed 0.68 mm^2/s (0.058364 m^2/day) | current speed 2.71 mm^2/s
+gen 49 processing 388 fringe cands (total done 9212 fringe: 380)
+cands 388
+-> done 9600 | fringe 388 | area 22.12 mm^2 (0.000022 m^2) | avg speed 0.70 mm^2/s (0.060071 m^2/day) | current speed 2.28 mm^2/s
+gen 50 processing 396 fringe cands (total done 9600 fringe: 388)
+cands 396
+-> done 9996 | fringe 396 | area 23.03 mm^2 (0.000023 m^2) | avg speed 0.70 mm^2/s (0.060623 m^2/day) | current speed 0.90 mm^2/s
+gen 51 processing 404 fringe cands (total done 9996 fringe: 396)
+cands 404
+-> done 10400 | fringe 404 | area 23.96 mm^2 (0.000024 m^2) | avg speed 0.69 mm^2/s (0.059332 m^2/day) | current speed 0.45 mm^2/s
+gen 52 processing 412 fringe cands (total done 10400 fringe: 404)
+cands 412
+-> done 10812 | fringe 412 | area 24.91 mm^2 (0.000025 m^2) | avg speed 0.71 mm^2/s (0.061122 m^2/day) | current speed 2.97 mm^2/s
+gen 53 processing 420 fringe cands (total done 10812 fringe: 412)
+cands 420
+-> done 11232 | fringe 420 | area 25.88 mm^2 (0.000026 m^2) | avg speed 0.73 mm^2/s (0.062957 m^2/day) | current speed 3.21 mm^2/s
+gen 54 processing 428 fringe cands (total done 11232 fringe: 420)
+cands 428
+-> done 11660 | fringe 428 | area 26.86 mm^2 (0.000027 m^2) | avg speed 0.73 mm^2/s (0.063420 m^2/day) | current speed 0.91 mm^2/s
+gen 55 processing 436 fringe cands (total done 11660 fringe: 428)
+cands 436
+-> done 12096 | fringe 436 | area 27.87 mm^2 (0.000028 m^2) | avg speed 0.72 mm^2/s (0.061903 m^2/day) | current speed 0.44 mm^2/s
+gen 56 processing 444 fringe cands (total done 12096 fringe: 436)
+cands 444
+-> done 12540 | fringe 444 | area 28.89 mm^2 (0.000029 m^2) | avg speed 0.73 mm^2/s (0.063477 m^2/day) | current speed 2.39 mm^2/s
+gen 57 processing 452 fringe cands (total done 12540 fringe: 444)
+cands 452
+-> done 12992 | fringe 452 | area 29.93 mm^2 (0.000030 m^2) | avg speed 0.75 mm^2/s (0.064986 m^2/day) | current speed 2.21 mm^2/s
+gen 58 processing 460 fringe cands (total done 12992 fringe: 452)
+cands 460
+-> done 13452 | fringe 460 | area 30.99 mm^2 (0.000031 m^2) | avg speed 0.76 mm^2/s (0.065636 m^2/day) | current speed 1.06 mm^2/s
+gen 59 processing 468 fringe cands (total done 13452 fringe: 460)
+cands 468
+-> done 13920 | fringe 468 | area 32.07 mm^2 (0.000032 m^2) | avg speed 0.75 mm^2/s (0.064573 m^2/day) | current speed 0.51 mm^2/s
+gen 60 processing 476 fringe cands (total done 13920 fringe: 468)
+cands 476
+-> done 14396 | fringe 476 | area 33.17 mm^2 (0.000033 m^2) | avg speed 0.76 mm^2/s (0.066025 m^2/day) | current speed 2.23 mm^2/s
+gen 61 processing 484 fringe cands (total done 14396 fringe: 476)
+cands 484
+-> done 14880 | fringe 484 | area 34.28 mm^2 (0.000034 m^2) | avg speed 0.78 mm^2/s (0.067638 m^2/day) | current speed 2.86 mm^2/s
+gen 62 processing 492 fringe cands (total done 14880 fringe: 484)
+cands 492
+-> done 15372 | fringe 492 | area 35.42 mm^2 (0.000035 m^2) | avg speed 0.79 mm^2/s (0.068012 m^2/day) | current speed 0.95 mm^2/s
+gen 63 processing 500 fringe cands (total done 15372 fringe: 492)
+cands 500
+-> done 15872 | fringe 500 | area 36.57 mm^2 (0.000037 m^2) | avg speed 0.76 mm^2/s (0.065823 m^2/day) | current speed 0.38 mm^2/s
+gen 64 processing 508 fringe cands (total done 15872 fringe: 500)
+cands 508
+-> done 16380 | fringe 508 | area 37.74 mm^2 (0.000038 m^2) | avg speed 0.78 mm^2/s (0.067353 m^2/day) | current speed 2.85 mm^2/s
+gen 65 processing 516 fringe cands (total done 16380 fringe: 508)
+cands 516
+-> done 16896 | fringe 516 | area 38.93 mm^2 (0.000039 m^2) | avg speed 0.79 mm^2/s (0.068626 m^2/day) | current speed 1.98 mm^2/s
+gen 66 processing 524 fringe cands (total done 16896 fringe: 516)
+cands 524
+-> done 17420 | fringe 524 | area 40.14 mm^2 (0.000040 m^2) | avg speed 0.80 mm^2/s (0.069322 m^2/day) | current speed 1.19 mm^2/s
+gen 67 processing 532 fringe cands (total done 17420 fringe: 524)
+cands 532
+-> done 17952 | fringe 532 | area 41.36 mm^2 (0.000041 m^2) | avg speed 0.78 mm^2/s (0.067430 m^2/day) | current speed 0.41 mm^2/s
+gen 68 processing 540 fringe cands (total done 17952 fringe: 532)
+cands 540
+-> done 18492 | fringe 540 | area 42.61 mm^2 (0.000043 m^2) | avg speed 0.80 mm^2/s (0.068811 m^2/day) | current speed 2.50 mm^2/s
+gen 69 processing 548 fringe cands (total done 18492 fringe: 540)
+cands 548
+-> done 19040 | fringe 548 | area 43.87 mm^2 (0.000044 m^2) | avg speed 0.81 mm^2/s (0.070297 m^2/day) | current speed 3.00 mm^2/s
+gen 70 processing 556 fringe cands (total done 19040 fringe: 548)
+cands 556
+-> done 19596 | fringe 556 | area 45.15 mm^2 (0.000045 m^2) | avg speed 0.81 mm^2/s (0.070362 m^2/day) | current speed 0.84 mm^2/s
+gen 71 processing 564 fringe cands (total done 19596 fringe: 556)
+cands 564
+-> done 20160 | fringe 564 | area 46.45 mm^2 (0.000046 m^2) | avg speed 0.80 mm^2/s (0.069190 m^2/day) | current speed 0.51 mm^2/s
+gen 72 processing 572 fringe cands (total done 20160 fringe: 564)
+cands 572
+-> done 20732 | fringe 572 | area 47.77 mm^2 (0.000048 m^2) | avg speed 0.82 mm^2/s (0.070649 m^2/day) | current speed 3.19 mm^2/s
+gen 73 processing 580 fringe cands (total done 20732 fringe: 572)
+cands 580
+-> done 21312 | fringe 580 | area 49.10 mm^2 (0.000049 m^2) | avg speed 0.83 mm^2/s (0.072021 m^2/day) | current speed 2.73 mm^2/s
+gen 74 processing 588 fringe cands (total done 21312 fringe: 580)
+cands 588
+-> done 21900 | fringe 588 | area 50.46 mm^2 (0.000050 m^2) | avg speed 0.84 mm^2/s (0.072547 m^2/day) | current speed 1.14 mm^2/s
+gen 75 processing 596 fringe cands (total done 21900 fringe: 588)
+cands 596
+-> done 22496 | fringe 596 | area 51.83 mm^2 (0.000052 m^2) | avg speed 0.82 mm^2/s (0.070863 m^2/day) | current speed 0.44 mm^2/s
+gen 76 processing 604 fringe cands (total done 22496 fringe: 596)
+cands 604
+-> done 23100 | fringe 604 | area 53.22 mm^2 (0.000053 m^2) | avg speed 0.84 mm^2/s (0.072281 m^2/day) | current speed 3.29 mm^2/s
+gen 77 processing 612 fringe cands (total done 23100 fringe: 604)
+cands 612
+-> done 23712 | fringe 612 | area 54.63 mm^2 (0.000055 m^2) | avg speed 0.85 mm^2/s (0.073516 m^2/day) | current speed 2.40 mm^2/s
+gen 78 processing 620 fringe cands (total done 23712 fringe: 612)
+cands 620
+-> done 24332 | fringe 620 | area 56.06 mm^2 (0.000056 m^2) | avg speed 0.86 mm^2/s (0.073964 m^2/day) | current speed 1.12 mm^2/s
+gen 79 processing 628 fringe cands (total done 24332 fringe: 620)
+cands 628
+-> done 24960 | fringe 628 | area 57.51 mm^2 (0.000058 m^2) | avg speed 0.84 mm^2/s (0.072748 m^2/day) | current speed 0.51 mm^2/s
+gen 80 processing 636 fringe cands (total done 24960 fringe: 628)
+cands 636
+-> done 25596 | fringe 636 | area 58.97 mm^2 (0.000059 m^2) | avg speed 0.86 mm^2/s (0.074132 m^2/day) | current speed 3.38 mm^2/s
+gen 81 processing 644 fringe cands (total done 25596 fringe: 636)
+cands 644
+-> done 26240 | fringe 644 | area 60.46 mm^2 (0.000060 m^2) | avg speed 0.87 mm^2/s (0.075580 m^2/day) | current speed 3.91 mm^2/s
+gen 82 processing 652 fringe cands (total done 26240 fringe: 644)
+cands 652
+-> done 26892 | fringe 652 | area 61.96 mm^2 (0.000062 m^2) | avg speed 0.88 mm^2/s (0.076045 m^2/day) | current speed 1.17 mm^2/s
+gen 83 processing 660 fringe cands (total done 26892 fringe: 652)
+cands 660
+-> done 27552 | fringe 660 | area 63.48 mm^2 (0.000063 m^2) | avg speed 0.87 mm^2/s (0.074922 m^2/day) | current speed 0.54 mm^2/s
+gen 84 processing 668 fringe cands (total done 27552 fringe: 660)
+cands 668
+-> done 28220 | fringe 668 | area 65.02 mm^2 (0.000065 m^2) | avg speed 0.88 mm^2/s (0.076214 m^2/day) | current speed 3.05 mm^2/s
+gen 85 processing 676 fringe cands (total done 28220 fringe: 668)
+cands 676
+-> done 28896 | fringe 676 | area 66.58 mm^2 (0.000067 m^2) | avg speed 0.90 mm^2/s (0.077611 m^2/day) | current speed 3.83 mm^2/s
+gen 86 processing 684 fringe cands (total done 28896 fringe: 676)
+cands 684
+-> done 29580 | fringe 684 | area 68.15 mm^2 (0.000068 m^2) | avg speed 0.90 mm^2/s (0.078011 m^2/day) | current speed 1.15 mm^2/s
+gen 87 processing 692 fringe cands (total done 29580 fringe: 684)
+cands 692
+-> done 30272 | fringe 692 | area 69.75 mm^2 (0.000070 m^2) | avg speed 0.88 mm^2/s (0.076462 m^2/day) | current speed 0.48 mm^2/s
+gen 88 processing 700 fringe cands (total done 30272 fringe: 692)
+cands 700
+-> done 30972 | fringe 700 | area 71.36 mm^2 (0.000071 m^2) | avg speed 0.90 mm^2/s (0.077633 m^2/day) | current speed 2.66 mm^2/s
+gen 89 processing 708 fringe cands (total done 30972 fringe: 700)
+cands 708
+-> done 31680 | fringe 708 | area 72.99 mm^2 (0.000073 m^2) | avg speed 0.91 mm^2/s (0.078930 m^2/day) | current speed 3.40 mm^2/s
+gen 90 processing 716 fringe cands (total done 31680 fringe: 708)
+cands 716
+-> done 32396 | fringe 716 | area 74.64 mm^2 (0.000075 m^2) | avg speed 0.92 mm^2/s (0.079322 m^2/day) | current speed 1.18 mm^2/s
+gen 91 processing 724 fringe cands (total done 32396 fringe: 716)
+cands 724
+-> done 33120 | fringe 724 | area 76.31 mm^2 (0.000076 m^2) | avg speed 0.91 mm^2/s (0.078388 m^2/day) | current speed 0.59 mm^2/s
+gen 92 processing 732 fringe cands (total done 33120 fringe: 724)
+cands 732
+-> done 33852 | fringe 732 | area 78.00 mm^2 (0.000078 m^2) | avg speed 0.92 mm^2/s (0.079652 m^2/day) | current speed 3.41 mm^2/s
+gen 93 processing 740 fringe cands (total done 33852 fringe: 732)
+cands 740
+-> done 34592 | fringe 740 | area 79.70 mm^2 (0.000080 m^2) | avg speed 0.94 mm^2/s (0.080828 m^2/day) | current speed 2.88 mm^2/s
+gen 94 processing 748 fringe cands (total done 34592 fringe: 740)
+cands 748
+-> done 35340 | fringe 748 | area 81.42 mm^2 (0.000081 m^2) | avg speed 0.94 mm^2/s (0.081215 m^2/day) | current speed 1.21 mm^2/s
+gen 95 processing 756 fringe cands (total done 35340 fringe: 748)
+cands 756
+-> done 36096 | fringe 756 | area 83.17 mm^2 (0.000083 m^2) | avg speed 0.93 mm^2/s (0.080275 m^2/day) | current speed 0.60 mm^2/s
+gen 96 processing 764 fringe cands (total done 36096 fringe: 756)
+cands 764
+-> done 36860 | fringe 764 | area 84.93 mm^2 (0.000085 m^2) | avg speed 0.94 mm^2/s (0.081525 m^2/day) | current speed 3.57 mm^2/s
+gen 97 processing 772 fringe cands (total done 36860 fringe: 764)
+cands 772
+-> done 37632 | fringe 772 | area 86.70 mm^2 (0.000087 m^2) | avg speed 0.96 mm^2/s (0.082691 m^2/day) | current speed 3.02 mm^2/s
+gen 98 processing 780 fringe cands (total done 37632 fringe: 772)
+cands 780
+-> done 38412 | fringe 780 | area 88.50 mm^2 (0.000089 m^2) | avg speed 0.96 mm^2/s (0.083100 m^2/day) | current speed 1.26 mm^2/s
+gen 99 processing 788 fringe cands (total done 38412 fringe: 780)
+cands 788
+-> done 39200 | fringe 788 | area 90.32 mm^2 (0.000090 m^2) | avg speed 0.95 mm^2/s (0.082139 m^2/day) | current speed 0.61 mm^2/s
+gen 100 processing 796 fringe cands (total done 39200 fringe: 788)
+cands 796
+-> done 39996 | fringe 796 | area 92.15 mm^2 (0.000092 m^2) | avg speed 0.96 mm^2/s (0.083363 m^2/day) | current speed 3.63 mm^2/s
+gen 101 processing 804 fringe cands (total done 39996 fringe: 796)
+cands 804
+-> done 40800 | fringe 804 | area 94.00 mm^2 (0.000094 m^2) | avg speed 0.98 mm^2/s (0.084598 m^2/day) | current speed 3.72 mm^2/s
+gen 102 processing 812 fringe cands (total done 40800 fringe: 804)
+cands 812
+-> done 41612 | fringe 812 | area 95.87 mm^2 (0.000096 m^2) | avg speed 0.98 mm^2/s (0.085016 m^2/day) | current speed 1.31 mm^2/s
+gen 103 processing 820 fringe cands (total done 41612 fringe: 812)
+cands 820
+-> done 42432 | fringe 820 | area 97.76 mm^2 (0.000098 m^2) | avg speed 0.97 mm^2/s (0.083876 m^2/day) | current speed 0.58 mm^2/s
+gen 104 processing 828 fringe cands (total done 42432 fringe: 820)
+cands 828
+-> done 43260 | fringe 828 | area 99.67 mm^2 (0.000100 m^2) | avg speed 0.98 mm^2/s (0.085089 m^2/day) | current speed 3.81 mm^2/s
+gen 105 processing 836 fringe cands (total done 43260 fringe: 828)
+cands 836
+-> done 44096 | fringe 836 | area 101.60 mm^2 (0.000102 m^2) | avg speed 1.00 mm^2/s (0.086221 m^2/day) | current speed 3.20 mm^2/s
+gen 106 processing 844 fringe cands (total done 44096 fringe: 836)
+cands 844
+-> done 44940 | fringe 844 | area 103.54 mm^2 (0.000104 m^2) | avg speed 1.00 mm^2/s (0.086623 m^2/day) | current speed 1.33 mm^2/s
+gen 107 processing 852 fringe cands (total done 44940 fringe: 844)
+cands 852
+-> done 45792 | fringe 852 | area 105.50 mm^2 (0.000106 m^2) | avg speed 0.99 mm^2/s (0.085272 m^2/day) | current speed 0.54 mm^2/s
+gen 108 processing 860 fringe cands (total done 45792 fringe: 852)
+cands 860
+-> done 46652 | fringe 860 | area 107.49 mm^2 (0.000107 m^2) | avg speed 1.00 mm^2/s (0.086465 m^2/day) | current speed 3.92 mm^2/s
+gen 109 processing 868 fringe cands (total done 46652 fringe: 860)
+cands 868
+-> done 47520 | fringe 868 | area 109.49 mm^2 (0.000109 m^2) | avg speed 1.01 mm^2/s (0.087661 m^2/day) | current speed 3.96 mm^2/s
+gen 110 processing 876 fringe cands (total done 47520 fringe: 868)
+cands 876
+-> done 48396 | fringe 876 | area 111.50 mm^2 (0.000112 m^2) | avg speed 1.02 mm^2/s (0.087864 m^2/day) | current speed 1.16 mm^2/s
+gen 111 processing 884 fringe cands (total done 48396 fringe: 876)
+cands 884
+-> done 49280 | fringe 884 | area 113.54 mm^2 (0.000114 m^2) | avg speed 1.00 mm^2/s (0.086742 m^2/day) | current speed 0.59 mm^2/s
+gen 112 processing 892 fringe cands (total done 49280 fringe: 884)
+cands 892
+-> done 50172 | fringe 892 | area 115.60 mm^2 (0.000116 m^2) | avg speed 1.02 mm^2/s (0.087897 m^2/day) | current speed 3.85 mm^2/s
+gen 113 processing 900 fringe cands (total done 50172 fringe: 892)
+cands 900
+-> done 51072 | fringe 900 | area 117.67 mm^2 (0.000118 m^2) | avg speed 1.03 mm^2/s (0.089097 m^2/day) | current speed 4.31 mm^2/s
+gen 114 processing 908 fringe cands (total done 51072 fringe: 900)
+cands 908
+-> done 51980 | fringe 908 | area 119.76 mm^2 (0.000120 m^2) | avg speed 1.03 mm^2/s (0.089390 m^2/day) | current speed 1.27 mm^2/s
+gen 115 processing 916 fringe cands (total done 51980 fringe: 908)
+cands 916
+-> done 52896 | fringe 916 | area 121.87 mm^2 (0.000122 m^2) | avg speed 1.02 mm^2/s (0.088188 m^2/day) | current speed 0.58 mm^2/s
+gen 116 processing 924 fringe cands (total done 52896 fringe: 916)
+cands 924
+-> done 53820 | fringe 924 | area 124.00 mm^2 (0.000124 m^2) | avg speed 1.03 mm^2/s (0.089353 m^2/day) | current speed 4.24 mm^2/s
+gen 117 processing 932 fringe cands (total done 53820 fringe: 924)
+cands 932
+-> done 54752 | fringe 932 | area 126.15 mm^2 (0.000126 m^2) | avg speed 1.05 mm^2/s (0.090379 m^2/day) | current speed 3.10 mm^2/s
+gen 118 processing 940 fringe cands (total done 54752 fringe: 932)
+cands 940
+-> done 55692 | fringe 940 | area 128.31 mm^2 (0.000128 m^2) | avg speed 1.05 mm^2/s (0.090809 m^2/day) | current speed 1.46 mm^2/s
+gen 119 processing 948 fringe cands (total done 55692 fringe: 940)
+cands 948
+-> done 56640 | fringe 948 | area 130.50 mm^2 (0.000130 m^2) | avg speed 1.03 mm^2/s (0.089334 m^2/day) | current speed 0.53 mm^2/s
+gen 120 processing 956 fringe cands (total done 56640 fringe: 948)
+cands 956
+-> done 57596 | fringe 956 | area 132.70 mm^2 (0.000133 m^2) | avg speed 1.05 mm^2/s (0.090484 m^2/day) | current speed 4.41 mm^2/s
+gen 121 processing 964 fringe cands (total done 57596 fringe: 956)
+cands 964
+-> done 58560 | fringe 964 | area 134.92 mm^2 (0.000135 m^2) | avg speed 1.06 mm^2/s (0.091638 m^2/day) | current speed 4.46 mm^2/s
+gen 122 processing 972 fringe cands (total done 58560 fringe: 964)
+cands 972
+-> done 59532 | fringe 972 | area 137.16 mm^2 (0.000137 m^2) | avg speed 1.06 mm^2/s (0.091571 m^2/day) | current speed 1.02 mm^2/s
+gen 123 processing 980 fringe cands (total done 59532 fringe: 972)
+cands 980
+-> done 60512 | fringe 980 | area 139.42 mm^2 (0.000139 m^2) | avg speed 1.05 mm^2/s (0.090434 m^2/day) | current speed 0.60 mm^2/s
+gen 124 processing 988 fringe cands (total done 60512 fringe: 980)
+cands 988
+-> done 61500 | fringe 988 | area 141.70 mm^2 (0.000142 m^2) | avg speed 1.06 mm^2/s (0.091493 m^2/day) | current speed 3.74 mm^2/s
+gen 125 processing 996 fringe cands (total done 61500 fringe: 988)
+cands 996
+-> done 62496 | fringe 996 | area 143.99 mm^2 (0.000144 m^2) | avg speed 1.07 mm^2/s (0.092629 m^2/day) | current speed 4.59 mm^2/s
+gen 126 processing 1004 fringe cands (total done 62496 fringe: 996)
+cands 1004
+-> done 63500 | fringe 1004 | area 146.30 mm^2 (0.000146 m^2) | avg speed 1.07 mm^2/s (0.092639 m^2/day) | current speed 1.08 mm^2/s
+gen 127 processing 1012 fringe cands (total done 63500 fringe: 1004)
+cands 1012
+-> done 64512 | fringe 1012 | area 148.64 mm^2 (0.000149 m^2) | avg speed 1.06 mm^2/s (0.091591 m^2/day) | current speed 0.62 mm^2/s
+gen 128 processing 1020 fringe cands (total done 64512 fringe: 1012)
+cands 1020
+-> done 65532 | fringe 1020 | area 150.99 mm^2 (0.000151 m^2) | avg speed 1.07 mm^2/s (0.092642 m^2/day) | current speed 3.91 mm^2/s
+gen 129 processing 1028 fringe cands (total done 65532 fringe: 1020)
+cands 1028
+-> done 66560 | fringe 1028 | area 153.35 mm^2 (0.000153 m^2) | avg speed 1.09 mm^2/s (0.093762 m^2/day) | current speed 4.73 mm^2/s
+gen 130 processing 1036 fringe cands (total done 66560 fringe: 1028)
+cands 1036
+-> done 67596 | fringe 1036 | area 155.74 mm^2 (0.000156 m^2) | avg speed 1.08 mm^2/s (0.093690 m^2/day) | current speed 1.03 mm^2/s
+gen 131 processing 1044 fringe cands (total done 67596 fringe: 1036)
+cands 1044
+-> done 68640 | fringe 1044 | area 158.15 mm^2 (0.000158 m^2) | avg speed 1.07 mm^2/s (0.092515 m^2/day) | current speed 0.59 mm^2/s
+gen 132 processing 1052 fringe cands (total done 68640 fringe: 1044)
+cands 1052
+-> done 69692 | fringe 1052 | area 160.57 mm^2 (0.000161 m^2) | avg speed 1.08 mm^2/s (0.093607 m^2/day) | current speed 4.70 mm^2/s
+gen 133 processing 1060 fringe cands (total done 69692 fringe: 1052)
+cands 1060
+-> done 70752 | fringe 1060 | area 163.01 mm^2 (0.000163 m^2) | avg speed 1.10 mm^2/s (0.094647 m^2/day) | current speed 4.07 mm^2/s
+gen 134 processing 1068 fringe cands (total done 70752 fringe: 1060)
+cands 1068
+-> done 71820 | fringe 1068 | area 165.47 mm^2 (0.000165 m^2) | avg speed 1.10 mm^2/s (0.094764 m^2/day) | current speed 1.19 mm^2/s
+gen 135 processing 1076 fringe cands (total done 71820 fringe: 1068)
+cands 1076
+-> done 72896 | fringe 1076 | area 167.95 mm^2 (0.000168 m^2) | avg speed 1.08 mm^2/s (0.093255 m^2/day) | current speed 0.52 mm^2/s
+gen 136 processing 1084 fringe cands (total done 72896 fringe: 1076)
+cands 1084
+-> done 73980 | fringe 1084 | area 170.45 mm^2 (0.000170 m^2) | avg speed 1.09 mm^2/s (0.094214 m^2/day) | current speed 3.53 mm^2/s
+gen 137 processing 1092 fringe cands (total done 73980 fringe: 1084)
+cands 1092
+-> done 75072 | fringe 1092 | area 172.97 mm^2 (0.000173 m^2) | avg speed 1.10 mm^2/s (0.095238 m^2/day) | current speed 4.19 mm^2/s
+gen 138 processing 1100 fringe cands (total done 75072 fringe: 1092)
+cands 1100
+-> done 76172 | fringe 1100 | area 175.50 mm^2 (0.000176 m^2) | avg speed 1.10 mm^2/s (0.095469 m^2/day) | current speed 1.32 mm^2/s
+gen 139 processing 1108 fringe cands (total done 76172 fringe: 1100)
+cands 1108
+-> done 77280 | fringe 1108 | area 178.05 mm^2 (0.000178 m^2) | avg speed 1.08 mm^2/s (0.093238 m^2/day) | current speed 0.41 mm^2/s
+gen 140 processing 1116 fringe cands (total done 77280 fringe: 1108)
+cands 1116
+-> done 78396 | fringe 1116 | area 180.62 mm^2 (0.000181 m^2) | avg speed 1.09 mm^2/s (0.094285 m^2/day) | current speed 4.91 mm^2/s
+gen 141 processing 1124 fringe cands (total done 78396 fringe: 1116)
+cands 1124
+-> done 79520 | fringe 1124 | area 183.21 mm^2 (0.000183 m^2) | avg speed 1.10 mm^2/s (0.095298 m^2/day) | current speed 4.40 mm^2/s
+gen 142 processing 1132 fringe cands (total done 79520 fringe: 1124)
+cands 1132
+-> done 80652 | fringe 1132 | area 185.82 mm^2 (0.000186 m^2) | avg speed 1.11 mm^2/s (0.095492 m^2/day) | current speed 1.29 mm^2/s
+gen 143 processing 1140 fringe cands (total done 80652 fringe: 1132)
+cands 1140
+-> done 81792 | fringe 1140 | area 188.45 mm^2 (0.000188 m^2) | avg speed 1.08 mm^2/s (0.092884 m^2/day) | current speed 0.37 mm^2/s
+gen 144 processing 1148 fringe cands (total done 81792 fringe: 1140)
+cands 1148
+-> done 82940 | fringe 1148 | area 191.09 mm^2 (0.000191 m^2) | avg speed 1.09 mm^2/s (0.093857 m^2/day) | current speed 4.28 mm^2/s
+gen 145 processing 1156 fringe cands (total done 82940 fringe: 1148)
+cands 1156
+-> done 84096 | fringe 1156 | area 193.76 mm^2 (0.000194 m^2) | avg speed 1.10 mm^2/s (0.094847 m^2/day) | current speed 4.51 mm^2/s
+gen 146 processing 1164 fringe cands (total done 84096 fringe: 1156)
+cands 1164
+-> done 85260 | fringe 1164 | area 196.44 mm^2 (0.000196 m^2) | avg speed 1.10 mm^2/s (0.094872 m^2/day) | current speed 1.12 mm^2/s
+gen 147 processing 1172 fringe cands (total done 85260 fringe: 1164)
+cands 1172
+-> done 86432 | fringe 1172 | area 199.14 mm^2 (0.000199 m^2) | avg speed 1.05 mm^2/s (0.090512 m^2/day) | current speed 0.24 mm^2/s
+gen 148 processing 1180 fringe cands (total done 86432 fringe: 1172)
+cands 1180
+-> done 87612 | fringe 1180 | area 201.86 mm^2 (0.000202 m^2) | avg speed 1.06 mm^2/s (0.091457 m^2/day) | current speed 4.51 mm^2/s
+gen 149 processing 1188 fringe cands (total done 87612 fringe: 1180)
+cands 1188
+-> done 88800 | fringe 1188 | area 204.60 mm^2 (0.000205 m^2) | avg speed 1.07 mm^2/s (0.092359 m^2/day) | current speed 3.91 mm^2/s
+gen 150 processing 1196 fringe cands (total done 88800 fringe: 1188)
+cands 1196
+-> done 89996 | fringe 1196 | area 207.35 mm^2 (0.000207 m^2) | avg speed 1.07 mm^2/s (0.092540 m^2/day) | current speed 1.25 mm^2/s
+gen 151 processing 1204 fringe cands (total done 89996 fringe: 1196)
+cands 1204
+-> done 91200 | fringe 1204 | area 210.12 mm^2 (0.000210 m^2) | avg speed 1.03 mm^2/s (0.088736 m^2/day) | current speed 0.25 mm^2/s
+gen 152 processing 1212 fringe cands (total done 91200 fringe: 1204)
+cands 1212
+-> done 92412 | fringe 1212 | area 212.92 mm^2 (0.000213 m^2) | avg speed 1.04 mm^2/s (0.089644 m^2/day) | current speed 4.50 mm^2/s
+gen 153 processing 1220 fringe cands (total done 92412 fringe: 1212)
+cands 1220
+-> done 93632 | fringe 1220 | area 215.73 mm^2 (0.000216 m^2) | avg speed 1.05 mm^2/s (0.090563 m^2/day) | current speed 4.70 mm^2/s
+gen 154 processing 1228 fringe cands (total done 93632 fringe: 1220)
+cands 1228
+-> done 94860 | fringe 1228 | area 218.56 mm^2 (0.000219 m^2) | avg speed 1.05 mm^2/s (0.090609 m^2/day) | current speed 1.09 mm^2/s
+gen 155 processing 1236 fringe cands (total done 94860 fringe: 1228)
+cands 1236
+-> done 96096 | fringe 1236 | area 221.41 mm^2 (0.000221 m^2) | avg speed 1.01 mm^2/s (0.087464 m^2/day) | current speed 0.28 mm^2/s
+gen 156 processing 1244 fringe cands (total done 96096 fringe: 1236)
+cands 1244
+-> done 97340 | fringe 1244 | area 224.27 mm^2 (0.000224 m^2) | avg speed 1.02 mm^2/s (0.088316 m^2/day) | current speed 4.12 mm^2/s
+gen 157 processing 1252 fringe cands (total done 97340 fringe: 1244)
+cands 1252
+-> done 98592 | fringe 1252 | area 227.16 mm^2 (0.000227 m^2) | avg speed 1.03 mm^2/s (0.089203 m^2/day) | current speed 4.72 mm^2/s
+gen 158 processing 1260 fringe cands (total done 98592 fringe: 1252)
+cands 1260
+-> done 99852 | fringe 1260 | area 230.06 mm^2 (0.000230 m^2) | avg speed 1.03 mm^2/s (0.089325 m^2/day) | current speed 1.16 mm^2/s
+gen 159 processing 1268 fringe cands (total done 99852 fringe: 1260)
+cands 1268
+-> done 101120 | fringe 1268 | area 232.98 mm^2 (0.000233 m^2) | avg speed 1.00 mm^2/s (0.086173 m^2/day) | current speed 0.26 mm^2/s
+gen 160 processing 1276 fringe cands (total done 101120 fringe: 1268)
+cands 1276
+-> done 102396 | fringe 1276 | area 235.92 mm^2 (0.000236 m^2) | avg speed 1.01 mm^2/s (0.087031 m^2/day) | current speed 4.77 mm^2/s
+gen 161 processing 1284 fringe cands (total done 102396 fringe: 1276)
+cands 1284
+-> done 103680 | fringe 1284 | area 238.88 mm^2 (0.000239 m^2) | avg speed 1.02 mm^2/s (0.087851 m^2/day) | current speed 4.08 mm^2/s
+gen 162 processing 1292 fringe cands (total done 103680 fringe: 1284)
+cands 1292
+-> done 104972 | fringe 1292 | area 241.86 mm^2 (0.000242 m^2) | avg speed 1.02 mm^2/s (0.087922 m^2/day) | current speed 1.09 mm^2/s
+gen 163 processing 1300 fringe cands (total done 104972 fringe: 1292)
+cands 1300
+-> done 106272 | fringe 1300 | area 244.85 mm^2 (0.000245 m^2) | avg speed 0.97 mm^2/s (0.084219 m^2/day) | current speed 0.22 mm^2/s
+gen 164 processing 1308 fringe cands (total done 106272 fringe: 1300)
+cands 1308
+-> done 107580 | fringe 1308 | area 247.86 mm^2 (0.000248 m^2) | avg speed 0.98 mm^2/s (0.085080 m^2/day) | current speed 5.82 mm^2/s
+gen 165 processing 1316 fringe cands (total done 107580 fringe: 1308)
+cands 1316
+-> done 108896 | fringe 1316 | area 250.90 mm^2 (0.000251 m^2) | avg speed 0.99 mm^2/s (0.085912 m^2/day) | current speed 4.97 mm^2/s
+gen 166 processing 1324 fringe cands (total done 108896 fringe: 1316)
+cands 1324
+-> done 110220 | fringe 1324 | area 253.95 mm^2 (0.000254 m^2) | avg speed 0.99 mm^2/s (0.085966 m^2/day) | current speed 1.05 mm^2/s
+gen 167 processing 1332 fringe cands (total done 110220 fringe: 1324)
+cands 1332
+-> done 111552 | fringe 1332 | area 257.02 mm^2 (0.000257 m^2) | avg speed 0.96 mm^2/s (0.082578 m^2/day) | current speed 0.22 mm^2/s
+gen 168 processing 1340 fringe cands (total done 111552 fringe: 1332)
+cands 1340
+-> done 112892 | fringe 1340 | area 260.10 mm^2 (0.000260 m^2) | avg speed 0.96 mm^2/s (0.083317 m^2/day) | current speed 3.78 mm^2/s
+gen 169 processing 1348 fringe cands (total done 112892 fringe: 1340)
+cands 1348
+-> done 114240 | fringe 1348 | area 263.21 mm^2 (0.000263 m^2) | avg speed 0.97 mm^2/s (0.084100 m^2/day) | current speed 4.55 mm^2/s
+gen 170 processing 1356 fringe cands (total done 114240 fringe: 1348)
+cands 1356
+-> done 115596 | fringe 1356 | area 266.33 mm^2 (0.000266 m^2) | avg speed 0.97 mm^2/s (0.084189 m^2/day) | current speed 1.07 mm^2/s
+gen 171 processing 1364 fringe cands (total done 115596 fringe: 1356)
+cands 1364
+-> done 116960 | fringe 1364 | area 269.48 mm^2 (0.000269 m^2) | avg speed 0.95 mm^2/s (0.081695 m^2/day) | current speed 0.27 mm^2/s
+gen 172 processing 1372 fringe cands (total done 116960 fringe: 1364)
+cands 1372
+-> done 118332 | fringe 1372 | area 272.64 mm^2 (0.000273 m^2) | avg speed 0.95 mm^2/s (0.082422 m^2/day) | current speed 3.95 mm^2/s
+gen 173 processing 1380 fringe cands (total done 118332 fringe: 1372)
+cands 1380
+-> done 119712 | fringe 1380 | area 275.82 mm^2 (0.000276 m^2) | avg speed 0.96 mm^2/s (0.083180 m^2/day) | current speed 4.55 mm^2/s
+gen 174 processing 1388 fringe cands (total done 119712 fringe: 1380)
+cands 1388
+-> done 121100 | fringe 1388 | area 279.01 mm^2 (0.000279 m^2) | avg speed 0.96 mm^2/s (0.083179 m^2/day) | current speed 0.96 mm^2/s
+gen 175 processing 1396 fringe cands (total done 121100 fringe: 1388)
+cands 1396
+-> done 122496 | fringe 1396 | area 282.23 mm^2 (0.000282 m^2) | avg speed 0.91 mm^2/s (0.078258 m^2/day) | current speed 0.15 mm^2/s
+gen 176 processing 1404 fringe cands (total done 122496 fringe: 1396)
+cands 1404
+-> done 123900 | fringe 1404 | area 285.47 mm^2 (0.000285 m^2) | avg speed 0.91 mm^2/s (0.078962 m^2/day) | current speed 4.25 mm^2/s
+gen 177 processing 1412 fringe cands (total done 123900 fringe: 1404)
+cands 1412
+-> done 125312 | fringe 1412 | area 288.72 mm^2 (0.000289 m^2) | avg speed 0.92 mm^2/s (0.079687 m^2/day) | current speed 4.73 mm^2/s
+gen 178 processing 1420 fringe cands (total done 125312 fringe: 1412)
+cands 1420
+-> done 126732 | fringe 1420 | area 291.99 mm^2 (0.000292 m^2) | avg speed 0.92 mm^2/s (0.079807 m^2/day) | current speed 1.07 mm^2/s
+gen 179 processing 1428 fringe cands (total done 126732 fringe: 1420)
+cands 1428
+-> done 128160 | fringe 1428 | area 295.28 mm^2 (0.000295 m^2) | avg speed 0.85 mm^2/s (0.073758 m^2/day) | current speed 0.11 mm^2/s
+gen 180 processing 1436 fringe cands (total done 128160 fringe: 1428)
+cands 1436
+-> done 129596 | fringe 1436 | area 298.59 mm^2 (0.000299 m^2) | avg speed 0.86 mm^2/s (0.074386 m^2/day) | current speed 3.59 mm^2/s
+gen 181 processing 1444 fringe cands (total done 129596 fringe: 1436)
+cands 1444
+-> done 131040 | fringe 1444 | area 301.92 mm^2 (0.000302 m^2) | avg speed 0.87 mm^2/s (0.075042 m^2/day) | current speed 4.16 mm^2/s
+gen 182 processing 1452 fringe cands (total done 131040 fringe: 1444)
+cands 1452
+-> done 132492 | fringe 1452 | area 305.26 mm^2 (0.000305 m^2) | avg speed 0.87 mm^2/s (0.075075 m^2/day) | current speed 0.91 mm^2/s
+gen 183 processing 1460 fringe cands (total done 132492 fringe: 1452)
+cands 1460
+-> done 133952 | fringe 1460 | area 308.63 mm^2 (0.000309 m^2) | avg speed 0.83 mm^2/s (0.071526 m^2/day) | current speed 0.16 mm^2/s
+gen 184 processing 1468 fringe cands (total done 133952 fringe: 1460)
+cands 1468
+-> done 135420 | fringe 1468 | area 312.01 mm^2 (0.000312 m^2) | avg speed 0.83 mm^2/s (0.072117 m^2/day) | current speed 3.39 mm^2/s
+gen 185 processing 1476 fringe cands (total done 135420 fringe: 1468)
+cands 1476
+-> done 136896 | fringe 1476 | area 315.41 mm^2 (0.000315 m^2) | avg speed 0.84 mm^2/s (0.072746 m^2/day) | current speed 4.24 mm^2/s
+gen 186 processing 1484 fringe cands (total done 136896 fringe: 1476)
+cands 1484
+-> done 138380 | fringe 1484 | area 318.83 mm^2 (0.000319 m^2) | avg speed 0.84 mm^2/s (0.072679 m^2/day) | current speed 0.78 mm^2/s
+gen 187 processing 1492 fringe cands (total done 138380 fringe: 1484)
+cands 1492
+-> done 139872 | fringe 1492 | area 322.27 mm^2 (0.000322 m^2) | avg speed 0.79 mm^2/s (0.067945 m^2/day) | current speed 0.11 mm^2/s
+gen 188 processing 1500 fringe cands (total done 139872 fringe: 1492)
+cands 1500
+-> done 141372 | fringe 1500 | area 325.72 mm^2 (0.000326 m^2) | avg speed 0.79 mm^2/s (0.068535 m^2/day) | current speed 4.16 mm^2/s
+gen 189 processing 1508 fringe cands (total done 141372 fringe: 1500)
+cands 1508
+-> done 142880 | fringe 1508 | area 329.20 mm^2 (0.000329 m^2) | avg speed 0.80 mm^2/s (0.069117 m^2/day) | current speed 3.92 mm^2/s
+gen 190 processing 1516 fringe cands (total done 142880 fringe: 1508)
+cands 1516
+-> done 144396 | fringe 1516 | area 332.69 mm^2 (0.000333 m^2) | avg speed 0.80 mm^2/s (0.069053 m^2/day) | current speed 0.74 mm^2/s
+gen 191 processing 1524 fringe cands (total done 144396 fringe: 1516)
+cands 1524
+-> done 145920 | fringe 1524 | area 336.20 mm^2 (0.000336 m^2) | avg speed 0.76 mm^2/s (0.065585 m^2/day) | current speed 0.13 mm^2/s
+gen 192 processing 1532 fringe cands (total done 145920 fringe: 1524)
+cands 1532
+-> done 147452 | fringe 1532 | area 339.73 mm^2 (0.000340 m^2) | avg speed 0.77 mm^2/s (0.066135 m^2/day) | current speed 3.82 mm^2/s
+gen 193 processing 1540 fringe cands (total done 147452 fringe: 1532)
+cands 1540
+-> done 148992 | fringe 1540 | area 343.28 mm^2 (0.000343 m^2) | avg speed 0.77 mm^2/s (0.066694 m^2/day) | current speed 4.04 mm^2/s
+gen 194 processing 1548 fringe cands (total done 148992 fringe: 1540)
+cands 1548
+-> done 150540 | fringe 1548 | area 346.84 mm^2 (0.000347 m^2) | avg speed 0.77 mm^2/s (0.066602 m^2/day) | current speed 0.68 mm^2/s
+gen 195 processing 1556 fringe cands (total done 150540 fringe: 1548)
+cands 1556
+-> done 152096 | fringe 1556 | area 350.43 mm^2 (0.000350 m^2) | avg speed 0.74 mm^2/s (0.063541 m^2/day) | current speed 0.14 mm^2/s
+gen 196 processing 1564 fringe cands (total done 152096 fringe: 1556)
+cands 1564
+-> done 153660 | fringe 1564 | area 354.03 mm^2 (0.000354 m^2) | avg speed 0.74 mm^2/s (0.064082 m^2/day) | current speed 4.32 mm^2/s
+gen 197 processing 1572 fringe cands (total done 153660 fringe: 1564)
+cands 1572
+-> done 155232 | fringe 1572 | area 357.65 mm^2 (0.000358 m^2) | avg speed 0.75 mm^2/s (0.064631 m^2/day) | current speed 4.58 mm^2/s
+gen 198 processing 1580 fringe cands (total done 155232 fringe: 1572)
+cands 1580
+-> done 156812 | fringe 1580 | area 361.29 mm^2 (0.000361 m^2) | avg speed 0.75 mm^2/s (0.064694 m^2/day) | current speed 0.83 mm^2/s
+gen 199 processing 1588 fringe cands (total done 156812 fringe: 1580)
+cands 1588
+-> done 158400 | fringe 1588 | area 364.95 mm^2 (0.000365 m^2) | avg speed 0.72 mm^2/s (0.061998 m^2/day) | current speed 0.14 mm^2/s
+gen 200 processing 1596 fringe cands (total done 158400 fringe: 1588)
+cands 1596
+-> done 159996 | fringe 1596 | area 368.63 mm^2 (0.000369 m^2) | avg speed 0.72 mm^2/s (0.062521 m^2/day) | current speed 4.44 mm^2/s
+gen 201 processing 1604 fringe cands (total done 159996 fringe: 1596)
+cands 1604
+-> done 161600 | fringe 1604 | area 372.33 mm^2 (0.000372 m^2) | avg speed 0.73 mm^2/s (0.063035 m^2/day) | current speed 4.06 mm^2/s
+gen 202 processing 1612 fringe cands (total done 161600 fringe: 1604)
+cands 1612
+-> done 163212 | fringe 1612 | area 376.04 mm^2 (0.000376 m^2) | avg speed 0.73 mm^2/s (0.063074 m^2/day) | current speed 0.78 mm^2/s
+gen 203 processing 1620 fringe cands (total done 163212 fringe: 1612)
+cands 1620
+-> done 164832 | fringe 1620 | area 379.77 mm^2 (0.000380 m^2) | avg speed 0.71 mm^2/s (0.061434 m^2/day) | current speed 0.20 mm^2/s
+gen 204 processing 1628 fringe cands (total done 164832 fringe: 1620)
+cands 1628
+-> done 166460 | fringe 1628 | area 383.52 mm^2 (0.000384 m^2) | avg speed 0.72 mm^2/s (0.061944 m^2/day) | current speed 4.48 mm^2/s
+gen 205 processing 1636 fringe cands (total done 166460 fringe: 1628)
+cands 1636
+-> done 168096 | fringe 1636 | area 387.29 mm^2 (0.000387 m^2) | avg speed 0.72 mm^2/s (0.062448 m^2/day) | current speed 4.21 mm^2/s
+gen 206 processing 1644 fringe cands (total done 168096 fringe: 1636)
+cands 1644
+-> done 169740 | fringe 1644 | area 391.08 mm^2 (0.000391 m^2) | avg speed 0.72 mm^2/s (0.062498 m^2/day) | current speed 0.79 mm^2/s
+gen 207 processing 1652 fringe cands (total done 169740 fringe: 1644)
+cands 1652
+-> done 171392 | fringe 1652 | area 394.89 mm^2 (0.000395 m^2) | avg speed 0.70 mm^2/s (0.060322 m^2/day) | current speed 0.15 mm^2/s
+gen 208 processing 1660 fringe cands (total done 171392 fringe: 1652)
+cands 1660
+-> done 173052 | fringe 1660 | area 398.71 mm^2 (0.000399 m^2) | avg speed 0.70 mm^2/s (0.060803 m^2/day) | current speed 3.99 mm^2/s
+gen 209 processing 1668 fringe cands (total done 173052 fringe: 1660)
+cands 1668
+-> done 174720 | fringe 1668 | area 402.55 mm^2 (0.000403 m^2) | avg speed 0.71 mm^2/s (0.061306 m^2/day) | current speed 5.02 mm^2/s
+gen 210 processing 1676 fringe cands (total done 174720 fringe: 1668)
+cands 1676
+-> done 176396 | fringe 1676 | area 406.42 mm^2 (0.000406 m^2) | avg speed 0.71 mm^2/s (0.061359 m^2/day) | current speed 0.78 mm^2/s
+gen 211 processing 1684 fringe cands (total done 176396 fringe: 1676)
+cands 1684
+-> done 178080 | fringe 1684 | area 410.30 mm^2 (0.000410 m^2) | avg speed 0.69 mm^2/s (0.059891 m^2/day) | current speed 0.20 mm^2/s
+gen 212 processing 1692 fringe cands (total done 178080 fringe: 1684)
+cands 1692
+-> done 179772 | fringe 1692 | area 414.19 mm^2 (0.000414 m^2) | avg speed 0.70 mm^2/s (0.060349 m^2/day) | current speed 3.58 mm^2/s
+gen 213 processing 1700 fringe cands (total done 179772 fringe: 1692)
+cands 1700
+-> done 181472 | fringe 1700 | area 418.11 mm^2 (0.000418 m^2) | avg speed 0.70 mm^2/s (0.060834 m^2/day) | current speed 4.70 mm^2/s
+gen 214 processing 1708 fringe cands (total done 181472 fringe: 1700)
+cands 1708
+-> done 183180 | fringe 1708 | area 422.05 mm^2 (0.000422 m^2) | avg speed 0.70 mm^2/s (0.060665 m^2/day) | current speed 0.54 mm^2/s
+gen 215 processing 1716 fringe cands (total done 183180 fringe: 1708)
+cands 1716
+-> done 184896 | fringe 1716 | area 426.00 mm^2 (0.000426 m^2) | avg speed 0.69 mm^2/s (0.059403 m^2/day) | current speed 0.21 mm^2/s
+gen 216 processing 1724 fringe cands (total done 184896 fringe: 1716)
+cands 1724
+-> done 186620 | fringe 1724 | area 429.97 mm^2 (0.000430 m^2) | avg speed 0.69 mm^2/s (0.059842 m^2/day) | current speed 3.35 mm^2/s
+gen 217 processing 1732 fringe cands (total done 186620 fringe: 1724)
+cands 1732
+-> done 188352 | fringe 1732 | area 433.96 mm^2 (0.000434 m^2) | avg speed 0.70 mm^2/s (0.060311 m^2/day) | current speed 4.46 mm^2/s
+gen 218 processing 1740 fringe cands (total done 188352 fringe: 1732)
+cands 1740
+-> done 190092 | fringe 1740 | area 437.97 mm^2 (0.000438 m^2) | avg speed 0.70 mm^2/s (0.060345 m^2/day) | current speed 0.74 mm^2/s
+gen 219 processing 1748 fringe cands (total done 190092 fringe: 1740)
+cands 1748
+-> done 191840 | fringe 1748 | area 442.00 mm^2 (0.000442 m^2) | avg speed 0.69 mm^2/s (0.059244 m^2/day) | current speed 0.23 mm^2/s
+gen 220 processing 1756 fringe cands (total done 191840 fringe: 1748)
+cands 1756
+-> done 193596 | fringe 1756 | area 446.05 mm^2 (0.000446 m^2) | avg speed 0.69 mm^2/s (0.059694 m^2/day) | current speed 4.07 mm^2/s
+gen 221 processing 1764 fringe cands (total done 193596 fringe: 1756)
+cands 1764
+-> done 195360 | fringe 1764 | area 450.11 mm^2 (0.000450 m^2) | avg speed 0.70 mm^2/s (0.060154 m^2/day) | current speed 4.49 mm^2/s
+gen 222 processing 1772 fringe cands (total done 195360 fringe: 1764)
+cands 1772
+-> done 197132 | fringe 1772 | area 454.19 mm^2 (0.000454 m^2) | avg speed 0.70 mm^2/s (0.060071 m^2/day) | current speed 0.60 mm^2/s
+gen 223 processing 1780 fringe cands (total done 197132 fringe: 1772)
+cands 1780
+-> done 198912 | fringe 1780 | area 458.29 mm^2 (0.000458 m^2) | avg speed 0.68 mm^2/s (0.058548 m^2/day) | current speed 0.18 mm^2/s
+gen 224 processing 1788 fringe cands (total done 198912 fringe: 1780)
+cands 1788
+-> done 200700 | fringe 1788 | area 462.41 mm^2 (0.000462 m^2) | avg speed 0.68 mm^2/s (0.058986 m^2/day) | current speed 4.08 mm^2/s
+gen 225 processing 1796 fringe cands (total done 200700 fringe: 1788)
+cands 1796
+-> done 202496 | fringe 1796 | area 466.55 mm^2 (0.000467 m^2) | avg speed 0.69 mm^2/s (0.059429 m^2/day) | current speed 4.24 mm^2/s
+gen 226 processing 1804 fringe cands (total done 202496 fringe: 1796)
+cands 1804
+-> done 204300 | fringe 1804 | area 470.71 mm^2 (0.000471 m^2) | avg speed 0.68 mm^2/s (0.059112 m^2/day) | current speed 0.43 mm^2/s
+gen 227 processing 1812 fringe cands (total done 204300 fringe: 1804)
+cands 1812
+-> done 206112 | fringe 1812 | area 474.88 mm^2 (0.000475 m^2) | avg speed 0.67 mm^2/s (0.057763 m^2/day) | current speed 0.19 mm^2/s
+gen 228 processing 1820 fringe cands (total done 206112 fringe: 1812)
+cands 1820
+-> done 207932 | fringe 1820 | area 479.08 mm^2 (0.000479 m^2) | avg speed 0.67 mm^2/s (0.058179 m^2/day) | current speed 3.66 mm^2/s
+gen 229 processing 1828 fringe cands (total done 207932 fringe: 1820)
+cands 1828
+-> done 209760 | fringe 1828 | area 483.29 mm^2 (0.000483 m^2) | avg speed 0.68 mm^2/s (0.058616 m^2/day) | current speed 4.64 mm^2/s
+gen 230 processing 1836 fringe cands (total done 209760 fringe: 1828)
+cands 1836
+-> done 211596 | fringe 1836 | area 487.52 mm^2 (0.000488 m^2) | avg speed 0.67 mm^2/s (0.058209 m^2/day) | current speed 0.38 mm^2/s
+gen 231 processing 1844 fringe cands (total done 211596 fringe: 1836)
+cands 1844
+-> done 213440 | fringe 1844 | area 491.77 mm^2 (0.000492 m^2) | avg speed 0.66 mm^2/s (0.057147 m^2/day) | current speed 0.21 mm^2/s
+gen 232 processing 1852 fringe cands (total done 213440 fringe: 1844)
+cands 1852
+-> done 215292 | fringe 1852 | area 496.03 mm^2 (0.000496 m^2) | avg speed 0.67 mm^2/s (0.057557 m^2/day) | current speed 3.85 mm^2/s
+gen 233 processing 1860 fringe cands (total done 215292 fringe: 1852)
+cands 1860
+-> done 217152 | fringe 1860 | area 500.32 mm^2 (0.000500 m^2) | avg speed 0.67 mm^2/s (0.057973 m^2/day) | current speed 4.10 mm^2/s
+gen 234 processing 1868 fringe cands (total done 217152 fringe: 1860)
+cands 1868
+-> done 219020 | fringe 1868 | area 504.62 mm^2 (0.000505 m^2) | avg speed 0.67 mm^2/s (0.057842 m^2/day) | current speed 0.53 mm^2/s
+gen 235 processing 1876 fringe cands (total done 219020 fringe: 1868)
+cands 1876
+-> done 220896 | fringe 1876 | area 508.94 mm^2 (0.000509 m^2) | avg speed 0.65 mm^2/s (0.056303 m^2/day) | current speed 0.16 mm^2/s
+gen 236 processing 1884 fringe cands (total done 220896 fringe: 1876)
+cands 1884
+-> done 222780 | fringe 1884 | area 513.29 mm^2 (0.000513 m^2) | avg speed 0.66 mm^2/s (0.056702 m^2/day) | current speed 3.90 mm^2/s
+gen 237 processing 1892 fringe cands (total done 222780 fringe: 1884)
+cands 1892
+-> done 224672 | fringe 1892 | area 517.64 mm^2 (0.000518 m^2) | avg speed 0.66 mm^2/s (0.057110 m^2/day) | current speed 4.31 mm^2/s
+gen 238 processing 1900 fringe cands (total done 224672 fringe: 1892)
+cands 1900
+-> done 226572 | fringe 1900 | area 522.02 mm^2 (0.000522 m^2) | avg speed 0.66 mm^2/s (0.056952 m^2/day) | current speed 0.50 mm^2/s
+gen 239 processing 1908 fringe cands (total done 226572 fringe: 1900)
+cands 1908
+-> done 228480 | fringe 1908 | area 526.42 mm^2 (0.000526 m^2) | avg speed 0.64 mm^2/s (0.055602 m^2/day) | current speed 0.17 mm^2/s
+gen 240 processing 1916 fringe cands (total done 228480 fringe: 1908)
+cands 1916
+-> done 230396 | fringe 1916 | area 530.83 mm^2 (0.000531 m^2) | avg speed 0.65 mm^2/s (0.055987 m^2/day) | current speed 3.69 mm^2/s
+gen 241 processing 1924 fringe cands (total done 230396 fringe: 1916)
+cands 1924
+-> done 232320 | fringe 1924 | area 535.27 mm^2 (0.000535 m^2) | avg speed 0.65 mm^2/s (0.056385 m^2/day) | current speed 4.40 mm^2/s
+gen 242 processing 1932 fringe cands (total done 232320 fringe: 1924)
+cands 1932
+-> done 234252 | fringe 1932 | area 539.72 mm^2 (0.000540 m^2) | avg speed 0.65 mm^2/s (0.056158 m^2/day) | current speed 0.44 mm^2/s
+gen 243 processing 1940 fringe cands (total done 234252 fringe: 1932)
+cands 1940
+-> done 236192 | fringe 1940 | area 544.19 mm^2 (0.000544 m^2) | avg speed 0.63 mm^2/s (0.054576 m^2/day) | current speed 0.14 mm^2/s
+gen 244 processing 1948 fringe cands (total done 236192 fringe: 1940)
+cands 1948
+-> done 238140 | fringe 1948 | area 548.67 mm^2 (0.000549 m^2) | avg speed 0.64 mm^2/s (0.054950 m^2/day) | current speed 3.76 mm^2/s
+gen 245 processing 1956 fringe cands (total done 238140 fringe: 1948)
+cands 1956
+-> done 240096 | fringe 1956 | area 553.18 mm^2 (0.000553 m^2) | avg speed 0.64 mm^2/s (0.055317 m^2/day) | current speed 3.44 mm^2/s
+gen 246 processing 1964 fringe cands (total done 240096 fringe: 1956)
+cands 1964
+-> done 242060 | fringe 1964 | area 557.71 mm^2 (0.000558 m^2) | avg speed 0.64 mm^2/s (0.055152 m^2/day) | current speed 0.47 mm^2/s
+gen 247 processing 1972 fringe cands (total done 242060 fringe: 1964)
+cands 1972
+-> done 244032 | fringe 1972 | area 562.25 mm^2 (0.000562 m^2) | avg speed 0.62 mm^2/s (0.053701 m^2/day) | current speed 0.15 mm^2/s
+gen 248 processing 1980 fringe cands (total done 244032 fringe: 1972)
+cands 1980
+-> done 246012 | fringe 1980 | area 566.81 mm^2 (0.000567 m^2) | avg speed 0.63 mm^2/s (0.054073 m^2/day) | current speed 4.30 mm^2/s
+gen 249 processing 1988 fringe cands (total done 246012 fringe: 1980)
+cands 1988
+-> done 248000 | fringe 1988 | area 571.39 mm^2 (0.000571 m^2) | avg speed 0.63 mm^2/s (0.054448 m^2/day) | current speed 4.42 mm^2/s
+gen 250 processing 1996 fringe cands (total done 248000 fringe: 1988)
+cands 1996
+-> done 249996 | fringe 1996 | area 575.99 mm^2 (0.000576 m^2) | avg speed 0.63 mm^2/s (0.054349 m^2/day) | current speed 0.51 mm^2/s
+gen 251 processing 2004 fringe cands (total done 249996 fringe: 1996)
+cands 2004
+-> done 252000 | fringe 2004 | area 580.61 mm^2 (0.000581 m^2) | avg speed 0.62 mm^2/s (0.053247 m^2/day) | current speed 0.17 mm^2/s
+gen 252 processing 2012 fringe cands (total done 252000 fringe: 2004)
+cands 2012
+-> done 254012 | fringe 2012 | area 585.24 mm^2 (0.000585 m^2) | avg speed 0.62 mm^2/s (0.053608 m^2/day) | current speed 4.11 mm^2/s
+gen 253 processing 2020 fringe cands (total done 254012 fringe: 2012)
+cands 2020
+-> done 256032 | fringe 2020 | area 589.90 mm^2 (0.000590 m^2) | avg speed 0.62 mm^2/s (0.053978 m^2/day) | current speed 4.75 mm^2/s
+gen 254 processing 2028 fringe cands (total done 256032 fringe: 2020)
+cands 2028
+-> done 258060 | fringe 2028 | area 594.57 mm^2 (0.000595 m^2) | avg speed 0.62 mm^2/s (0.053884 m^2/day) | current speed 0.51 mm^2/s
+gen 255 processing 2036 fringe cands (total done 258060 fringe: 2028)
+cands 2036
+-> done 260096 | fringe 2036 | area 599.26 mm^2 (0.000599 m^2) | avg speed 0.61 mm^2/s (0.053005 m^2/day) | current speed 0.20 mm^2/s
+gen 256 processing 2044 fringe cands (total done 260096 fringe: 2036)
+cands 2044
+-> done 262140 | fringe 2044 | area 603.97 mm^2 (0.000604 m^2) | avg speed 0.62 mm^2/s (0.053357 m^2/day) | current speed 3.99 mm^2/s
+gen 257 processing 2052 fringe cands (total done 262140 fringe: 2044)
+cands 2052
+-> done 264192 | fringe 2052 | area 608.70 mm^2 (0.000609 m^2) | avg speed 0.62 mm^2/s (0.053723 m^2/day) | current speed 5.05 mm^2/s
+gen 258 processing 2060 fringe cands (total done 264192 fringe: 2052)
+cands 2060
+-> done 266252 | fringe 2060 | area 613.44 mm^2 (0.000613 m^2) | avg speed 0.62 mm^2/s (0.053626 m^2/day) | current speed 0.50 mm^2/s
+gen 259 processing 2068 fringe cands (total done 266252 fringe: 2060)
+cands 2068
+-> done 268320 | fringe 2068 | area 618.21 mm^2 (0.000618 m^2) | avg speed 0.61 mm^2/s (0.052660 m^2/day) | current speed 0.18 mm^2/s
+gen 260 processing 2076 fringe cands (total done 268320 fringe: 2068)
+cands 2076
+-> done 270396 | fringe 2076 | area 622.99 mm^2 (0.000623 m^2) | avg speed 0.61 mm^2/s (0.053004 m^2/day) | current speed 3.95 mm^2/s
+gen 261 processing 2084 fringe cands (total done 270396 fringe: 2076)
+cands 2084
+-> done 272480 | fringe 2084 | area 627.79 mm^2 (0.000628 m^2) | avg speed 0.62 mm^2/s (0.053360 m^2/day) | current speed 4.74 mm^2/s
+gen 262 processing 2092 fringe cands (total done 272480 fringe: 2084)
+cands 2092
+-> done 274572 | fringe 2092 | area 632.61 mm^2 (0.000633 m^2) | avg speed 0.62 mm^2/s (0.053276 m^2/day) | current speed 0.51 mm^2/s
+gen 263 processing 2100 fringe cands (total done 274572 fringe: 2092)
+cands 2100
+-> done 276672 | fringe 2100 | area 637.45 mm^2 (0.000637 m^2) | avg speed 0.60 mm^2/s (0.052164 m^2/day) | current speed 0.16 mm^2/s
+gen 264 processing 2108 fringe cands (total done 276672 fringe: 2100)
+cands 2108
+-> done 278780 | fringe 2108 | area 642.31 mm^2 (0.000642 m^2) | avg speed 0.61 mm^2/s (0.052507 m^2/day) | current speed 4.36 mm^2/s
+gen 265 processing 2116 fringe cands (total done 278780 fringe: 2108)
+cands 2116
+-> done 280896 | fringe 2116 | area 647.18 mm^2 (0.000647 m^2) | avg speed 0.61 mm^2/s (0.052846 m^2/day) | current speed 4.09 mm^2/s
+gen 266 processing 2124 fringe cands (total done 280896 fringe: 2116)
+cands 2124
+-> done 283020 | fringe 2124 | area 652.08 mm^2 (0.000652 m^2) | avg speed 0.61 mm^2/s (0.052844 m^2/day) | current speed 0.61 mm^2/s
+gen 267 processing 2132 fringe cands (total done 283020 fringe: 2124)
+cands 2132
+-> done 285152 | fringe 2132 | area 656.99 mm^2 (0.000657 m^2) | avg speed 0.60 mm^2/s (0.051740 m^2/day) | current speed 0.16 mm^2/s
+gen 268 processing 2140 fringe cands (total done 285152 fringe: 2132)
+cands 2140
+-> done 287292 | fringe 2140 | area 661.92 mm^2 (0.000662 m^2) | avg speed 0.60 mm^2/s (0.052067 m^2/day) | current speed 3.79 mm^2/s
+gen 269 processing 2148 fringe cands (total done 287292 fringe: 2140)
+cands 2148
+-> done 289440 | fringe 2148 | area 666.87 mm^2 (0.000667 m^2) | avg speed 0.61 mm^2/s (0.052403 m^2/day) | current speed 4.50 mm^2/s
+gen 270 processing 2156 fringe cands (total done 289440 fringe: 2148)
+cands 2156
+-> done 291596 | fringe 2156 | area 671.84 mm^2 (0.000672 m^2) | avg speed 0.61 mm^2/s (0.052441 m^2/day) | current speed 0.67 mm^2/s
+gen 271 processing 2164 fringe cands (total done 291596 fringe: 2156)
+cands 2164
+-> done 293760 | fringe 2164 | area 676.82 mm^2 (0.000677 m^2) | avg speed 0.59 mm^2/s (0.051264 m^2/day) | current speed 0.15 mm^2/s
+gen 272 processing 2172 fringe cands (total done 293760 fringe: 2164)
+cands 2172
+-> done 295932 | fringe 2172 | area 681.83 mm^2 (0.000682 m^2) | avg speed 0.60 mm^2/s (0.051597 m^2/day) | current speed 4.87 mm^2/s
+gen 273 processing 2180 fringe cands (total done 295932 fringe: 2172)
+cands 2180
+-> done 298112 | fringe 2180 | area 686.85 mm^2 (0.000687 m^2) | avg speed 0.60 mm^2/s (0.051927 m^2/day) | current speed 4.59 mm^2/s
+gen 274 processing 2188 fringe cands (total done 298112 fringe: 2180)
+cands 2188
+-> done 300300 | fringe 2188 | area 691.89 mm^2 (0.000692 m^2) | avg speed 0.60 mm^2/s (0.052018 m^2/day) | current speed 0.79 mm^2/s
+gen 275 processing 2196 fringe cands (total done 300300 fringe: 2188)
+cands 2196
+-> done 302496 | fringe 2196 | area 696.95 mm^2 (0.000697 m^2) | avg speed 0.59 mm^2/s (0.050598 m^2/day) | current speed 0.12 mm^2/s
+gen 276 processing 2204 fringe cands (total done 302496 fringe: 2196)
+cands 2204
+-> done 304700 | fringe 2204 | area 702.03 mm^2 (0.000702 m^2) | avg speed 0.59 mm^2/s (0.050909 m^2/day) | current speed 3.80 mm^2/s
+gen 277 processing 2212 fringe cands (total done 304700 fringe: 2204)
+cands 2212
+-> done 306912 | fringe 2212 | area 707.13 mm^2 (0.000707 m^2) | avg speed 0.59 mm^2/s (0.051224 m^2/day) | current speed 3.97 mm^2/s
+gen 278 processing 2220 fringe cands (total done 306912 fringe: 2212)
+cands 2220
+-> done 309132 | fringe 2220 | area 712.24 mm^2 (0.000712 m^2) | avg speed 0.59 mm^2/s (0.051206 m^2/day) | current speed 0.57 mm^2/s
+gen 279 processing 2228 fringe cands (total done 309132 fringe: 2220)
+cands 2228
+-> done 311360 | fringe 2228 | area 717.37 mm^2 (0.000717 m^2) | avg speed 0.58 mm^2/s (0.050265 m^2/day) | current speed 0.16 mm^2/s
+generated surface 125284162.015807 vx^2 (7.216368 cm^2)
+saving /workspace/segments/auto_grown_20260831151707201

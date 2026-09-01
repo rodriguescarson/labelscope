@@ -1,0 +1,7 @@
+level 0: 108288 in box, 108288 fetched, 0 absent upstream, 0 FAILED, 39441.6 MB
+level 1: 15000 in box, 15000 fetched, 0 absent upstream, 0 FAILED, 9532.5 MB
+level 2: 2197 in box, 2093 fetched, 0 absent upstream, 0 FAILED, 2477.8 MB
+level 3: 343 in box, 315 fetched, 0 absent upstream, 0 FAILED, 626.7 MB
+level 4: 64 in box, 56 fetched, 0 absent upstream, 0 FAILED, 132.2 MB
+level 5: 8 in box, 6 fetched, 0 absent upstream, 0 FAILED, 11.2 MB
+total 125758 chunks, 52.22 GB, 0 absent, 0 failed -> /workspace/pred_box.zarr

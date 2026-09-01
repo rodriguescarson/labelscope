@@ -1,0 +1,14 @@
+growing seeds 0..3 (radius 6000, 280 generations, interior seeds)  start 14:52
+[14:52] seed 0: x=15937 y=22826 z=69274
+[15:37] seed 0 rc=0 generated surface 125284162.015807 vx^2 (7.216368 cm^2)
+    inside-scan 89.6% | span zyx [ 8421.  9645. 10969.] | grid (562, 562)
+[15:50] seed 1: x=15744 y=17580 z=56482
+[16:59] seed 1 rc=0 generated surface 125709475.117429 vx^2 (7.240866 cm^2)
+    inside-scan 100.0% | span zyx [10386. 10919. 10241.] | grid (562, 562)
+[17:14] seed 2: x=17775 y=12334 z=43698
+[18:00] seed 2 rc=0 generated surface 125099868.038817 vx^2 (7.205753 cm^2)
+    inside-scan 94.9% | span zyx [ 8868. 11557. 10266.] | grid (562, 562)
+[18:15] seed 3: x=16072 y=12897 z=29477
+[19:06] seed 3 rc=0 generated surface 125192535.710981 vx^2 (7.211091 cm^2)
+    inside-scan 99.2% | span zyx [ 7291. 10000.  9606.] | grid (562, 562)
+BATCH DONE 19:24  segments: 4

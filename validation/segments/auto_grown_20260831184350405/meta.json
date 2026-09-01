@@ -1,0 +1,43 @@
+{
+    "area_cm2": 7.211090630038452,
+    "area_vx2": 125192535.71098077,
+    "bbox": [
+        [
+            10871.1015625,
+            8746.4208984375,
+            26300.345703125
+        ],
+        [
+            20477.25,
+            18746.12109375,
+            33591.00390625
+        ]
+    ],
+    "elapsed_time_s": 1351.104957946,
+    "format": "tifxyz",
+    "max_gen": 280,
+    "scale": [
+        0.05000000074505806,
+        0.05000000074505806
+    ],
+    "seed": [
+        16072.0,
+        12897.0,
+        29477.0
+    ],
+    "source": "vc_grow_seg_from_seed",
+    "target_volume": "pred_box.zarr",
+    "type": "seg",
+    "uuid": "auto_grown_20260831184350405",
+    "vc_gsfs_mode": "explicit_seed",
+    "vc_gsfs_params": {
+        "cache_size": 8000000000,
+        "generations": 280,
+        "min_area_cm": 0.05,
+        "mode": "seed",
+        "step_size": 20.0,
+        "use_cuda": true,
+        "voxelsize": 2.4
+    },
+    "vc_gsfs_version": "dev"
+}

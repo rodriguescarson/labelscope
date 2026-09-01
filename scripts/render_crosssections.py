@@ -43,11 +43,26 @@ def strip_for_rows(mesh, volume, origin, rows, reach: float, step: float):
         cols = np.flatnonzero(valid)
         base = mesh.points[r, cols]
         nrm = normals[r, cols]
-        walk = base[None] + nrm[None] * offsets[:, None, None]
+
+        # One image column per *voxel* of arc length, not per grid vertex. The
+        # grid step here is 20 voxels while the depth axis is 1 voxel per row,
+        # so sampling at the vertices makes the picture 20:1 anisotropic: a
+        # sheet drifting gently across the surface is squashed into a near
+        # vertical streak, and the one thing the image exists to show -- whether
+        # the surface steps to another wrap -- becomes invisible.
+        seg = np.linalg.norm(np.diff(base, axis=0), axis=1)
+        arc = np.concatenate([[0.0], np.cumsum(seg)])
+        n_out = max(2, int(arc[-1] / step))
+        want = np.linspace(0.0, arc[-1], n_out)
+        base_i = np.stack([np.interp(want, arc, base[:, k]) for k in range(3)], axis=1)
+        nrm_i = np.stack([np.interp(want, arc, nrm[:, k]) for k in range(3)], axis=1)
+        nrm_i /= np.linalg.norm(nrm_i, axis=1, keepdims=True) + 1e-9
+
+        walk = base_i[None] + nrm_i[None] * offsets[:, None, None]
         flat = walk.reshape(-1, 3)
         if remote and hasattr(volume, "prefetch"):
             volume.prefetch(flat - (np.zeros(3) if origin is None else np.asarray(origin)))
-        values = sample(flat).reshape(offsets.size, len(cols))
+        values = sample(flat).reshape(offsets.size, n_out)
         columns.append(values)
         keep.append(r)
     return columns, keep, offsets
@@ -84,6 +99,7 @@ def main(argv=None) -> int:
     )
     ap.add_argument("--step", type=float, default=1.0)
     ap.add_argument("--rows", type=int, default=12, help="how many cross-sections to render")
+    ap.add_argument("--window", type=int, default=900, help="voxels of arc length per image")
     args = ap.parse_args(argv)
 
     from labelscope.mesh import read_tifxyz
@@ -114,9 +130,15 @@ def main(argv=None) -> int:
 
     written = 0
     for image, row in zip(columns, kept):
-        path = os.path.join(args.out, f"{name}__row{row:05d}.png")
-        if to_png(image, path):
-            written += 1
+        # isotropic now, so a whole row is thousands of pixels wide; cut it into
+        # windows a person can actually look at
+        for start in range(0, image.shape[1], args.window):
+            piece = image[:, start : start + args.window]
+            if piece.shape[1] < args.window // 3:
+                continue
+            path = os.path.join(args.out, f"{name}__row{row:05d}_x{start:05d}.png")
+            if to_png(piece, path):
+                written += 1
     print(f"{name}: grid {mesh.shape}, {written} cross-sections -> {args.out}")
     if args.remote:
         print(f"  streamed {getattr(volume, 'bytes_fetched', 0) / 1e6:.0f} MB")
