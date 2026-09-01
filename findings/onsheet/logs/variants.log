@@ -1,0 +1,15 @@
+[12:36] box ready: 55G
+level 5: 8 in box, 8 fetched, 0 absent upstream, 0 FAILED, 15.7 MB
+total 125900 chunks, 52.42 GB, 0 absent, 0 failed -> /workspace/pred_box.zarr
+[12:37] growing variant: nogrid
+[13:10] nogrid rc=0 generated surface 126859814.721363 vx^2 (7.307126 cm^2)
+[13:10] growing variant: grid
+[13:10] grid rc=0 
+=== ON-SHEET SCORING ===
+surface                                      blocks    range  |peak|  verdict
+------------------------------------------------------------------------------------
+auto_grown_20260901123710485                      6     14.5    58.0  OFF SHEET (25% of baseline)
+pubmesh                                           6     58.3    12.5  baseline
+
+wrote /workspace/onsheet.json
+ALL DONE 13:11

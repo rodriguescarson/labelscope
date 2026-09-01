@@ -1,0 +1,6 @@
+surface                                      blocks    range  |peak|  verdict
+------------------------------------------------------------------------------------
+20260603222816-20231005123336_v2_flatboi__20      5     37.8    47.0  ON SHEET (56% of baseline)
+pubmesh                                           5     67.0    12.0  baseline
+
+wrote /workspace/onsheet_corpus/20260603222816-20231005123336_v2_flatboi__20260603222816-on-20260411134726-2.4um.tifxyz.json

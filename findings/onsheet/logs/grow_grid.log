@@ -1,0 +1,1055 @@
+zarr dataset size for scale group 0 [75784, 32693, 32693]
+chunk shape shape [256, 256, 256]
+mode: seed
+step size: 20
+min_area_cm: 0.05
+voxelsize: 2.4
+tgt_overlap_count: 20
+seed location [15744, 17580, 56482] value is 255
+Loaded normal grid level 0 (coordinate_scale=1, output_spiral_step=20)
+GrowPatch loss weights:
+  DIST: 1 STRAIGHT: 0.2 DIRECTION: 1 SNAP: 0.1 NORMAL: 10 NORMAL3DLINE: 0 REFERENCE_RAY: 0 SURFACE_SDT: 0 SPACELINE: 0 SDIR: 1
+empty space tracing
+seed val [15744, 17580, 56482] 255
+search & optimization ...lets go! 
+lets start fringe: 4
+gen 2 processing 12 fringe cands (total done 0 fringe: 4)
+cands 12
+-> done 12 | fringe 12 | area 0.03 mm^2 (0.000000 m^2) | avg speed 0.01 mm^2/s (0.001176 m^2/day) | current speed 0.01 mm^2/s
+gen 3 processing 20 fringe cands (total done 12 fringe: 12)
+cands 20
+-> done 32 | fringe 20 | area 0.07 mm^2 (0.000000 m^2) | avg speed 0.02 mm^2/s (0.002131 m^2/day) | current speed 0.05 mm^2/s
+gen 4 processing 28 fringe cands (total done 32 fringe: 20)
+cands 28
+-> done 60 | fringe 28 | area 0.14 mm^2 (0.000000 m^2) | avg speed 0.03 mm^2/s (0.002926 m^2/day) | current speed 0.06 mm^2/s
+gen 5 processing 36 fringe cands (total done 60 fringe: 28)
+cands 36
+-> done 96 | fringe 36 | area 0.22 mm^2 (0.000000 m^2) | avg speed 0.05 mm^2/s (0.003889 m^2/day) | current speed 0.10 mm^2/s
+gen 6 processing 44 fringe cands (total done 96 fringe: 36)
+cands 44
+-> done 140 | fringe 44 | area 0.32 mm^2 (0.000000 m^2) | avg speed 0.05 mm^2/s (0.004717 m^2/day) | current speed 0.10 mm^2/s
+gen 7 processing 52 fringe cands (total done 140 fringe: 44)
+cands 52
+-> done 192 | fringe 52 | area 0.44 mm^2 (0.000000 m^2) | avg speed 0.05 mm^2/s (0.004739 m^2/day) | current speed 0.06 mm^2/s
+gen 8 processing 60 fringe cands (total done 192 fringe: 52)
+cands 60
+local solve radius 290 Ceres Solver Report: Iterations: 16, Initial cost: 2.006084e+00, Final cost: 2.006084e+00, Termination: CONVERGENCE
+-> done 252 | fringe 60 | area 0.58 mm^2 (0.000001 m^2) | avg speed 0.02 mm^2/s (0.001899 m^2/day) | current speed 0.01 mm^2/s
+gen 9 processing 68 fringe cands (total done 252 fringe: 60)
+cands 68
+-> done 320 | fringe 68 | area 0.74 mm^2 (0.000001 m^2) | avg speed 0.02 mm^2/s (0.001932 m^2/day) | current speed 0.02 mm^2/s
+gen 10 processing 76 fringe cands (total done 320 fringe: 68)
+cands 76
+-> done 396 | fringe 76 | area 0.91 mm^2 (0.000001 m^2) | avg speed 0.02 mm^2/s (0.001695 m^2/day) | current speed 0.01 mm^2/s
+gen 11 processing 84 fringe cands (total done 396 fringe: 76)
+cands 84
+-> done 480 | fringe 84 | area 1.11 mm^2 (0.000001 m^2) | avg speed 0.02 mm^2/s (0.001502 m^2/day) | current speed 0.01 mm^2/s
+gen 12 processing 92 fringe cands (total done 480 fringe: 84)
+cands 92
+-> done 572 | fringe 92 | area 1.32 mm^2 (0.000001 m^2) | avg speed 0.02 mm^2/s (0.001357 m^2/day) | current speed 0.01 mm^2/s
+gen 13 processing 100 fringe cands (total done 572 fringe: 92)
+cands 100
+-> done 672 | fringe 100 | area 1.55 mm^2 (0.000002 m^2) | avg speed 0.02 mm^2/s (0.001332 m^2/day) | current speed 0.01 mm^2/s
+gen 14 processing 108 fringe cands (total done 672 fringe: 100)
+cands 108
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2040279, Misses: 21001, Total: 2061280, Hit Rate: 98.98%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2045904, Misses: 22001, Total: 2067905, Hit Rate: 98.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2053944, Misses: 23001, Total: 2076945, Hit Rate: 98.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2058434, Misses: 24001, Total: 2082435, Hit Rate: 98.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2063534, Misses: 25001, Total: 2088535, Hit Rate: 98.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2094187, Misses: 26000, Total: 2120187, Hit Rate: 98.77%
+-> done 780 | fringe 108 | area 1.80 mm^2 (0.000002 m^2) | avg speed 0.01 mm^2/s (0.000785 m^2/day) | current speed 0.00 mm^2/s
+gen 15 processing 116 fringe cands (total done 780 fringe: 108)
+cands 116
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2142833, Misses: 27003, Total: 2169836, Hit Rate: 98.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2270254, Misses: 28003, Total: 2298257, Hit Rate: 98.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2368666, Misses: 29003, Total: 2397669, Hit Rate: 98.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2473969, Misses: 30001, Total: 2503970, Hit Rate: 98.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2478366, Misses: 31001, Total: 2509367, Hit Rate: 98.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2485307, Misses: 32001, Total: 2517308, Hit Rate: 98.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2493447, Misses: 33001, Total: 2526448, Hit Rate: 98.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2497267, Misses: 34001, Total: 2531268, Hit Rate: 98.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2501342, Misses: 35001, Total: 2536343, Hit Rate: 98.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2504876, Misses: 36001, Total: 2540877, Hit Rate: 98.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2513102, Misses: 37001, Total: 2550103, Hit Rate: 98.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2515642, Misses: 38001, Total: 2553643, Hit Rate: 98.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2518699, Misses: 39001, Total: 2557700, Hit Rate: 98.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2525881, Misses: 40001, Total: 2565882, Hit Rate: 98.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2531208, Misses: 41001, Total: 2572209, Hit Rate: 98.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2540455, Misses: 42001, Total: 2582456, Hit Rate: 98.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2549986, Misses: 43001, Total: 2592987, Hit Rate: 98.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2569864, Misses: 44001, Total: 2613865, Hit Rate: 98.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2667659, Misses: 45000, Total: 2712659, Hit Rate: 98.34%
+-> done 896 | fringe 116 | area 2.06 mm^2 (0.000002 m^2) | avg speed 0.01 mm^2/s (0.000478 m^2/day) | current speed 0.00 mm^2/s
+gen 16 processing 124 fringe cands (total done 896 fringe: 116)
+cands 124
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2731188, Misses: 46003, Total: 2777191, Hit Rate: 98.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2856494, Misses: 47003, Total: 2903497, Hit Rate: 98.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 2930010, Misses: 48003, Total: 2978013, Hit Rate: 98.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3040274, Misses: 49003, Total: 3089277, Hit Rate: 98.41%
+-> done 1020 | fringe 124 | area 2.35 mm^2 (0.000002 m^2) | avg speed 0.01 mm^2/s (0.000503 m^2/day) | current speed 0.01 mm^2/s
+gen 17 processing 132 fringe cands (total done 1020 fringe: 124)
+cands 132
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3130778, Misses: 50002, Total: 3180780, Hit Rate: 98.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3208291, Misses: 51003, Total: 3259294, Hit Rate: 98.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3309965, Misses: 52003, Total: 3361968, Hit Rate: 98.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3401207, Misses: 53003, Total: 3454210, Hit Rate: 98.47%
+-> done 1152 | fringe 132 | area 2.65 mm^2 (0.000003 m^2) | avg speed 0.01 mm^2/s (0.000526 m^2/day) | current speed 0.01 mm^2/s
+gen 18 processing 140 fringe cands (total done 1152 fringe: 132)
+cands 140
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3472518, Misses: 54003, Total: 3526521, Hit Rate: 98.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3572026, Misses: 55003, Total: 3627029, Hit Rate: 98.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3630757, Misses: 56003, Total: 3686760, Hit Rate: 98.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3710921, Misses: 57003, Total: 3767924, Hit Rate: 98.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3789275, Misses: 58003, Total: 3847278, Hit Rate: 98.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3857934, Misses: 59002, Total: 3916936, Hit Rate: 98.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3859666, Misses: 60002, Total: 3919668, Hit Rate: 98.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3861387, Misses: 61002, Total: 3922389, Hit Rate: 98.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3863023, Misses: 62002, Total: 3925025, Hit Rate: 98.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3864602, Misses: 63002, Total: 3927604, Hit Rate: 98.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3866167, Misses: 64002, Total: 3930169, Hit Rate: 98.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3867847, Misses: 65002, Total: 3932849, Hit Rate: 98.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3869346, Misses: 66002, Total: 3935348, Hit Rate: 98.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3870898, Misses: 67002, Total: 3937900, Hit Rate: 98.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3872466, Misses: 68002, Total: 3940468, Hit Rate: 98.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3874181, Misses: 69002, Total: 3943183, Hit Rate: 98.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3875808, Misses: 70002, Total: 3945810, Hit Rate: 98.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3877411, Misses: 71002, Total: 3948413, Hit Rate: 98.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3879223, Misses: 72002, Total: 3951225, Hit Rate: 98.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3881040, Misses: 73002, Total: 3954042, Hit Rate: 98.15%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3882817, Misses: 74002, Total: 3956819, Hit Rate: 98.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3884578, Misses: 75002, Total: 3959580, Hit Rate: 98.11%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3886260, Misses: 76002, Total: 3962262, Hit Rate: 98.08%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3888635, Misses: 77002, Total: 3965637, Hit Rate: 98.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3890897, Misses: 78002, Total: 3968899, Hit Rate: 98.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3894176, Misses: 79001, Total: 3973177, Hit Rate: 98.01%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3902139, Misses: 80001, Total: 3982140, Hit Rate: 97.99%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3906618, Misses: 81001, Total: 3987619, Hit Rate: 97.97%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3911951, Misses: 82001, Total: 3993952, Hit Rate: 97.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3917612, Misses: 83001, Total: 4000613, Hit Rate: 97.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3922034, Misses: 84001, Total: 4006035, Hit Rate: 97.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3927678, Misses: 85001, Total: 4012679, Hit Rate: 97.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3944953, Misses: 86001, Total: 4030954, Hit Rate: 97.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3952618, Misses: 87001, Total: 4039619, Hit Rate: 97.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3969964, Misses: 88001, Total: 4057965, Hit Rate: 97.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 3985885, Misses: 89001, Total: 4074886, Hit Rate: 97.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4006167, Misses: 90001, Total: 4096168, Hit Rate: 97.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4014115, Misses: 91001, Total: 4105116, Hit Rate: 97.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4093799, Misses: 92001, Total: 4185800, Hit Rate: 97.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4101669, Misses: 93001, Total: 4194670, Hit Rate: 97.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4110605, Misses: 94001, Total: 4204606, Hit Rate: 97.76%
+-> done 1292 | fringe 140 | area 2.98 mm^2 (0.000003 m^2) | avg speed 0.00 mm^2/s (0.000329 m^2/day) | current speed 0.00 mm^2/s
+gen 19 processing 148 fringe cands (total done 1292 fringe: 140)
+cands 148
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4173904, Misses: 95003, Total: 4268907, Hit Rate: 97.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4263342, Misses: 96003, Total: 4359345, Hit Rate: 97.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4334816, Misses: 97003, Total: 4431819, Hit Rate: 97.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4411168, Misses: 98003, Total: 4509171, Hit Rate: 97.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4493492, Misses: 99003, Total: 4592495, Hit Rate: 97.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4575364, Misses: 100003, Total: 4675367, Hit Rate: 97.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4621648, Misses: 101002, Total: 4722650, Hit Rate: 97.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4628210, Misses: 102001, Total: 4730211, Hit Rate: 97.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4633817, Misses: 103001, Total: 4736818, Hit Rate: 97.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4640132, Misses: 104001, Total: 4744133, Hit Rate: 97.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4654279, Misses: 105001, Total: 4759280, Hit Rate: 97.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4663097, Misses: 106001, Total: 4769098, Hit Rate: 97.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4674880, Misses: 107001, Total: 4781881, Hit Rate: 97.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4689014, Misses: 108001, Total: 4797015, Hit Rate: 97.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4694240, Misses: 109001, Total: 4803241, Hit Rate: 97.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4697829, Misses: 110001, Total: 4807830, Hit Rate: 97.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4701552, Misses: 111001, Total: 4812553, Hit Rate: 97.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4708068, Misses: 112001, Total: 4820069, Hit Rate: 97.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4717644, Misses: 113001, Total: 4830645, Hit Rate: 97.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4732080, Misses: 114001, Total: 4846081, Hit Rate: 97.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4734327, Misses: 115001, Total: 4849328, Hit Rate: 97.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4736475, Misses: 116001, Total: 4852476, Hit Rate: 97.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4739847, Misses: 117001, Total: 4856848, Hit Rate: 97.59%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4744157, Misses: 118001, Total: 4862158, Hit Rate: 97.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4750288, Misses: 119001, Total: 4869289, Hit Rate: 97.56%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4754852, Misses: 120001, Total: 4874853, Hit Rate: 97.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4758242, Misses: 121001, Total: 4879243, Hit Rate: 97.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4761712, Misses: 122001, Total: 4883713, Hit Rate: 97.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4766677, Misses: 123001, Total: 4889678, Hit Rate: 97.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4771348, Misses: 124001, Total: 4895349, Hit Rate: 97.47%
+-> done 1440 | fringe 148 | area 3.32 mm^2 (0.000003 m^2) | avg speed 0.00 mm^2/s (0.000261 m^2/day) | current speed 0.00 mm^2/s
+gen 20 processing 156 fringe cands (total done 1440 fringe: 148)
+cands 156
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4852694, Misses: 126003, Total: 4978697, Hit Rate: 97.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4924105, Misses: 127003, Total: 5051108, Hit Rate: 97.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 4991003, Misses: 128003, Total: 5119006, Hit Rate: 97.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5086612, Misses: 129003, Total: 5215615, Hit Rate: 97.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5166270, Misses: 130003, Total: 5296273, Hit Rate: 97.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5246798, Misses: 131002, Total: 5377800, Hit Rate: 97.56%
+-> done 1596 | fringe 156 | area 3.68 mm^2 (0.000004 m^2) | avg speed 0.00 mm^2/s (0.000276 m^2/day) | current speed 0.01 mm^2/s
+gen 21 processing 164 fringe cands (total done 1596 fringe: 156)
+cands 164
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5317609, Misses: 132003, Total: 5449612, Hit Rate: 97.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5419182, Misses: 133003, Total: 5552185, Hit Rate: 97.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5497341, Misses: 134003, Total: 5631344, Hit Rate: 97.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5589828, Misses: 135003, Total: 5724831, Hit Rate: 97.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5670396, Misses: 136003, Total: 5806399, Hit Rate: 97.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5728741, Misses: 137003, Total: 5865744, Hit Rate: 97.66%
+-> done 1760 | fringe 164 | area 4.06 mm^2 (0.000004 m^2) | avg speed 0.00 mm^2/s (0.000293 m^2/day) | current speed 0.01 mm^2/s
+gen 22 processing 172 fringe cands (total done 1760 fringe: 164)
+cands 172
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5812837, Misses: 138003, Total: 5950840, Hit Rate: 97.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5873272, Misses: 139003, Total: 6012275, Hit Rate: 97.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 5956565, Misses: 140003, Total: 6096568, Hit Rate: 97.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6057387, Misses: 141003, Total: 6198390, Hit Rate: 97.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6136716, Misses: 142003, Total: 6278719, Hit Rate: 97.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6217217, Misses: 143003, Total: 6360220, Hit Rate: 97.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6288936, Misses: 144003, Total: 6432939, Hit Rate: 97.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6363008, Misses: 145002, Total: 6508010, Hit Rate: 97.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6395276, Misses: 146002, Total: 6541278, Hit Rate: 97.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6396714, Misses: 147002, Total: 6543716, Hit Rate: 97.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6398143, Misses: 148002, Total: 6546145, Hit Rate: 97.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6399633, Misses: 149002, Total: 6548635, Hit Rate: 97.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6401062, Misses: 150002, Total: 6551064, Hit Rate: 97.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6402450, Misses: 151002, Total: 6553452, Hit Rate: 97.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6403823, Misses: 152002, Total: 6555825, Hit Rate: 97.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6405259, Misses: 153002, Total: 6558261, Hit Rate: 97.67%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6406713, Misses: 154002, Total: 6560715, Hit Rate: 97.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6408065, Misses: 155002, Total: 6563067, Hit Rate: 97.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6409413, Misses: 156002, Total: 6565415, Hit Rate: 97.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6410843, Misses: 157002, Total: 6567845, Hit Rate: 97.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6412248, Misses: 158002, Total: 6570250, Hit Rate: 97.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6413599, Misses: 159002, Total: 6572601, Hit Rate: 97.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6414965, Misses: 160002, Total: 6574967, Hit Rate: 97.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6416387, Misses: 161002, Total: 6577389, Hit Rate: 97.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6417762, Misses: 162002, Total: 6579764, Hit Rate: 97.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6419075, Misses: 163002, Total: 6582077, Hit Rate: 97.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6420660, Misses: 164002, Total: 6584662, Hit Rate: 97.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6422109, Misses: 165002, Total: 6587111, Hit Rate: 97.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6423502, Misses: 166002, Total: 6589504, Hit Rate: 97.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6424804, Misses: 167002, Total: 6591806, Hit Rate: 97.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6426164, Misses: 168002, Total: 6594166, Hit Rate: 97.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6427649, Misses: 169002, Total: 6596651, Hit Rate: 97.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6429130, Misses: 170002, Total: 6599132, Hit Rate: 97.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6430449, Misses: 171002, Total: 6601451, Hit Rate: 97.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6431844, Misses: 172002, Total: 6603846, Hit Rate: 97.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6433268, Misses: 173002, Total: 6606270, Hit Rate: 97.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6434610, Misses: 174002, Total: 6608612, Hit Rate: 97.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6435942, Misses: 175002, Total: 6610944, Hit Rate: 97.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6437275, Misses: 176002, Total: 6613277, Hit Rate: 97.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6438628, Misses: 177002, Total: 6615630, Hit Rate: 97.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6439921, Misses: 178002, Total: 6617923, Hit Rate: 97.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6441219, Misses: 179002, Total: 6620221, Hit Rate: 97.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6442557, Misses: 180002, Total: 6622559, Hit Rate: 97.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6443963, Misses: 181002, Total: 6624965, Hit Rate: 97.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6445292, Misses: 182002, Total: 6627294, Hit Rate: 97.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6446544, Misses: 183002, Total: 6629546, Hit Rate: 97.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6447822, Misses: 184002, Total: 6631824, Hit Rate: 97.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6449233, Misses: 185002, Total: 6634235, Hit Rate: 97.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6450539, Misses: 186002, Total: 6636541, Hit Rate: 97.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6451824, Misses: 187002, Total: 6638826, Hit Rate: 97.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6453032, Misses: 188002, Total: 6641034, Hit Rate: 97.17%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6454284, Misses: 189002, Total: 6643286, Hit Rate: 97.15%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6455474, Misses: 190002, Total: 6645476, Hit Rate: 97.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6456694, Misses: 191002, Total: 6647696, Hit Rate: 97.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6458420, Misses: 192002, Total: 6650422, Hit Rate: 97.11%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6459631, Misses: 193002, Total: 6652633, Hit Rate: 97.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6460863, Misses: 194002, Total: 6654865, Hit Rate: 97.08%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6462147, Misses: 195002, Total: 6657149, Hit Rate: 97.07%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6463540, Misses: 196002, Total: 6659542, Hit Rate: 97.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6464915, Misses: 197002, Total: 6661917, Hit Rate: 97.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6466137, Misses: 198002, Total: 6664139, Hit Rate: 97.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6467494, Misses: 199002, Total: 6666496, Hit Rate: 97.01%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6468837, Misses: 200002, Total: 6668839, Hit Rate: 97.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6470227, Misses: 201002, Total: 6671229, Hit Rate: 96.99%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6471580, Misses: 202001, Total: 6673581, Hit Rate: 96.97%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6477649, Misses: 203001, Total: 6680650, Hit Rate: 96.96%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6483885, Misses: 204001, Total: 6687886, Hit Rate: 96.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6489027, Misses: 205001, Total: 6694028, Hit Rate: 96.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6495802, Misses: 206001, Total: 6701803, Hit Rate: 96.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6502236, Misses: 207001, Total: 6709237, Hit Rate: 96.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6545502, Misses: 208001, Total: 6753503, Hit Rate: 96.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6556431, Misses: 209001, Total: 6765432, Hit Rate: 96.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6564776, Misses: 210001, Total: 6774777, Hit Rate: 96.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6574326, Misses: 211001, Total: 6785327, Hit Rate: 96.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6582056, Misses: 212001, Total: 6794057, Hit Rate: 96.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6589267, Misses: 213001, Total: 6802268, Hit Rate: 96.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6597584, Misses: 214001, Total: 6811585, Hit Rate: 96.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6606666, Misses: 215001, Total: 6821667, Hit Rate: 96.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6616360, Misses: 216001, Total: 6832361, Hit Rate: 96.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6624535, Misses: 217001, Total: 6841536, Hit Rate: 96.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6629242, Misses: 218001, Total: 6847243, Hit Rate: 96.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6634190, Misses: 219001, Total: 6853191, Hit Rate: 96.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6645456, Misses: 220001, Total: 6865457, Hit Rate: 96.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6652078, Misses: 221001, Total: 6873079, Hit Rate: 96.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6657013, Misses: 222001, Total: 6879014, Hit Rate: 96.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6665090, Misses: 223001, Total: 6888091, Hit Rate: 96.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6673109, Misses: 224001, Total: 6897110, Hit Rate: 96.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6680889, Misses: 225001, Total: 6905890, Hit Rate: 96.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6688683, Misses: 226001, Total: 6914684, Hit Rate: 96.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6696964, Misses: 227001, Total: 6923965, Hit Rate: 96.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6705080, Misses: 228001, Total: 6933081, Hit Rate: 96.71%
+-> done 1932 | fringe 172 | area 4.45 mm^2 (0.000004 m^2) | avg speed 0.00 mm^2/s (0.000199 m^2/day) | current speed 0.00 mm^2/s
+gen 23 processing 180 fringe cands (total done 1932 fringe: 172)
+cands 180
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6752832, Misses: 229003, Total: 6981835, Hit Rate: 96.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6869850, Misses: 230003, Total: 7099853, Hit Rate: 96.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 6976603, Misses: 231003, Total: 7207606, Hit Rate: 96.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7057727, Misses: 232003, Total: 7289730, Hit Rate: 96.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7127387, Misses: 233003, Total: 7360390, Hit Rate: 96.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7223437, Misses: 234003, Total: 7457440, Hit Rate: 96.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7307443, Misses: 235003, Total: 7542446, Hit Rate: 96.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7388277, Misses: 236003, Total: 7624280, Hit Rate: 96.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7389805, Misses: 237003, Total: 7626808, Hit Rate: 96.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7391377, Misses: 238003, Total: 7629380, Hit Rate: 96.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7392887, Misses: 239003, Total: 7631890, Hit Rate: 96.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7394435, Misses: 240003, Total: 7634438, Hit Rate: 96.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7395987, Misses: 241003, Total: 7636990, Hit Rate: 96.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7397494, Misses: 242003, Total: 7639497, Hit Rate: 96.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7399023, Misses: 243003, Total: 7642026, Hit Rate: 96.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7400562, Misses: 244003, Total: 7644565, Hit Rate: 96.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7402069, Misses: 245003, Total: 7647072, Hit Rate: 96.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7403606, Misses: 246003, Total: 7649609, Hit Rate: 96.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7405088, Misses: 247003, Total: 7652091, Hit Rate: 96.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7406617, Misses: 248003, Total: 7654620, Hit Rate: 96.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7408212, Misses: 249003, Total: 7657215, Hit Rate: 96.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7409783, Misses: 250003, Total: 7659786, Hit Rate: 96.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7411314, Misses: 251003, Total: 7662317, Hit Rate: 96.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7412916, Misses: 252003, Total: 7664919, Hit Rate: 96.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7414892, Misses: 253003, Total: 7667895, Hit Rate: 96.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7416466, Misses: 254003, Total: 7670469, Hit Rate: 96.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7418181, Misses: 255003, Total: 7673184, Hit Rate: 96.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7419815, Misses: 256003, Total: 7675818, Hit Rate: 96.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7421404, Misses: 257003, Total: 7678407, Hit Rate: 96.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7423057, Misses: 258003, Total: 7681060, Hit Rate: 96.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7424617, Misses: 259003, Total: 7683620, Hit Rate: 96.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7426215, Misses: 260003, Total: 7686218, Hit Rate: 96.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7427867, Misses: 261003, Total: 7688870, Hit Rate: 96.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7429446, Misses: 262003, Total: 7691449, Hit Rate: 96.59%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7431038, Misses: 263003, Total: 7694041, Hit Rate: 96.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7432637, Misses: 264003, Total: 7696640, Hit Rate: 96.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7434152, Misses: 265002, Total: 7699154, Hit Rate: 96.56%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7435760, Misses: 266002, Total: 7701762, Hit Rate: 96.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7437269, Misses: 267002, Total: 7704271, Hit Rate: 96.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7439500, Misses: 268002, Total: 7707502, Hit Rate: 96.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7441057, Misses: 269002, Total: 7710059, Hit Rate: 96.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7442669, Misses: 270002, Total: 7712671, Hit Rate: 96.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7444289, Misses: 271002, Total: 7715291, Hit Rate: 96.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7445989, Misses: 272002, Total: 7717991, Hit Rate: 96.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7447501, Misses: 273002, Total: 7720503, Hit Rate: 96.46%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7449181, Misses: 274002, Total: 7723183, Hit Rate: 96.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7450873, Misses: 275002, Total: 7725875, Hit Rate: 96.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7452759, Misses: 276001, Total: 7728760, Hit Rate: 96.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7454714, Misses: 277002, Total: 7731716, Hit Rate: 96.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7458607, Misses: 278002, Total: 7736609, Hit Rate: 96.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7462350, Misses: 279002, Total: 7741352, Hit Rate: 96.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7464150, Misses: 280002, Total: 7744152, Hit Rate: 96.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7465992, Misses: 281002, Total: 7746994, Hit Rate: 96.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7467725, Misses: 282002, Total: 7749727, Hit Rate: 96.36%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7469447, Misses: 283002, Total: 7752449, Hit Rate: 96.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7471144, Misses: 284002, Total: 7755146, Hit Rate: 96.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7472931, Misses: 285002, Total: 7757933, Hit Rate: 96.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7474684, Misses: 286002, Total: 7760686, Hit Rate: 96.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7476429, Misses: 287002, Total: 7763431, Hit Rate: 96.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7478155, Misses: 288002, Total: 7766157, Hit Rate: 96.29%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7479841, Misses: 289002, Total: 7768843, Hit Rate: 96.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7481589, Misses: 290002, Total: 7771591, Hit Rate: 96.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7483223, Misses: 291002, Total: 7774225, Hit Rate: 96.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7485013, Misses: 292002, Total: 7777015, Hit Rate: 96.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7486658, Misses: 293002, Total: 7779660, Hit Rate: 96.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7488383, Misses: 294002, Total: 7782385, Hit Rate: 96.22%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7490041, Misses: 295002, Total: 7785043, Hit Rate: 96.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7491685, Misses: 296002, Total: 7787687, Hit Rate: 96.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7493346, Misses: 297002, Total: 7790348, Hit Rate: 96.19%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7495089, Misses: 298002, Total: 7793091, Hit Rate: 96.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7496836, Misses: 299002, Total: 7795838, Hit Rate: 96.16%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7498424, Misses: 300002, Total: 7798426, Hit Rate: 96.15%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7500837, Misses: 301001, Total: 7801838, Hit Rate: 96.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7527276, Misses: 302001, Total: 7829277, Hit Rate: 96.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7545174, Misses: 303001, Total: 7848175, Hit Rate: 96.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7563108, Misses: 304001, Total: 7867109, Hit Rate: 96.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7566276, Misses: 305001, Total: 7871277, Hit Rate: 96.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7570919, Misses: 306001, Total: 7876920, Hit Rate: 96.12%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7577094, Misses: 307001, Total: 7884095, Hit Rate: 96.11%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7580878, Misses: 308001, Total: 7888879, Hit Rate: 96.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7585131, Misses: 309001, Total: 7894132, Hit Rate: 96.09%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7589747, Misses: 310001, Total: 7899748, Hit Rate: 96.08%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7594848, Misses: 311001, Total: 7905849, Hit Rate: 96.07%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7599901, Misses: 312001, Total: 7911902, Hit Rate: 96.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7619903, Misses: 313000, Total: 7932903, Hit Rate: 96.05%
+-> done 2112 | fringe 180 | area 4.87 mm^2 (0.000005 m^2) | avg speed 0.00 mm^2/s (0.000155 m^2/day) | current speed 0.00 mm^2/s
+gen 24 processing 188 fringe cands (total done 2112 fringe: 180)
+cands 188
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7725735, Misses: 314003, Total: 8039738, Hit Rate: 96.09%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7881818, Misses: 315003, Total: 8196821, Hit Rate: 96.16%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 7974902, Misses: 316003, Total: 8290905, Hit Rate: 96.19%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8035334, Misses: 317003, Total: 8352337, Hit Rate: 96.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8126712, Misses: 318003, Total: 8444715, Hit Rate: 96.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8198827, Misses: 319003, Total: 8517830, Hit Rate: 96.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8286946, Misses: 320003, Total: 8606949, Hit Rate: 96.28%
+-> done 2300 | fringe 188 | area 5.30 mm^2 (0.000005 m^2) | avg speed 0.00 mm^2/s (0.000165 m^2/day) | current speed 0.01 mm^2/s
+gen 25 processing 196 fringe cands (total done 2300 fringe: 188)
+cands 196
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8361972, Misses: 321003, Total: 8682975, Hit Rate: 96.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8541984, Misses: 322003, Total: 8863987, Hit Rate: 96.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8651147, Misses: 323003, Total: 8974150, Hit Rate: 96.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8728724, Misses: 324003, Total: 9052727, Hit Rate: 96.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8819147, Misses: 325003, Total: 9144150, Hit Rate: 96.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 8921197, Misses: 326003, Total: 9247200, Hit Rate: 96.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9001994, Misses: 327003, Total: 9328997, Hit Rate: 96.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9085448, Misses: 328003, Total: 9413451, Hit Rate: 96.52%
+-> done 2496 | fringe 196 | area 5.75 mm^2 (0.000006 m^2) | avg speed 0.00 mm^2/s (0.000175 m^2/day) | current speed 0.01 mm^2/s
+gen 26 processing 204 fringe cands (total done 2496 fringe: 196)
+cands 204
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9164325, Misses: 329003, Total: 9493328, Hit Rate: 96.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9308805, Misses: 330003, Total: 9638808, Hit Rate: 96.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9391064, Misses: 331003, Total: 9722067, Hit Rate: 96.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9468934, Misses: 332003, Total: 9800937, Hit Rate: 96.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9563620, Misses: 333003, Total: 9896623, Hit Rate: 96.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9648936, Misses: 334003, Total: 9982939, Hit Rate: 96.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9753341, Misses: 335003, Total: 10088344, Hit Rate: 96.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9832330, Misses: 336003, Total: 10168333, Hit Rate: 96.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9888401, Misses: 337003, Total: 10225404, Hit Rate: 96.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9889776, Misses: 338002, Total: 10227778, Hit Rate: 96.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9891230, Misses: 339003, Total: 10230233, Hit Rate: 96.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9892602, Misses: 340003, Total: 10232605, Hit Rate: 96.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9893976, Misses: 341003, Total: 10234979, Hit Rate: 96.67%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9895308, Misses: 342003, Total: 10237311, Hit Rate: 96.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9896611, Misses: 343003, Total: 10239614, Hit Rate: 96.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9898018, Misses: 344003, Total: 10242021, Hit Rate: 96.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9899452, Misses: 345003, Total: 10244455, Hit Rate: 96.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9900817, Misses: 346003, Total: 10246820, Hit Rate: 96.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9902186, Misses: 347002, Total: 10249188, Hit Rate: 96.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9903440, Misses: 348002, Total: 10251442, Hit Rate: 96.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9904661, Misses: 349002, Total: 10253663, Hit Rate: 96.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9905930, Misses: 350002, Total: 10255932, Hit Rate: 96.59%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9907378, Misses: 351002, Total: 10258380, Hit Rate: 96.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9908900, Misses: 352002, Total: 10260902, Hit Rate: 96.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9910385, Misses: 353002, Total: 10263387, Hit Rate: 96.56%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9912187, Misses: 354002, Total: 10266189, Hit Rate: 96.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9913617, Misses: 355002, Total: 10268619, Hit Rate: 96.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9915010, Misses: 356002, Total: 10271012, Hit Rate: 96.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9916489, Misses: 357002, Total: 10273491, Hit Rate: 96.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9917938, Misses: 358002, Total: 10275940, Hit Rate: 96.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9919429, Misses: 359002, Total: 10278431, Hit Rate: 96.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9921097, Misses: 360002, Total: 10281099, Hit Rate: 96.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9922688, Misses: 361002, Total: 10283690, Hit Rate: 96.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9924212, Misses: 362002, Total: 10286214, Hit Rate: 96.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9925858, Misses: 363002, Total: 10288860, Hit Rate: 96.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9927347, Misses: 364002, Total: 10291349, Hit Rate: 96.46%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9929148, Misses: 365002, Total: 10294150, Hit Rate: 96.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9930760, Misses: 366002, Total: 10296762, Hit Rate: 96.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9932325, Misses: 367002, Total: 10299327, Hit Rate: 96.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9934051, Misses: 368002, Total: 10302053, Hit Rate: 96.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9935754, Misses: 369002, Total: 10304756, Hit Rate: 96.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9937506, Misses: 370002, Total: 10307508, Hit Rate: 96.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9939211, Misses: 371002, Total: 10310213, Hit Rate: 96.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9940934, Misses: 372002, Total: 10312936, Hit Rate: 96.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9942607, Misses: 373002, Total: 10315609, Hit Rate: 96.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9944335, Misses: 374002, Total: 10318337, Hit Rate: 96.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9946092, Misses: 375002, Total: 10321094, Hit Rate: 96.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9947688, Misses: 376002, Total: 10323690, Hit Rate: 96.36%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9949403, Misses: 377002, Total: 10326405, Hit Rate: 96.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9951090, Misses: 378002, Total: 10329092, Hit Rate: 96.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9952734, Misses: 379002, Total: 10331736, Hit Rate: 96.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9954457, Misses: 380002, Total: 10334459, Hit Rate: 96.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9956222, Misses: 381002, Total: 10337224, Hit Rate: 96.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9958040, Misses: 382002, Total: 10340042, Hit Rate: 96.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9959700, Misses: 383002, Total: 10342702, Hit Rate: 96.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9961449, Misses: 384002, Total: 10345451, Hit Rate: 96.29%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9963235, Misses: 385002, Total: 10348237, Hit Rate: 96.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9965408, Misses: 386002, Total: 10351410, Hit Rate: 96.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9967785, Misses: 387002, Total: 10354787, Hit Rate: 96.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9970308, Misses: 388002, Total: 10358310, Hit Rate: 96.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9972835, Misses: 389002, Total: 10361837, Hit Rate: 96.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9975275, Misses: 390002, Total: 10365277, Hit Rate: 96.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9977559, Misses: 391002, Total: 10368561, Hit Rate: 96.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9979108, Misses: 392002, Total: 10371110, Hit Rate: 96.22%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9980875, Misses: 393002, Total: 10373877, Hit Rate: 96.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9982565, Misses: 394002, Total: 10376567, Hit Rate: 96.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9984294, Misses: 395002, Total: 10379296, Hit Rate: 96.19%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9985879, Misses: 396002, Total: 10381881, Hit Rate: 96.19%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9987479, Misses: 397002, Total: 10384481, Hit Rate: 96.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9989190, Misses: 398001, Total: 10387191, Hit Rate: 96.17%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9990731, Misses: 399002, Total: 10389733, Hit Rate: 96.16%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9992131, Misses: 400002, Total: 10392133, Hit Rate: 96.15%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9993677, Misses: 401002, Total: 10394679, Hit Rate: 96.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9995232, Misses: 402002, Total: 10397234, Hit Rate: 96.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9996777, Misses: 403002, Total: 10399779, Hit Rate: 96.12%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 9998497, Misses: 404002, Total: 10402499, Hit Rate: 96.12%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10000113, Misses: 405002, Total: 10405115, Hit Rate: 96.11%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10001824, Misses: 406002, Total: 10407826, Hit Rate: 96.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10003454, Misses: 407002, Total: 10410456, Hit Rate: 96.09%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10005060, Misses: 408002, Total: 10413062, Hit Rate: 96.08%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10006781, Misses: 409002, Total: 10415783, Hit Rate: 96.07%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10008407, Misses: 410002, Total: 10418409, Hit Rate: 96.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10010074, Misses: 411002, Total: 10421076, Hit Rate: 96.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10011612, Misses: 412002, Total: 10423614, Hit Rate: 96.05%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10013249, Misses: 413002, Total: 10426251, Hit Rate: 96.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10014810, Misses: 414002, Total: 10428812, Hit Rate: 96.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10016429, Misses: 415002, Total: 10431431, Hit Rate: 96.02%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10018009, Misses: 416002, Total: 10434011, Hit Rate: 96.01%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10019472, Misses: 417002, Total: 10436474, Hit Rate: 96.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10021159, Misses: 418002, Total: 10439161, Hit Rate: 96.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10022732, Misses: 419002, Total: 10441734, Hit Rate: 95.99%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10024240, Misses: 420002, Total: 10444242, Hit Rate: 95.98%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10025907, Misses: 421002, Total: 10446909, Hit Rate: 95.97%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10027458, Misses: 422002, Total: 10449460, Hit Rate: 95.96%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10028972, Misses: 423002, Total: 10451974, Hit Rate: 95.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10030591, Misses: 424002, Total: 10454593, Hit Rate: 95.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10032180, Misses: 425002, Total: 10457182, Hit Rate: 95.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10033670, Misses: 426002, Total: 10459672, Hit Rate: 95.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10035153, Misses: 427001, Total: 10462154, Hit Rate: 95.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10037054, Misses: 428002, Total: 10465056, Hit Rate: 95.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10038485, Misses: 429002, Total: 10467487, Hit Rate: 95.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10039854, Misses: 430002, Total: 10469856, Hit Rate: 95.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10041253, Misses: 431002, Total: 10472255, Hit Rate: 95.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10042549, Misses: 432002, Total: 10474551, Hit Rate: 95.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10043919, Misses: 433002, Total: 10476921, Hit Rate: 95.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10045322, Misses: 434002, Total: 10479324, Hit Rate: 95.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10046662, Misses: 435002, Total: 10481664, Hit Rate: 95.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10048136, Misses: 436002, Total: 10484138, Hit Rate: 95.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10049590, Misses: 437002, Total: 10486592, Hit Rate: 95.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10051096, Misses: 438002, Total: 10489098, Hit Rate: 95.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10052585, Misses: 439002, Total: 10491587, Hit Rate: 95.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10054136, Misses: 440002, Total: 10494138, Hit Rate: 95.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10055604, Misses: 441001, Total: 10496605, Hit Rate: 95.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10065818, Misses: 442001, Total: 10507819, Hit Rate: 95.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10088518, Misses: 443001, Total: 10531519, Hit Rate: 95.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10092600, Misses: 444001, Total: 10536601, Hit Rate: 95.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10096764, Misses: 445001, Total: 10541765, Hit Rate: 95.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10101017, Misses: 446001, Total: 10547018, Hit Rate: 95.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10105364, Misses: 447001, Total: 10552365, Hit Rate: 95.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10109724, Misses: 448001, Total: 10557725, Hit Rate: 95.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10113503, Misses: 449001, Total: 10562504, Hit Rate: 95.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10118258, Misses: 450001, Total: 10568259, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10126940, Misses: 451001, Total: 10577941, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10136483, Misses: 452000, Total: 10588483, Hit Rate: 95.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10146989, Misses: 453001, Total: 10599990, Hit Rate: 95.73%
+-> done 2700 | fringe 204 | area 6.22 mm^2 (0.000006 m^2) | avg speed 0.00 mm^2/s (0.000148 m^2/day) | current speed 0.00 mm^2/s
+gen 27 processing 212 fringe cands (total done 2700 fringe: 204)
+cands 212
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10199004, Misses: 454002, Total: 10653006, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10293160, Misses: 455003, Total: 10748163, Hit Rate: 95.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10417256, Misses: 456003, Total: 10873259, Hit Rate: 95.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10508843, Misses: 457002, Total: 10965845, Hit Rate: 95.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10601470, Misses: 458003, Total: 11059473, Hit Rate: 95.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10699602, Misses: 459003, Total: 11158605, Hit Rate: 95.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10770278, Misses: 460003, Total: 11230281, Hit Rate: 95.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10846746, Misses: 461001, Total: 11307747, Hit Rate: 95.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10943335, Misses: 462002, Total: 11405337, Hit Rate: 95.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10958627, Misses: 463003, Total: 11421630, Hit Rate: 95.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10960266, Misses: 464003, Total: 11424269, Hit Rate: 95.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10962010, Misses: 465003, Total: 11427013, Hit Rate: 95.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10963804, Misses: 466003, Total: 11429807, Hit Rate: 95.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10965559, Misses: 467003, Total: 11432562, Hit Rate: 95.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10967320, Misses: 468003, Total: 11435323, Hit Rate: 95.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10968987, Misses: 469003, Total: 11437990, Hit Rate: 95.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10970746, Misses: 470003, Total: 11440749, Hit Rate: 95.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10972979, Misses: 471003, Total: 11443982, Hit Rate: 95.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10974538, Misses: 472003, Total: 11446541, Hit Rate: 95.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10976129, Misses: 473003, Total: 11449132, Hit Rate: 95.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10977730, Misses: 474003, Total: 11451733, Hit Rate: 95.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10979315, Misses: 475003, Total: 11454318, Hit Rate: 95.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10980851, Misses: 476003, Total: 11456854, Hit Rate: 95.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10982505, Misses: 477003, Total: 11459508, Hit Rate: 95.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10984105, Misses: 478003, Total: 11462108, Hit Rate: 95.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10985641, Misses: 479003, Total: 11464644, Hit Rate: 95.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10987296, Misses: 480003, Total: 11467299, Hit Rate: 95.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10988999, Misses: 481003, Total: 11470002, Hit Rate: 95.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10990770, Misses: 482003, Total: 11472773, Hit Rate: 95.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10992403, Misses: 483003, Total: 11475406, Hit Rate: 95.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10993903, Misses: 484003, Total: 11477906, Hit Rate: 95.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10995347, Misses: 485003, Total: 11480350, Hit Rate: 95.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10996748, Misses: 486003, Total: 11482751, Hit Rate: 95.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10998167, Misses: 487003, Total: 11485170, Hit Rate: 95.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 10999564, Misses: 488003, Total: 11487567, Hit Rate: 95.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11000974, Misses: 489003, Total: 11489977, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11002397, Misses: 490003, Total: 11492400, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11003769, Misses: 491003, Total: 11494772, Hit Rate: 95.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11005176, Misses: 492003, Total: 11497179, Hit Rate: 95.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11006602, Misses: 493003, Total: 11499605, Hit Rate: 95.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11008054, Misses: 494003, Total: 11502057, Hit Rate: 95.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11009437, Misses: 495003, Total: 11504440, Hit Rate: 95.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11010915, Misses: 496003, Total: 11506918, Hit Rate: 95.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11012349, Misses: 497003, Total: 11509352, Hit Rate: 95.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11013832, Misses: 498003, Total: 11511835, Hit Rate: 95.67%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11015240, Misses: 499003, Total: 11514243, Hit Rate: 95.67%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11016695, Misses: 500003, Total: 11516698, Hit Rate: 95.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11018145, Misses: 501003, Total: 11519148, Hit Rate: 95.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11019562, Misses: 502003, Total: 11521565, Hit Rate: 95.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11021043, Misses: 503003, Total: 11524046, Hit Rate: 95.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11022417, Misses: 504003, Total: 11526420, Hit Rate: 95.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11023866, Misses: 505003, Total: 11528869, Hit Rate: 95.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11025274, Misses: 506003, Total: 11531277, Hit Rate: 95.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11026958, Misses: 507002, Total: 11533960, Hit Rate: 95.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11028619, Misses: 508002, Total: 11536621, Hit Rate: 95.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11030228, Misses: 509002, Total: 11539230, Hit Rate: 95.59%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11031763, Misses: 510002, Total: 11541765, Hit Rate: 95.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11033340, Misses: 511002, Total: 11544342, Hit Rate: 95.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11035470, Misses: 512002, Total: 11547472, Hit Rate: 95.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11037183, Misses: 513002, Total: 11550185, Hit Rate: 95.56%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11038853, Misses: 514002, Total: 11552855, Hit Rate: 95.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11040477, Misses: 515002, Total: 11555479, Hit Rate: 95.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11042108, Misses: 516002, Total: 11558110, Hit Rate: 95.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11043916, Misses: 517002, Total: 11560918, Hit Rate: 95.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11045581, Misses: 518002, Total: 11563583, Hit Rate: 95.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11047203, Misses: 519002, Total: 11566205, Hit Rate: 95.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11048856, Misses: 520002, Total: 11568858, Hit Rate: 95.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11051180, Misses: 521002, Total: 11572182, Hit Rate: 95.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11053553, Misses: 522002, Total: 11575555, Hit Rate: 95.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11057328, Misses: 523002, Total: 11580330, Hit Rate: 95.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11060034, Misses: 524002, Total: 11584036, Hit Rate: 95.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11061668, Misses: 525002, Total: 11586670, Hit Rate: 95.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11063299, Misses: 526002, Total: 11589301, Hit Rate: 95.46%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11064923, Misses: 527002, Total: 11591925, Hit Rate: 95.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11066577, Misses: 528002, Total: 11594579, Hit Rate: 95.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11068046, Misses: 529002, Total: 11597048, Hit Rate: 95.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11069605, Misses: 530002, Total: 11599607, Hit Rate: 95.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11071174, Misses: 531002, Total: 11602176, Hit Rate: 95.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11072751, Misses: 532002, Total: 11604753, Hit Rate: 95.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11074247, Misses: 533002, Total: 11607249, Hit Rate: 95.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11075837, Misses: 534002, Total: 11609839, Hit Rate: 95.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11077306, Misses: 535002, Total: 11612308, Hit Rate: 95.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11078847, Misses: 536002, Total: 11614849, Hit Rate: 95.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11080288, Misses: 537002, Total: 11617290, Hit Rate: 95.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11081772, Misses: 538002, Total: 11619774, Hit Rate: 95.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11083274, Misses: 539002, Total: 11622276, Hit Rate: 95.36%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11084914, Misses: 540002, Total: 11624916, Hit Rate: 95.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11087359, Misses: 541002, Total: 11628361, Hit Rate: 95.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11089252, Misses: 542002, Total: 11631254, Hit Rate: 95.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11092244, Misses: 543001, Total: 11635245, Hit Rate: 95.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11094242, Misses: 544001, Total: 11638243, Hit Rate: 95.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11097505, Misses: 545001, Total: 11642506, Hit Rate: 95.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11100696, Misses: 546001, Total: 11646697, Hit Rate: 95.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11104193, Misses: 547001, Total: 11651194, Hit Rate: 95.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11107275, Misses: 548001, Total: 11655276, Hit Rate: 95.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11110736, Misses: 549001, Total: 11659737, Hit Rate: 95.29%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11114095, Misses: 550001, Total: 11664096, Hit Rate: 95.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11117550, Misses: 551001, Total: 11668551, Hit Rate: 95.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11120714, Misses: 552001, Total: 11672715, Hit Rate: 95.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11123956, Misses: 553001, Total: 11676957, Hit Rate: 95.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11127543, Misses: 554001, Total: 11681544, Hit Rate: 95.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11130882, Misses: 555001, Total: 11685883, Hit Rate: 95.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11134059, Misses: 556001, Total: 11690060, Hit Rate: 95.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11137541, Misses: 557001, Total: 11694542, Hit Rate: 95.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11140960, Misses: 558001, Total: 11698961, Hit Rate: 95.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11144397, Misses: 559001, Total: 11703398, Hit Rate: 95.22%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11147703, Misses: 560001, Total: 11707704, Hit Rate: 95.22%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11151066, Misses: 561001, Total: 11712067, Hit Rate: 95.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11153920, Misses: 562001, Total: 11715921, Hit Rate: 95.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11156525, Misses: 563001, Total: 11719526, Hit Rate: 95.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11165735, Misses: 564001, Total: 11729736, Hit Rate: 95.19%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11168267, Misses: 565001, Total: 11733268, Hit Rate: 95.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11171311, Misses: 566001, Total: 11737312, Hit Rate: 95.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11174617, Misses: 567001, Total: 11741618, Hit Rate: 95.17%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11178160, Misses: 568001, Total: 11746161, Hit Rate: 95.16%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11181676, Misses: 569001, Total: 11750677, Hit Rate: 95.16%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11185412, Misses: 570001, Total: 11755413, Hit Rate: 95.15%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11189822, Misses: 571001, Total: 11760823, Hit Rate: 95.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11192875, Misses: 572001, Total: 11764876, Hit Rate: 95.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11194788, Misses: 573001, Total: 11767789, Hit Rate: 95.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11196730, Misses: 574001, Total: 11770731, Hit Rate: 95.12%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11199253, Misses: 575001, Total: 11774254, Hit Rate: 95.12%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11202122, Misses: 576001, Total: 11778123, Hit Rate: 95.11%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11204057, Misses: 577001, Total: 11781058, Hit Rate: 95.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11205959, Misses: 578001, Total: 11783960, Hit Rate: 95.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11207917, Misses: 579001, Total: 11786918, Hit Rate: 95.09%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11209964, Misses: 580001, Total: 11789965, Hit Rate: 95.08%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11212635, Misses: 581000, Total: 11793635, Hit Rate: 95.07%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11215357, Misses: 582001, Total: 11797358, Hit Rate: 95.07%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11217430, Misses: 583001, Total: 11800431, Hit Rate: 95.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11219819, Misses: 584001, Total: 11803820, Hit Rate: 95.05%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11222449, Misses: 585001, Total: 11807450, Hit Rate: 95.05%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11225772, Misses: 586001, Total: 11811773, Hit Rate: 95.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11230338, Misses: 587001, Total: 11817339, Hit Rate: 95.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11235231, Misses: 588001, Total: 11823232, Hit Rate: 95.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11277606, Misses: 589000, Total: 11866606, Hit Rate: 95.04%
+-> done 2912 | fringe 212 | area 6.71 mm^2 (0.000007 m^2) | avg speed 0.00 mm^2/s (0.000125 m^2/day) | current speed 0.00 mm^2/s
+gen 28 processing 220 fringe cands (total done 2912 fringe: 212)
+cands 220
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11438764, Misses: 590003, Total: 12028767, Hit Rate: 95.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11544256, Misses: 591003, Total: 12135259, Hit Rate: 95.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11681630, Misses: 592003, Total: 12273633, Hit Rate: 95.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11775947, Misses: 593003, Total: 12368950, Hit Rate: 95.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11859759, Misses: 594003, Total: 12453762, Hit Rate: 95.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 11943118, Misses: 595003, Total: 12538121, Hit Rate: 95.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12000887, Misses: 596003, Total: 12596890, Hit Rate: 95.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12112694, Misses: 597002, Total: 12709696, Hit Rate: 95.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12201538, Misses: 598003, Total: 12799541, Hit Rate: 95.33%
+-> done 3132 | fringe 220 | area 7.22 mm^2 (0.000007 m^2) | avg speed 0.00 mm^2/s (0.000132 m^2/day) | current speed 0.01 mm^2/s
+gen 29 processing 228 fringe cands (total done 3132 fringe: 220)
+cands 228
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12303840, Misses: 599002, Total: 12902842, Hit Rate: 95.36%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12403171, Misses: 600003, Total: 13003174, Hit Rate: 95.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12520529, Misses: 601002, Total: 13121531, Hit Rate: 95.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12616072, Misses: 602002, Total: 13218074, Hit Rate: 95.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12727697, Misses: 603003, Total: 13330700, Hit Rate: 95.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12806980, Misses: 604002, Total: 13410982, Hit Rate: 95.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12883329, Misses: 605003, Total: 13488332, Hit Rate: 95.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 12982519, Misses: 606003, Total: 13588522, Hit Rate: 95.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13076809, Misses: 607003, Total: 13683812, Hit Rate: 95.56%
+-> done 3360 | fringe 228 | area 7.74 mm^2 (0.000008 m^2) | avg speed 0.00 mm^2/s (0.000140 m^2/day) | current speed 0.01 mm^2/s
+gen 30 processing 236 fringe cands (total done 3360 fringe: 228)
+cands 236
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13170304, Misses: 608002, Total: 13778306, Hit Rate: 95.59%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13283540, Misses: 609003, Total: 13892543, Hit Rate: 95.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13391025, Misses: 610003, Total: 14001028, Hit Rate: 95.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13551204, Misses: 611003, Total: 14162207, Hit Rate: 95.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13633194, Misses: 612003, Total: 14245197, Hit Rate: 95.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13711663, Misses: 613003, Total: 14324666, Hit Rate: 95.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13793236, Misses: 614003, Total: 14407239, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13857083, Misses: 615003, Total: 14472086, Hit Rate: 95.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 13980414, Misses: 616003, Total: 14596417, Hit Rate: 95.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14056128, Misses: 617003, Total: 14673131, Hit Rate: 95.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14105298, Misses: 618003, Total: 14723301, Hit Rate: 95.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14106851, Misses: 619003, Total: 14725854, Hit Rate: 95.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14108377, Misses: 620003, Total: 14728380, Hit Rate: 95.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14109916, Misses: 621003, Total: 14730919, Hit Rate: 95.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14111432, Misses: 622003, Total: 14733435, Hit Rate: 95.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14112943, Misses: 623003, Total: 14735946, Hit Rate: 95.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14114500, Misses: 624003, Total: 14738503, Hit Rate: 95.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14116091, Misses: 625003, Total: 14741094, Hit Rate: 95.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14117693, Misses: 626003, Total: 14743696, Hit Rate: 95.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14119292, Misses: 627003, Total: 14746295, Hit Rate: 95.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14120779, Misses: 628003, Total: 14748782, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14122344, Misses: 629003, Total: 14751347, Hit Rate: 95.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14123828, Misses: 630003, Total: 14753831, Hit Rate: 95.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14125440, Misses: 631003, Total: 14756443, Hit Rate: 95.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14127065, Misses: 632003, Total: 14759068, Hit Rate: 95.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14128617, Misses: 633003, Total: 14761620, Hit Rate: 95.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14130217, Misses: 634003, Total: 14764220, Hit Rate: 95.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14131743, Misses: 635003, Total: 14766746, Hit Rate: 95.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14133293, Misses: 636003, Total: 14769296, Hit Rate: 95.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14134883, Misses: 637003, Total: 14771886, Hit Rate: 95.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14136469, Misses: 638003, Total: 14774472, Hit Rate: 95.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14138016, Misses: 639003, Total: 14777019, Hit Rate: 95.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14139490, Misses: 640003, Total: 14779493, Hit Rate: 95.67%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14140897, Misses: 641003, Total: 14781900, Hit Rate: 95.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14142332, Misses: 642003, Total: 14784335, Hit Rate: 95.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14143758, Misses: 643003, Total: 14786761, Hit Rate: 95.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14145140, Misses: 644003, Total: 14789143, Hit Rate: 95.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14146577, Misses: 645003, Total: 14791580, Hit Rate: 95.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14147990, Misses: 646003, Total: 14793993, Hit Rate: 95.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14149404, Misses: 647003, Total: 14796407, Hit Rate: 95.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14150786, Misses: 648003, Total: 14798789, Hit Rate: 95.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14152192, Misses: 649003, Total: 14801195, Hit Rate: 95.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14153497, Misses: 650003, Total: 14803500, Hit Rate: 95.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14154848, Misses: 651003, Total: 14805851, Hit Rate: 95.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14156196, Misses: 652003, Total: 14808199, Hit Rate: 95.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14157600, Misses: 653003, Total: 14810603, Hit Rate: 95.59%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14159024, Misses: 654003, Total: 14813027, Hit Rate: 95.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14160441, Misses: 655003, Total: 14815444, Hit Rate: 95.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14161755, Misses: 656003, Total: 14817758, Hit Rate: 95.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14163093, Misses: 657003, Total: 14820096, Hit Rate: 95.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14164560, Misses: 658003, Total: 14822563, Hit Rate: 95.56%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14165920, Misses: 659003, Total: 14824923, Hit Rate: 95.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14167300, Misses: 660003, Total: 14827303, Hit Rate: 95.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14168697, Misses: 661003, Total: 14829700, Hit Rate: 95.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14170111, Misses: 662003, Total: 14832114, Hit Rate: 95.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14171367, Misses: 663003, Total: 14834370, Hit Rate: 95.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14172566, Misses: 664003, Total: 14836569, Hit Rate: 95.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14173889, Misses: 665003, Total: 14838892, Hit Rate: 95.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14175119, Misses: 666003, Total: 14841122, Hit Rate: 95.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14176388, Misses: 667003, Total: 14843391, Hit Rate: 95.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14177722, Misses: 668003, Total: 14845725, Hit Rate: 95.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14178940, Misses: 669003, Total: 14847943, Hit Rate: 95.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14180246, Misses: 670003, Total: 14850249, Hit Rate: 95.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14181479, Misses: 671003, Total: 14852482, Hit Rate: 95.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14182833, Misses: 672003, Total: 14854836, Hit Rate: 95.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14184072, Misses: 673003, Total: 14857075, Hit Rate: 95.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14185369, Misses: 674003, Total: 14859372, Hit Rate: 95.46%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14186747, Misses: 675003, Total: 14861750, Hit Rate: 95.46%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14188149, Misses: 676003, Total: 14864152, Hit Rate: 95.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14189608, Misses: 677003, Total: 14866611, Hit Rate: 95.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14190975, Misses: 678003, Total: 14868978, Hit Rate: 95.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14192318, Misses: 679003, Total: 14871321, Hit Rate: 95.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14193655, Misses: 680003, Total: 14873658, Hit Rate: 95.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14195029, Misses: 681003, Total: 14876032, Hit Rate: 95.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14196374, Misses: 682003, Total: 14878377, Hit Rate: 95.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14197766, Misses: 683003, Total: 14880769, Hit Rate: 95.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14199119, Misses: 684003, Total: 14883122, Hit Rate: 95.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14200551, Misses: 685003, Total: 14885554, Hit Rate: 95.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14201996, Misses: 686003, Total: 14887999, Hit Rate: 95.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14203342, Misses: 687003, Total: 14890345, Hit Rate: 95.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14204635, Misses: 688003, Total: 14892638, Hit Rate: 95.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14206109, Misses: 689003, Total: 14895112, Hit Rate: 95.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14207473, Misses: 690003, Total: 14897476, Hit Rate: 95.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14208928, Misses: 691003, Total: 14899931, Hit Rate: 95.36%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14210305, Misses: 692003, Total: 14902308, Hit Rate: 95.36%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14211722, Misses: 693003, Total: 14904725, Hit Rate: 95.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14213180, Misses: 694003, Total: 14907183, Hit Rate: 95.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14214582, Misses: 695003, Total: 14909585, Hit Rate: 95.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14215949, Misses: 696003, Total: 14911952, Hit Rate: 95.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14217339, Misses: 697003, Total: 14914342, Hit Rate: 95.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14218781, Misses: 698003, Total: 14916784, Hit Rate: 95.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14220161, Misses: 699003, Total: 14919164, Hit Rate: 95.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14221542, Misses: 700003, Total: 14921545, Hit Rate: 95.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14222968, Misses: 701003, Total: 14923971, Hit Rate: 95.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14224388, Misses: 702003, Total: 14926391, Hit Rate: 95.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14225783, Misses: 703003, Total: 14928786, Hit Rate: 95.29%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14227127, Misses: 704003, Total: 14931130, Hit Rate: 95.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14228523, Misses: 705003, Total: 14933526, Hit Rate: 95.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14229899, Misses: 706003, Total: 14935902, Hit Rate: 95.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14231296, Misses: 707003, Total: 14938299, Hit Rate: 95.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14232692, Misses: 708003, Total: 14940695, Hit Rate: 95.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14234178, Misses: 709003, Total: 14943181, Hit Rate: 95.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14235592, Misses: 710003, Total: 14945595, Hit Rate: 95.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14236980, Misses: 711003, Total: 14947983, Hit Rate: 95.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14238480, Misses: 712003, Total: 14950483, Hit Rate: 95.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14239878, Misses: 713003, Total: 14952881, Hit Rate: 95.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14241293, Misses: 714003, Total: 14955296, Hit Rate: 95.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14242732, Misses: 715003, Total: 14957735, Hit Rate: 95.22%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14244219, Misses: 716003, Total: 14960222, Hit Rate: 95.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14245676, Misses: 717003, Total: 14962679, Hit Rate: 95.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14247055, Misses: 718003, Total: 14965058, Hit Rate: 95.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14248503, Misses: 719003, Total: 14967506, Hit Rate: 95.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14249989, Misses: 720003, Total: 14969992, Hit Rate: 95.19%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14251437, Misses: 721003, Total: 14972440, Hit Rate: 95.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14252825, Misses: 722003, Total: 14974828, Hit Rate: 95.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14254271, Misses: 723003, Total: 14977274, Hit Rate: 95.17%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14255774, Misses: 724003, Total: 14979777, Hit Rate: 95.17%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14257263, Misses: 725003, Total: 14982266, Hit Rate: 95.16%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14258706, Misses: 726003, Total: 14984709, Hit Rate: 95.16%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14260098, Misses: 727003, Total: 14987101, Hit Rate: 95.15%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14261450, Misses: 728003, Total: 14989453, Hit Rate: 95.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14262763, Misses: 729003, Total: 14991766, Hit Rate: 95.14%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14264211, Misses: 730003, Total: 14994214, Hit Rate: 95.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14265555, Misses: 731003, Total: 14996558, Hit Rate: 95.13%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14267321, Misses: 732003, Total: 14999324, Hit Rate: 95.12%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14268751, Misses: 733003, Total: 15001754, Hit Rate: 95.11%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14270183, Misses: 734003, Total: 15004186, Hit Rate: 95.11%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14271570, Misses: 735003, Total: 15006573, Hit Rate: 95.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14272965, Misses: 736003, Total: 15008968, Hit Rate: 95.10%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14274407, Misses: 737003, Total: 15011410, Hit Rate: 95.09%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14275858, Misses: 738003, Total: 15013861, Hit Rate: 95.08%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14277270, Misses: 739003, Total: 15016273, Hit Rate: 95.08%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14278686, Misses: 740003, Total: 15018689, Hit Rate: 95.07%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14280090, Misses: 741003, Total: 15021093, Hit Rate: 95.07%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14281528, Misses: 742003, Total: 15023531, Hit Rate: 95.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14282878, Misses: 743003, Total: 15025881, Hit Rate: 95.06%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14284240, Misses: 744003, Total: 15028243, Hit Rate: 95.05%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14285678, Misses: 745003, Total: 15030681, Hit Rate: 95.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14287124, Misses: 746003, Total: 15033127, Hit Rate: 95.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14288531, Misses: 747003, Total: 15035534, Hit Rate: 95.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14290079, Misses: 748002, Total: 15038081, Hit Rate: 95.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14291660, Misses: 749002, Total: 15040662, Hit Rate: 95.02%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14293236, Misses: 750002, Total: 15043238, Hit Rate: 95.01%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14294720, Misses: 751002, Total: 15045722, Hit Rate: 95.01%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14296258, Misses: 752002, Total: 15048260, Hit Rate: 95.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14297827, Misses: 753002, Total: 15050829, Hit Rate: 95.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14299449, Misses: 754002, Total: 15053451, Hit Rate: 94.99%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14301017, Misses: 755002, Total: 15056019, Hit Rate: 94.99%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14302513, Misses: 756002, Total: 15058515, Hit Rate: 94.98%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14304004, Misses: 757002, Total: 15061006, Hit Rate: 94.97%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14305623, Misses: 758002, Total: 15063625, Hit Rate: 94.97%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14307195, Misses: 759002, Total: 15066197, Hit Rate: 94.96%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14308779, Misses: 760002, Total: 15068781, Hit Rate: 94.96%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14310285, Misses: 761002, Total: 15071287, Hit Rate: 94.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14311798, Misses: 762002, Total: 15073800, Hit Rate: 94.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14313451, Misses: 763002, Total: 15076453, Hit Rate: 94.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14314939, Misses: 764002, Total: 15078941, Hit Rate: 94.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14316525, Misses: 765002, Total: 15081527, Hit Rate: 94.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14318020, Misses: 766002, Total: 15084022, Hit Rate: 94.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14319460, Misses: 767002, Total: 15086462, Hit Rate: 94.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14320983, Misses: 768002, Total: 15088985, Hit Rate: 94.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14322499, Misses: 769002, Total: 15091501, Hit Rate: 94.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14324042, Misses: 770002, Total: 15094044, Hit Rate: 94.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14325450, Misses: 771002, Total: 15096452, Hit Rate: 94.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14326923, Misses: 772002, Total: 15098925, Hit Rate: 94.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14328406, Misses: 773002, Total: 15101408, Hit Rate: 94.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14329855, Misses: 774002, Total: 15103857, Hit Rate: 94.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14331289, Misses: 775002, Total: 15106291, Hit Rate: 94.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14332721, Misses: 776002, Total: 15108723, Hit Rate: 94.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14334151, Misses: 777002, Total: 15111153, Hit Rate: 94.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14335482, Misses: 778002, Total: 15113484, Hit Rate: 94.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14337061, Misses: 779002, Total: 15116063, Hit Rate: 94.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14338683, Misses: 780002, Total: 15118685, Hit Rate: 94.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14340187, Misses: 781001, Total: 15121188, Hit Rate: 94.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14341545, Misses: 782002, Total: 15123547, Hit Rate: 94.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14342779, Misses: 783002, Total: 15125781, Hit Rate: 94.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14344131, Misses: 784002, Total: 15128133, Hit Rate: 94.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14345553, Misses: 785002, Total: 15130555, Hit Rate: 94.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14347011, Misses: 786002, Total: 15133013, Hit Rate: 94.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14348462, Misses: 787002, Total: 15135464, Hit Rate: 94.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14349831, Misses: 788002, Total: 15137833, Hit Rate: 94.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14352663, Misses: 789001, Total: 15141664, Hit Rate: 94.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14356254, Misses: 790001, Total: 15146255, Hit Rate: 94.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14359207, Misses: 791001, Total: 15150208, Hit Rate: 94.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14362855, Misses: 792001, Total: 15154856, Hit Rate: 94.77%
+-> done 3596 | fringe 236 | area 8.29 mm^2 (0.000008 m^2) | avg speed 0.00 mm^2/s (0.000122 m^2/day) | current speed 0.00 mm^2/s
+gen 31 processing 244 fringe cands (total done 3596 fringe: 236)
+cands 244
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14445142, Misses: 793003, Total: 15238145, Hit Rate: 94.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14575198, Misses: 794003, Total: 15369201, Hit Rate: 94.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14668035, Misses: 795003, Total: 15463038, Hit Rate: 94.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14857520, Misses: 796003, Total: 15653523, Hit Rate: 94.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 14934300, Misses: 797002, Total: 15731302, Hit Rate: 94.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15018402, Misses: 798003, Total: 15816405, Hit Rate: 94.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15100567, Misses: 799003, Total: 15899570, Hit Rate: 94.97%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15211267, Misses: 800003, Total: 16011270, Hit Rate: 95.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15315259, Misses: 801003, Total: 16116262, Hit Rate: 95.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15378162, Misses: 802003, Total: 16180165, Hit Rate: 95.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15420079, Misses: 803003, Total: 16223082, Hit Rate: 95.05%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15421590, Misses: 804003, Total: 16225593, Hit Rate: 95.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15423139, Misses: 805002, Total: 16228141, Hit Rate: 95.04%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15424768, Misses: 806003, Total: 16230771, Hit Rate: 95.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15426302, Misses: 807003, Total: 16233305, Hit Rate: 95.03%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15427772, Misses: 808003, Total: 16235775, Hit Rate: 95.02%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15429295, Misses: 809003, Total: 16238298, Hit Rate: 95.02%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15430921, Misses: 810003, Total: 16240924, Hit Rate: 95.01%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15432545, Misses: 811003, Total: 16243548, Hit Rate: 95.01%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15434080, Misses: 812003, Total: 16246083, Hit Rate: 95.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15435761, Misses: 813003, Total: 16248764, Hit Rate: 95.00%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15437405, Misses: 814003, Total: 16251408, Hit Rate: 94.99%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15438913, Misses: 815003, Total: 16253916, Hit Rate: 94.99%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15440527, Misses: 816003, Total: 16256530, Hit Rate: 94.98%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15442079, Misses: 817003, Total: 16259082, Hit Rate: 94.98%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15443651, Misses: 818003, Total: 16261654, Hit Rate: 94.97%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15445265, Misses: 819003, Total: 16264268, Hit Rate: 94.96%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15446831, Misses: 820003, Total: 16266834, Hit Rate: 94.96%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15448463, Misses: 821003, Total: 16269466, Hit Rate: 94.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15450121, Misses: 822003, Total: 16272124, Hit Rate: 94.95%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15451873, Misses: 823003, Total: 16274876, Hit Rate: 94.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15453510, Misses: 824003, Total: 16277513, Hit Rate: 94.94%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15455233, Misses: 825003, Total: 16280236, Hit Rate: 94.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15457039, Misses: 826003, Total: 16283042, Hit Rate: 94.93%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15458745, Misses: 827003, Total: 16285748, Hit Rate: 94.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15460488, Misses: 828003, Total: 16288491, Hit Rate: 94.92%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15462203, Misses: 829003, Total: 16291206, Hit Rate: 94.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15463927, Misses: 830003, Total: 16293930, Hit Rate: 94.91%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15465723, Misses: 831003, Total: 16296726, Hit Rate: 94.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15467451, Misses: 832003, Total: 16299454, Hit Rate: 94.90%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15469219, Misses: 833003, Total: 16302222, Hit Rate: 94.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15471048, Misses: 834003, Total: 16305051, Hit Rate: 94.89%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15472762, Misses: 835003, Total: 16307765, Hit Rate: 94.88%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15474480, Misses: 836003, Total: 16310483, Hit Rate: 94.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15476245, Misses: 837003, Total: 16313248, Hit Rate: 94.87%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15477969, Misses: 838003, Total: 16315972, Hit Rate: 94.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15479702, Misses: 839003, Total: 16318705, Hit Rate: 94.86%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15481392, Misses: 840003, Total: 16321395, Hit Rate: 94.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15483182, Misses: 841003, Total: 16324185, Hit Rate: 94.85%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15484997, Misses: 842003, Total: 16327000, Hit Rate: 94.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15486805, Misses: 843003, Total: 16329808, Hit Rate: 94.84%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15488603, Misses: 844003, Total: 16332606, Hit Rate: 94.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15490400, Misses: 845003, Total: 16335403, Hit Rate: 94.83%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15492125, Misses: 846003, Total: 16338128, Hit Rate: 94.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15493794, Misses: 847003, Total: 16340797, Hit Rate: 94.82%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15495436, Misses: 848003, Total: 16343439, Hit Rate: 94.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15497145, Misses: 849003, Total: 16346148, Hit Rate: 94.81%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15498715, Misses: 850003, Total: 16348718, Hit Rate: 94.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15500375, Misses: 851003, Total: 16351378, Hit Rate: 94.80%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15501975, Misses: 852003, Total: 16353978, Hit Rate: 94.79%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15503627, Misses: 853003, Total: 16356630, Hit Rate: 94.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15505350, Misses: 854003, Total: 16359353, Hit Rate: 94.78%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15507033, Misses: 855003, Total: 16362036, Hit Rate: 94.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15508636, Misses: 856003, Total: 16364639, Hit Rate: 94.77%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15510286, Misses: 857003, Total: 16367289, Hit Rate: 94.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15511929, Misses: 858003, Total: 16369932, Hit Rate: 94.76%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15513458, Misses: 859003, Total: 16372461, Hit Rate: 94.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15514987, Misses: 860003, Total: 16374990, Hit Rate: 94.75%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15516459, Misses: 861003, Total: 16377462, Hit Rate: 94.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15517987, Misses: 862003, Total: 16379990, Hit Rate: 94.74%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15519595, Misses: 863003, Total: 16382598, Hit Rate: 94.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15521231, Misses: 864003, Total: 16385234, Hit Rate: 94.73%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15522847, Misses: 865003, Total: 16387850, Hit Rate: 94.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15524383, Misses: 866003, Total: 16390386, Hit Rate: 94.72%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15525896, Misses: 867003, Total: 16392899, Hit Rate: 94.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15527553, Misses: 868003, Total: 16395556, Hit Rate: 94.71%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15529215, Misses: 869003, Total: 16398218, Hit Rate: 94.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15530872, Misses: 870003, Total: 16400875, Hit Rate: 94.70%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15532491, Misses: 871003, Total: 16403494, Hit Rate: 94.69%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15534093, Misses: 872003, Total: 16406096, Hit Rate: 94.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15535658, Misses: 873003, Total: 16408661, Hit Rate: 94.68%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15537193, Misses: 874003, Total: 16411196, Hit Rate: 94.67%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15538659, Misses: 875003, Total: 16413662, Hit Rate: 94.67%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15540145, Misses: 876003, Total: 16416148, Hit Rate: 94.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15541639, Misses: 877003, Total: 16418642, Hit Rate: 94.66%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15543189, Misses: 878003, Total: 16421192, Hit Rate: 94.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15544791, Misses: 879003, Total: 16423794, Hit Rate: 94.65%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15546332, Misses: 880003, Total: 16426335, Hit Rate: 94.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15547855, Misses: 881003, Total: 16428858, Hit Rate: 94.64%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15549435, Misses: 882003, Total: 16431438, Hit Rate: 94.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15551020, Misses: 883003, Total: 16434023, Hit Rate: 94.63%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15552574, Misses: 884003, Total: 16436577, Hit Rate: 94.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15554093, Misses: 885003, Total: 16439096, Hit Rate: 94.62%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15555589, Misses: 886003, Total: 16441592, Hit Rate: 94.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15557071, Misses: 887003, Total: 16444074, Hit Rate: 94.61%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15558581, Misses: 888003, Total: 16446584, Hit Rate: 94.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15560040, Misses: 889003, Total: 16449043, Hit Rate: 94.60%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15561483, Misses: 890003, Total: 16451486, Hit Rate: 94.59%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15563015, Misses: 891003, Total: 16454018, Hit Rate: 94.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15564500, Misses: 892003, Total: 16456503, Hit Rate: 94.58%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15565967, Misses: 893003, Total: 16458970, Hit Rate: 94.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15567496, Misses: 894003, Total: 16461499, Hit Rate: 94.57%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15568999, Misses: 895003, Total: 16464002, Hit Rate: 94.56%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15570461, Misses: 896003, Total: 16466464, Hit Rate: 94.56%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15571938, Misses: 897003, Total: 16468941, Hit Rate: 94.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15573407, Misses: 898003, Total: 16471410, Hit Rate: 94.55%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15574919, Misses: 899003, Total: 16473922, Hit Rate: 94.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15576310, Misses: 900003, Total: 16476313, Hit Rate: 94.54%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15577770, Misses: 901003, Total: 16478773, Hit Rate: 94.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15579277, Misses: 902003, Total: 16481280, Hit Rate: 94.53%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15580722, Misses: 903003, Total: 16483725, Hit Rate: 94.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15582101, Misses: 904003, Total: 16486104, Hit Rate: 94.52%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15583471, Misses: 905003, Total: 16488474, Hit Rate: 94.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15585014, Misses: 906003, Total: 16491017, Hit Rate: 94.51%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15586481, Misses: 907003, Total: 16493484, Hit Rate: 94.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15587869, Misses: 908003, Total: 16495872, Hit Rate: 94.50%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15589340, Misses: 909003, Total: 16498343, Hit Rate: 94.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15590852, Misses: 910003, Total: 16500855, Hit Rate: 94.49%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15592322, Misses: 911003, Total: 16503325, Hit Rate: 94.48%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15593824, Misses: 912003, Total: 16505827, Hit Rate: 94.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15595344, Misses: 913003, Total: 16508347, Hit Rate: 94.47%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15596883, Misses: 914003, Total: 16510886, Hit Rate: 94.46%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15598355, Misses: 915003, Total: 16513358, Hit Rate: 94.46%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15599837, Misses: 916003, Total: 16515840, Hit Rate: 94.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15601347, Misses: 917003, Total: 16518350, Hit Rate: 94.45%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15602813, Misses: 918003, Total: 16520816, Hit Rate: 94.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15604297, Misses: 919003, Total: 16523300, Hit Rate: 94.44%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15605835, Misses: 920003, Total: 16525838, Hit Rate: 94.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15607366, Misses: 921003, Total: 16528369, Hit Rate: 94.43%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15608843, Misses: 922003, Total: 16530846, Hit Rate: 94.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15610360, Misses: 923003, Total: 16533363, Hit Rate: 94.42%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15611771, Misses: 924003, Total: 16535774, Hit Rate: 94.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15613295, Misses: 925003, Total: 16538298, Hit Rate: 94.41%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15614823, Misses: 926003, Total: 16540826, Hit Rate: 94.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15616327, Misses: 927003, Total: 16543330, Hit Rate: 94.40%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15617780, Misses: 928003, Total: 16545783, Hit Rate: 94.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15619294, Misses: 929003, Total: 16548297, Hit Rate: 94.39%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15620795, Misses: 930003, Total: 16550798, Hit Rate: 94.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15622313, Misses: 931003, Total: 16553316, Hit Rate: 94.38%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15623798, Misses: 932003, Total: 16555801, Hit Rate: 94.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15625242, Misses: 933003, Total: 16558245, Hit Rate: 94.37%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15626760, Misses: 934003, Total: 16560763, Hit Rate: 94.36%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15628251, Misses: 935003, Total: 16563254, Hit Rate: 94.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15629738, Misses: 936003, Total: 16565741, Hit Rate: 94.35%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15631256, Misses: 937003, Total: 16568259, Hit Rate: 94.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15632699, Misses: 938003, Total: 16570702, Hit Rate: 94.34%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15634379, Misses: 939003, Total: 16573382, Hit Rate: 94.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15636150, Misses: 940003, Total: 16576153, Hit Rate: 94.33%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15637855, Misses: 941003, Total: 16578858, Hit Rate: 94.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15639791, Misses: 942003, Total: 16581794, Hit Rate: 94.32%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15641565, Misses: 943002, Total: 16584567, Hit Rate: 94.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15643003, Misses: 944002, Total: 16587005, Hit Rate: 94.31%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15644437, Misses: 945002, Total: 16589439, Hit Rate: 94.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15645847, Misses: 946002, Total: 16591849, Hit Rate: 94.30%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15647256, Misses: 947002, Total: 16594258, Hit Rate: 94.29%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15648691, Misses: 948002, Total: 16596693, Hit Rate: 94.29%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15650104, Misses: 949002, Total: 16599106, Hit Rate: 94.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15652114, Misses: 950002, Total: 16602116, Hit Rate: 94.28%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15653599, Misses: 951002, Total: 16604601, Hit Rate: 94.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15655018, Misses: 952002, Total: 16607020, Hit Rate: 94.27%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15656409, Misses: 953002, Total: 16609411, Hit Rate: 94.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15657838, Misses: 954002, Total: 16611840, Hit Rate: 94.26%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15659284, Misses: 955002, Total: 16614286, Hit Rate: 94.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15660630, Misses: 956002, Total: 16616632, Hit Rate: 94.25%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15662045, Misses: 957002, Total: 16619047, Hit Rate: 94.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15663461, Misses: 958002, Total: 16621463, Hit Rate: 94.24%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15664876, Misses: 959002, Total: 16623878, Hit Rate: 94.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15666314, Misses: 960002, Total: 16626316, Hit Rate: 94.23%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15667780, Misses: 961002, Total: 16628782, Hit Rate: 94.22%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15669218, Misses: 962002, Total: 16631220, Hit Rate: 94.22%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15670636, Misses: 963002, Total: 16633638, Hit Rate: 94.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15672070, Misses: 964002, Total: 16636072, Hit Rate: 94.21%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15673519, Misses: 965002, Total: 16638521, Hit Rate: 94.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15674963, Misses: 966002, Total: 16640965, Hit Rate: 94.20%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15676401, Misses: 967002, Total: 16643403, Hit Rate: 94.19%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15677809, Misses: 968002, Total: 16645811, Hit Rate: 94.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15679223, Misses: 969002, Total: 16648225, Hit Rate: 94.18%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15680641, Misses: 970002, Total: 16650643, Hit Rate: 94.17%
+[GridStore Cache] Hitrate Warning Triggered: Hits: 15682096, Misses: 971002, Total: 16653098, Hit Rate: 94.17%

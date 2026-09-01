@@ -1,0 +1,6 @@
+surface                                      blocks    range  |peak|  verdict
+------------------------------------------------------------------------------------
+20260623153216-w081-084__20260623153216-on-2      5     37.9    36.0  ON SHEET (57% of baseline)
+pubmesh                                           5     67.0    12.0  baseline
+
+wrote /workspace/onsheet_corpus/20260623153216-w081-084__20260623153216-on-20260411134726-2.4um.tifxyz.json

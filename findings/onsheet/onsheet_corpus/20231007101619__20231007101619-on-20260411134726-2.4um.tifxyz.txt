@@ -1,0 +1,6 @@
+surface                                      blocks    range  |peak|  verdict
+------------------------------------------------------------------------------------
+20231007101619__20231007101619-on-2026041113      5     30.1    25.0  marginal (45% of baseline)
+pubmesh                                           5     67.0    12.0  baseline
+
+wrote /workspace/onsheet_corpus/20231007101619__20231007101619-on-20260411134726-2.4um.tifxyz.json
