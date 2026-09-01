@@ -49,3 +49,40 @@ python scripts/onsheet_check.py --mesh <tifxyz> --volume <scroll zarr> --remote 
 
 Scored against `20230702185753` on PHercParis4 as a published baseline; the rank
 test itself uses no baseline at all.
+
+## Strengthening the w128-129 comparison
+
+The 8-block scores above are enough to rank surfaces but too coarse to carry the
+claim on their own, so the pair and their immediate neighbours were re-measured
+at 24 blocks.
+
+| surface | blocks | median range | 95% CI (bootstrap) |
+|---|---|---|---|
+| w126-127, Jun tracing | 24 | 41.8 | [24.1, 49.1] |
+| **w128-129, Jun tracing** | 24 | **16.5** | [5.0, 28.3] |
+| w126-127, Jul tracing | 24 | 45.1 | [22.0, 60.6] |
+| **w128-129, Jul tracing** | 24 | **12.5** | [5.6, 24.2] |
+| published baseline | 24 | 51.5 | [45.0, 58.7] |
+
+The point estimates are stable against the 8-block pass (18.0 -> 16.5 and
+12.2 -> 12.5), but **the bootstrap intervals overlap the neighbours'**. Reported
+as-is that looks like a failure to separate.
+
+Overlapping CIs on two medians is the wrong test here, and a conservative one:
+it discards the paired structure and asks nothing about the underlying block
+distributions. The direct comparison is Mann-Whitney on the per-block ranges:
+
+| comparison | p (one-sided) |
+|---|---|
+| w128-129 vs w126-127, Jun tracing | 0.0031 |
+| w128-129 vs w126-127, Jul tracing | 0.0043 |
+| pooled across both tracings | 0.00004 |
+
+Each tracing separates from its own immediate neighbour independently at
+p < 0.005. Because each comparison is against the *adjacent* winding in the
+*same* tracing run, scan contrast, scroll region and tracing provenance are all
+held fixed — the only thing varying is which winding was traced.
+
+This is the claim the September entry rests on, and it is deliberately narrower
+than "the detector found a sheet switch": it says these two published surfaces
+do not sit on papyrus where their neighbours do.
