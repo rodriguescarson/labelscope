@@ -1277,6 +1277,74 @@ def _load_window(volume_path: str, lo, hi):
     return window, lo
 
 
+def cmd_onsheet(args: argparse.Namespace) -> int:
+    """Is a traced surface sitting on papyrus, or cutting across the windings?"""
+    import json
+
+    from .onsheet import compare, measure, verdict
+
+    if args.remote:
+        from .remote_zarr import ChunkedVolume
+
+        volume = ChunkedVolume.from_store(args.volume, cache_dir=args.cache)
+    else:
+        import tifffile
+
+        volume = tifffile.imread(args.volume)
+
+    paths = list(args.mesh) + ([args.baseline] if args.baseline else [])
+    results = measure(
+        paths,
+        volume,
+        reach=args.reach,
+        step=args.step,
+        blocks=args.blocks,
+        block_size=args.block_size,
+        seed=args.seed,
+    )
+    if args.baseline:
+        results[-1]["baseline"] = True
+
+    base = next((r for r in results if r.get("baseline") and "error" not in r), None)
+    print(f"{'surface':44s} {'blocks':>6s} {'range':>8s} {'|peak|':>7s}  verdict")
+    print("-" * 84)
+    for row in results:
+        if "error" in row:
+            print(f"{row['mesh'][:44]:44s} {'-':>6s} {'-':>8s} {'-':>7s}  {row['error']}")
+            continue
+        label = "baseline" if row.get("baseline") else ""
+        if base is not None and not row.get("baseline"):
+            label, frac = verdict(row["range_median"], base["range_median"])
+            label += f" ({frac:.0%} of baseline)"
+        print(
+            f"{row['mesh'][:44]:44s} {row['blocks']:6d} {row['range_median']:8.1f} "
+            f"{row['peak_offset_abs_median']:7.1f}  {label}"
+        )
+
+    payload = {"results": results}
+    if args.compare and len(results) >= 2:
+        usable = [r for r in results if "error" not in r]
+        if len(usable) >= 2:
+            stats = compare(usable[0]["per_block"], usable[1]["per_block"])
+            payload["compare"] = stats
+            if "error" not in stats:
+                print(
+                    f"\n{usable[0]['mesh'][:36]} vs {usable[1]['mesh'][:36]}: "
+                    f"medians {stats['median_a']:.1f} vs {stats['median_b']:.1f}, "
+                    f"Mann-Whitney one-sided p = {stats['p_less']:.4g}"
+                )
+                print(
+                    "  (valid only if both were measured in the same volume; "
+                    "adjacent windings of one tracing run is the strongest form)"
+                )
+
+    if args.out:
+        with open(args.out, "w") as handle:
+            json.dump(payload, handle, indent=2)
+        print(f"\nwrote {args.out}")
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         prog="labelscope",
@@ -1537,6 +1605,53 @@ def main(argv=None) -> int:
         "called a seam rather than damage",
     )
     switch.set_defaults(func=cmd_sheetswitch)
+
+    onsheet = sub.add_parser(
+        "onsheet",
+        help="check whether a traced surface actually sits on papyrus",
+    )
+    onsheet.add_argument(
+        "--mesh", nargs="+", required=True, help="one or more tifxyz directories"
+    )
+    onsheet.add_argument(
+        "--volume", required=True, help="the CT volume the surface was traced on"
+    )
+    onsheet.add_argument(
+        "--baseline",
+        help="a published surface from the SAME volume, measured the same way.  "
+        "Absolute range tracks scan resolution and contrast, so a verdict is "
+        "only meaningful against a baseline from the same scan",
+    )
+    onsheet.add_argument(
+        "--compare",
+        action="store_true",
+        help="test whether the first surface is drawn from a lower profile-range "
+        "distribution than the second (Mann-Whitney over blocks).  Comparing "
+        "two surfaces measured in the same volume -- ideally adjacent windings "
+        "of one tracing run -- is stronger than either against a baseline",
+    )
+    onsheet.add_argument(
+        "--remote", action="store_true", help="stream the volume over HTTP"
+    )
+    onsheet.add_argument("--cache", help="directory to keep fetched chunks in")
+    onsheet.add_argument(
+        "--reach", type=float, default=70.0, help="voxels to walk either way along the normal"
+    )
+    onsheet.add_argument("--step", type=float, default=1.0, help="sampling step along the normal")
+    onsheet.add_argument(
+        "--blocks", type=int, default=6, help="how many coherent grid blocks to profile"
+    )
+    onsheet.add_argument(
+        "--block-size",
+        type=int,
+        default=12,
+        help="grid cells per side of a block.  Averaging over a whole patch "
+        "cancels the winding phase and makes a bad surface look good, so this "
+        "stays small",
+    )
+    onsheet.add_argument("--seed", type=int, default=0)
+    onsheet.add_argument("--out", help="write the full result as JSON")
+    onsheet.set_defaults(func=cmd_onsheet)
 
     args = parser.parse_args(argv)
     return args.func(args)

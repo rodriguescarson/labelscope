@@ -23,6 +23,7 @@ It answers three questions:
 | Are the labels internally consistent? | `labelscope scan` | class-scheme, shape, encoding and topology census; ranked worst volumes |
 | Do the labels sit where the CT says the surface is? | `labelscope align` | signed offset from the label to the scan's own ridge, in voxels |
 | Has this traced surface jumped to a neighbouring wrap? | `labelscope sheetswitch` | the grid lines (or, on a triangular mesh, the cut) where it does, and a refusal when the resolution cannot tell |
+| Is this traced surface even sitting on papyrus? | `labelscope onsheet` | dynamic range of the scan along the surface normal, and a Mann-Whitney test against a second surface from the same scan |
 
 ---
 
@@ -234,7 +235,44 @@ itself and keeps the search inside 45% of it, so it cannot reach the next wrap.
 The spacing it measured is reported alongside every result.
 
 
-## 4. `labelscope sheetswitch` — has this surface jumped to another wrap?
+## 4. `labelscope onsheet` — is this surface even on papyrus?
+
+A tracer can finish normally, report a plausible area, place every vertex inside
+the scan, and still return a surface that cuts *across* the windings. The meta
+looks right and renders show credible fibrous texture at every depth.
+
+Sampling the scan along the surface normal separates the two: a surface on a
+sheet sits on a density ridge and has real dynamic range; one cutting across
+sheets sees similar material at every depth and is flat.
+
+```
+labelscope onsheet --mesh seg.tifxyz --baseline published.tifxyz \
+  --volume https://.../volume.zarr --remote
+```
+
+Two cautions, both learned by getting them wrong first:
+
+* **Absolute range is not comparable across scans.** It tracks scan resolution
+  and contrast as much as surface quality — one scroll in the published corpus
+  has a median of 19.7 where others run 34–60, and that is its resolution, not
+  53 bad surfaces. A threshold fitted on one scroll will not transfer.
+* **So prefer `--compare`**, which tests two surfaces measured in the *same*
+  volume against each other. Adjacent windings of one tracing run is the
+  strongest form: it holds scan, region and provenance fixed and varies only
+  which winding was traced.
+
+```
+labelscope onsheet --mesh suspect.tifxyz neighbour.tifxyz \
+  --volume https://.../volume.zarr --remote --compare
+```
+
+This check covers 257 of the 258 published surfaces, where `sheetswitch` can
+assess 114 — it needs no winding spacing, so the resolution and degenerate-null
+gates that stop the sheet-switch detector do not apply.
+
+---
+
+## 5. `labelscope sheetswitch` — has this surface jumped to another wrap?
 
 The Open Problems bottleneck table lists "Meshes can jump from one wrap to
 another" and asks for conservative failure detection.
