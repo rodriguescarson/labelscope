@@ -83,5 +83,8 @@ recorded before the mechanism is written into any text.
 
 ## Key hash
 
-`SHA-256(drafts/ink-labeler-key.json)`: *to be appended in the commit that
-seals the key, before labelling.*
+`SHA-256(drafts/ink-labeler-key.json)` = `a126d16f00e9953cbcf4ba5be1a46bf19d6178311dc412384724437a4594a86f`
+
+Sealed 2 Sep 2026 before any label was made. The page shows 255 renders; the
+three segments with no published ink render and the one with no surface
+volume are excluded and counted, as above.
