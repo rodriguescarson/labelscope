@@ -18,8 +18,15 @@ degenerate. Across the 253 published surfaces in seven scrolls:
 | degenerate null | 16 |
 
 The on-sheet check samples the scan along the surface normal. It needs no
-winding spacing and, in its rank form, no baseline surface either, so it scores
-**all 253**.
+winding spacing and, in its rank form, no baseline surface either, so nothing in
+the method excludes a surface the way these gates do.
+
+**What has actually been run: 95 of the 253** — all 81 published PHercParis4
+surfaces plus the 14 of PHerc0139/20250108 and PHerc0172/20250926. Every one
+returned a score, including the 40 PHercParis4 surfaces the sheet-switch gates
+reject. The remaining 158 are expected to score for the same reason, but that is
+an inference from the method, not a measurement, and it is not claimed as a
+result until the pass is run.
 
 ## The one verified error falls in the half the detector cannot see
 
@@ -57,9 +64,11 @@ the other by default.
 
 ## What follows
 
-The on-sheet check is the more broadly applicable of the two: it doubles corpus
-coverage (114 -> 253), it caught a real defect the detector's gates hid, and its
-rank form needs no known-good reference surface. The sheet-switch detector
+The on-sheet check is the more broadly applicable of the two: on the 81
+PHercParis4 surfaces where both were run it scored all 81 against the detector's
+41, it caught a real defect the detector's gates hid, and its rank form needs no
+known-good reference surface. Whether that 2x coverage holds across the whole
+corpus is the obvious next measurement. The sheet-switch detector
 remains unproven on real errors — the validation that would settle it still
 needs traced surfaces with known sheet crossings, which this work has not yet
 produced.
