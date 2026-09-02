@@ -109,3 +109,18 @@ column than walking the scan.
 raw-scan comparison; the surface-volume command is in section 2; the
 cross-sections come from `scripts/onsheet/xsec_block.py` with the block
 coordinates in the image filenames.
+
+## 4. The whole series, on their surface volumes
+
+Measuring every published PHercParis4 w-series surface the same way (100 chunks
+of its own surface volume, seed 0):
+
+![winding series](figures/PHercParis4_winding_series.png)
+
+Both tracings sit on a plateau of about 50-65 grey levels from winding 18 to
+about 120, decline through the last few wraps, and end at 26 and 25 on
+w128-129 -- below the interior minimum of either series (38.2 and 37.6). The
+terminal patch is the worst of 29 and the worst of 28 on the team's own data,
+which is the rank test of `terminal-patch-result.md` repeated with a dense
+measurement. The decline beginning around w120 is consistent with the outer
+wraps being progressively more fused, not with a single tracing mistake.
