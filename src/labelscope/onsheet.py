@@ -136,7 +136,27 @@ def _s3_list(url: str, delimiter: bool):
     return [f"{bucket}/{k}" for k in found if k != prefix]
 
 
-def surface_volume_profiles(store: str, chunks: int = 100, seed: int = 0, min_coverage=0.5):
+def _sv_profile(key: str, raw: bytes, min_coverage: float):
+    if len(raw) != SV_LAYERS * SV_SIDE * SV_SIDE:
+        return None
+    cube = np.frombuffer(raw, dtype=np.uint8).reshape(SV_LAYERS, SV_SIDE, SV_SIDE)
+    footprint = cube.max(axis=0) > 0  # the surface exists where any layer is non-zero
+    if footprint.mean() < min_coverage:
+        return None
+    profile = cube[:, footprint].astype(np.float32).mean(axis=1)
+    mid = SV_LAYERS // 2
+    return {
+        "block": key.rsplit("/", 2)[-2:],
+        "n": int(footprint.sum()),
+        "range": float(profile.max() - profile.min()),
+        "at_zero": float(profile[mid]),
+        "peak_offset": float(np.argmax(profile) - mid),
+    }
+
+
+def surface_volume_profiles(
+    store: str, chunks: int = 100, seed: int = 0, min_coverage=0.5, workers: int = 16
+):
     """Layer profiles from a published segment's own ``surface-volumes`` zarr.
 
     Each chunk is 109 layers x 128 x 128 columns, uint8, uncompressed, with the
@@ -145,39 +165,49 @@ def surface_volume_profiles(store: str, chunks: int = 100, seed: int = 0, min_co
     surface covers exist -- so chunks are drawn from a listing.  Returns the
     same record shape as :func:`block_profiles` so :func:`summarise` and
     :func:`compare` apply unchanged.
+
+    Listings and fetches run in a thread pool, but candidates are drawn and
+    accepted in seed order, so the result does not depend on which request
+    finished first.
     """
     import urllib.request
+    from concurrent.futures import ThreadPoolExecutor
 
     rng = np.random.default_rng(seed)
     columns = _s3_list(f"{store.rstrip('/')}/0/0/", delimiter=True)
     if not columns:
         return []
-    out, tries = [], 0
-    while len(out) < chunks and tries < chunks * 6:
-        tries += 1
-        col = columns[int(rng.integers(len(columns)))]
-        keys = _s3_list(col, delimiter=False)
-        if not keys:
-            continue
-        key = keys[int(rng.integers(len(keys)))]
-        raw = urllib.request.urlopen(key, timeout=120).read()
-        if len(raw) != SV_LAYERS * SV_SIDE * SV_SIDE:
-            continue
-        cube = np.frombuffer(raw, dtype=np.uint8).reshape(SV_LAYERS, SV_SIDE, SV_SIDE)
-        footprint = cube.max(axis=0) > 0  # the surface exists where any layer is non-zero
-        if footprint.mean() < min_coverage:
-            continue
-        profile = cube[:, footprint].astype(np.float32).mean(axis=1)
-        mid = SV_LAYERS // 2
-        out.append(
-            {
-                "block": key.rsplit("/", 2)[-2:],
-                "n": int(footprint.sum()),
-                "range": float(profile.max() - profile.min()),
-                "at_zero": float(profile[mid]),
-                "peak_offset": float(np.argmax(profile) - mid),
-            }
-        )
+
+    def fetch(url):
+        try:
+            return urllib.request.urlopen(url, timeout=120).read()
+        except Exception:
+            return b""
+
+    out = []
+    seen = set()
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        while len(out) < chunks:
+            want = min(2 * (chunks - len(out)) + 8, 4 * chunks)
+            cols = [columns[int(i)] for i in rng.integers(len(columns), size=want)]
+            listed = list(pool.map(lambda c: _s3_list(c, delimiter=False), cols))
+            keys = []
+            for ks in listed:
+                if ks:
+                    k = ks[int(rng.integers(len(ks)))]
+                    if k not in seen:
+                        seen.add(k)
+                        keys.append(k)
+            if not keys:
+                break
+            for key, raw in zip(keys, pool.map(fetch, keys)):
+                rec = _sv_profile(key, raw, min_coverage)
+                if rec is not None:
+                    out.append(rec)
+                    if len(out) >= chunks:
+                        break
+            if len(seen) >= len(columns) * 4:
+                break
     return out
 
 

@@ -217,7 +217,11 @@ def test_surface_volume_profiles_reads_a_chunk(monkeypatch):
     monkeypatch.setattr(
         on,
         "_s3_list",
-        lambda url, delimiter: ["http://x/0/0/7/"] if delimiter else ["http://x/0/0/7/3"],
+        lambda url, delimiter: (
+            ["http://x/0/0/7/"]
+            if delimiter
+            else ["http://x/0/0/7/3", "http://x/0/0/7/4", "http://x/0/0/7/5"]
+        ),
     )
 
     class _Resp:
@@ -232,7 +236,8 @@ def test_surface_volume_profiles_reads_a_chunk(monkeypatch):
     assert found[0]["n"] == 128 * 96
     assert found[0]["range"] == 180.0
     assert found[0]["peak_offset"] == 0.0
-    assert found[0]["block"] == ["7", "3"]
+    assert found[0]["block"][0] == "7"
+    assert len({tuple(f["block"]) for f in found}) == 3  # never the same chunk twice
 
 
 def test_surface_volume_profiles_rejects_sparse_chunks(monkeypatch):
