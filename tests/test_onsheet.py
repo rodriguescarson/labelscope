@@ -120,3 +120,76 @@ def test_blocks_require_enough_valid_vertices(volume):
     mesh.valid[:] = False
     mesh.valid[::7, ::7] = True
     assert profiles(mesh, volume) == []
+
+
+def test_tiles_never_overlap(volume):
+    from labelscope.onsheet import _tiles
+
+    tiles = _tiles(40, 40, 12, np.random.default_rng(0))
+    assert len(tiles) == 9  # 40 // 12 == 3 per side
+    seen = set()
+    for r, c in tiles:
+        cells = {(r + i, c + j) for i in range(12) for j in range(12)}
+        assert not (cells & seen)
+        seen |= cells
+
+
+def test_lazy_and_eager_readers_give_identical_blocks(tmp_path, volume):
+    """The memory-mapped path must reproduce the in-memory path exactly.
+
+    Written the way the published corpus is written -- three uncompressed
+    float32 TIFFs plus meta.json -- so this exercises the real mapping.
+    """
+    import tifffile
+
+    from labelscope.mesh import LazyQuadMesh, QuadMesh, read_tifxyz
+
+    mesh = mesh_on_sheet()
+    d = tmp_path / "surf.tifxyz"
+    d.mkdir()
+    for axis, idx in (("z", 0), ("y", 1), ("x", 2)):
+        tifffile.imwrite(d / f"{axis}.tif", mesh.points[..., idx].astype(np.float32))
+    (d / "meta.json").write_text("{}")
+
+    eager = read_tifxyz(str(d))
+    lazy = read_tifxyz(str(d), lazy=True)
+    assert isinstance(eager, QuadMesh)
+    assert isinstance(lazy, LazyQuadMesh)
+    assert lazy.shape == eager.shape
+
+    a = profiles(eager, volume)
+    b = profiles(lazy, volume)
+    assert [x["block"] for x in a] == [x["block"] for x in b]
+    assert np.allclose([x["range"] for x in a], [x["range"] for x in b])
+    assert np.allclose([x["at_zero"] for x in a], [x["at_zero"] for x in b])
+
+
+def test_lazy_auto_reads_small_files_whole(tmp_path):
+    import tifffile
+
+    from labelscope.mesh import QuadMesh, read_tifxyz
+
+    mesh = mesh_on_sheet()
+    d = tmp_path / "small.tifxyz"
+    d.mkdir()
+    for axis, idx in (("z", 0), ("y", 1), ("x", 2)):
+        tifffile.imwrite(d / f"{axis}.tif", mesh.points[..., idx].astype(np.float32))
+    assert isinstance(read_tifxyz(str(d), lazy="auto"), QuadMesh)
+
+
+def test_lazy_falls_back_when_not_mappable(tmp_path, volume):
+    """A compressed TIFF cannot be memory-mapped; the reader must still work."""
+    import tifffile
+
+    from labelscope.mesh import QuadMesh, read_tifxyz
+
+    mesh = mesh_on_sheet()
+    d = tmp_path / "zipped.tifxyz"
+    d.mkdir()
+    for axis, idx in (("z", 0), ("y", 1), ("x", 2)):
+        tifffile.imwrite(
+            d / f"{axis}.tif", mesh.points[..., idx].astype(np.float32), compression="zlib"
+        )
+    got = read_tifxyz(str(d), lazy=True)
+    assert isinstance(got, QuadMesh)
+    assert profiles(got, volume)

@@ -62,24 +62,87 @@ class QuadMesh:
         hi = np.ceil(pts.max(0)).astype(int) + margin
         return lo, hi
 
+    def window(self, r0: int, r1: int, c0: int, c1: int) -> QuadMesh:
+        """The sub-grid ``[r0:r1, c0:c1]`` as its own mesh."""
+        return QuadMesh(
+            points=self.points[r0:r1, c0:c1],
+            valid=self.valid[r0:r1, c0:c1],
+            meta=self.meta,
+            path=self.path,
+        )
 
-def read_tifxyz(directory: str) -> QuadMesh:
-    """Load a tifxyz surface.  Missing vertices are marked by -1 in any channel."""
-    import tifffile
 
-    parts = {}
+class LazyQuadMesh:
+    """A tifxyz surface left on disk; only the windows asked for are read.
+
+    A published surface can run to 250 MB per axis.  Materialising all three
+    axes, the stacked points, the validity mask and then the normals is several
+    gigabytes, which is more than the small machine this check is meant to run
+    on.  The on-sheet check only ever looks at a few dozen small blocks, so it
+    can memory-map the TIFFs and page in just those.
+    """
+
+    def __init__(self, parts, meta: dict, path: str = ""):
+        self._parts = parts  # (z, y, x), each a memory-mapped 2-D array
+        self.meta = meta
+        self.path = path
+
+    @property
+    def shape(self) -> Tuple[int, int]:
+        return tuple(self._parts[0].shape)
+
+    def window(self, r0: int, r1: int, c0: int, c1: int) -> QuadMesh:
+        """Read ``[r0:r1, c0:c1]`` off disk and return it as an in-memory mesh."""
+        parts = [np.asarray(p[r0:r1, c0:c1], dtype=np.float32) for p in self._parts]
+        points = np.stack(parts, axis=-1)
+        valid = np.all(points >= 0, axis=-1) & np.all(np.isfinite(points), axis=-1)
+        return QuadMesh(points=points, valid=valid, meta=self.meta, path=self.path)
+
+
+def _tifxyz_paths(directory: str):
+    paths = {}
     for axis in ("x", "y", "z"):
         path = os.path.join(directory, f"{axis}.tif")
         if not os.path.exists(path):
             raise FileNotFoundError(f"{directory} is not a tifxyz surface: no {axis}.tif")
-        parts[axis] = tifffile.imread(path).astype(np.float32)
+        paths[axis] = path
+    return paths
 
+
+def _read_meta(directory: str) -> dict:
     meta_path = os.path.join(directory, "meta.json")
-    meta = {}
     if os.path.exists(meta_path):
         with open(meta_path) as handle:
-            meta = json.load(handle)
+            return json.load(handle)
+    return {}
 
+
+def read_tifxyz(directory: str, lazy=False):
+    """Load a tifxyz surface.  Missing vertices are marked by -1 in any channel.
+
+    ``lazy=True`` memory-maps the TIFFs instead of reading them, returning a
+    :class:`LazyQuadMesh` that only supports windowed access; ``lazy="auto"``
+    does so when the three files together exceed 256 MB.  Mapping needs the
+    TIFFs to be uncompressed and contiguous, which is how the published corpus
+    is written; a file that cannot be mapped is read whole instead.
+    """
+    import tifffile
+
+    paths = _tifxyz_paths(directory)
+    meta = _read_meta(directory)
+
+    if lazy == "auto":
+        lazy = sum(os.path.getsize(p) for p in paths.values()) > 256 * 1024 * 1024
+
+    if lazy:
+        try:
+            parts = tuple(tifffile.memmap(paths[axis], mode="r") for axis in ("z", "y", "x"))
+            if all(p.ndim == 2 for p in parts):
+                return LazyQuadMesh(parts, meta=meta, path=directory)
+        except (ValueError, OSError):
+            pass  # not mappable: fall through and read it whole
+
+    parts = {axis: tifffile.imread(path).astype(np.float32) for axis, path in paths.items()}
     points = np.stack([parts["z"], parts["y"], parts["x"]], axis=-1)
     valid = np.all(points >= 0, axis=-1) & np.all(np.isfinite(points), axis=-1)
     return QuadMesh(points=points, valid=valid, meta=meta, path=directory)

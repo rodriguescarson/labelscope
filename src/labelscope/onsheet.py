@@ -29,6 +29,22 @@ import os
 import numpy as np
 
 
+def _tiles(rows: int, cols: int, block_size: int, rng) -> list:
+    """Every non-overlapping ``block_size`` tile of the grid, in random order.
+
+    Tiles rather than random placement: two overlapping blocks share vertices,
+    and treating them as separate observations in :func:`compare` would count
+    the same material twice.  A grid smaller than one tile yields nothing.
+    """
+    tiles = [
+        (r, c)
+        for r in range(0, rows - block_size + 1, block_size)
+        for c in range(0, cols - block_size + 1, block_size)
+    ]
+    order = rng.permutation(len(tiles))
+    return [tiles[i] for i in order]
+
+
 def block_profiles(
     mesh,
     volume,
@@ -41,30 +57,34 @@ def block_profiles(
 ):
     """Mean intensity along the normal, one profile per coherent grid block.
 
-    Blocks are sampled at random and rejected unless at least half their
-    vertices are valid, so a patch with sparse coverage yields fewer blocks
-    rather than profiles built from scattered points.
+    Blocks are non-overlapping tiles visited in random order and rejected unless
+    at least half their vertices are valid, so a patch with sparse coverage
+    yields fewer blocks rather than profiles built from scattered points.
+
+    Normals come from a one-cell-padded window around each block, which gives
+    the same central differences as computing them over the whole grid while
+    letting a :class:`~labelscope.mesh.LazyQuadMesh` page in only that window.
     """
     from labelscope.mesh import _sampler
 
     sample, remote = _sampler(volume, origin)
     offsets = np.arange(-reach, reach + step / 2, step, dtype=np.float32)
-    normals = mesh.normals()
     rows, cols = mesh.shape
     rng = np.random.default_rng(seed)
 
     out = []
-    tries = 0
-    while len(out) < blocks and tries < blocks * 20:
-        tries += 1
-        r0 = int(rng.integers(0, max(1, rows - block_size)))
-        c0 = int(rng.integers(0, max(1, cols - block_size)))
-        sl = (slice(r0, r0 + block_size), slice(c0, c0 + block_size))
-        valid = mesh.valid[sl]
+    for r0, c0 in _tiles(rows, cols, block_size, rng):
+        if len(out) >= blocks:
+            break
+        pr0, pc0 = max(r0 - 1, 0), max(c0 - 1, 0)
+        pr1, pc1 = min(r0 + block_size + 1, rows), min(c0 + block_size + 1, cols)
+        win = mesh.window(pr0, pr1, pc0, pc1)
+        sl = (slice(r0 - pr0, r0 - pr0 + block_size), slice(c0 - pc0, c0 - pc0 + block_size))
+        valid = win.valid[sl]
         if valid.sum() < (block_size * block_size) // 2:
             continue
-        base = mesh.points[sl][valid].astype(np.float32)
-        nrm = normals[sl][valid]
+        base = win.points[sl][valid].astype(np.float32)
+        nrm = win.normals()[sl][valid]
         walk = base[None] + nrm[None] * offsets[:, None, None]
         flat = walk.reshape(-1, 3)
         if remote and hasattr(volume, "prefetch"):
@@ -145,12 +165,16 @@ def verdict(range_median: float, baseline_median: float) -> tuple[str, float]:
 
 
 def measure(paths, volume, *, reach=70.0, step=1.0, blocks=6, block_size=12, seed=0):
-    """Score each tifxyz in ``paths`` against one already-opened volume."""
+    """Score each tifxyz in ``paths`` against one already-opened volume.
+
+    Surfaces over 256 MB on disk are memory-mapped rather than loaded, since
+    the check only touches a few dozen blocks of them.
+    """
     from labelscope.mesh import read_tifxyz
 
     results = []
     for path in paths:
-        mesh = read_tifxyz(path)
+        mesh = read_tifxyz(path, lazy="auto")
         found = block_profiles(mesh, volume, None, reach, step, blocks, block_size, seed)
         row = summarise(os.path.basename(str(path).rstrip("/")), found)
         row["per_block"] = found
