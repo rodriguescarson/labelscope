@@ -223,6 +223,17 @@ def test_surface_volume_profiles_reads_a_chunk(monkeypatch):
             else ["http://x/0/0/7/3", "http://x/0/0/7/4", "http://x/0/0/7/5"]
         ),
     )
+    monkeypatch.setattr(
+        on,
+        "_sv_geometry",
+        lambda store: {
+            "layers": on.SV_LAYERS,
+            "side": (on.SV_SIDE, on.SV_SIDE),
+            "dtype": np.dtype("u1"),
+            "order": "C",
+            "codec": None,
+        },
+    )
 
     class _Resp:
         def read(self):
@@ -250,6 +261,17 @@ def test_surface_volume_profiles_rejects_sparse_chunks(monkeypatch):
         "_s3_list",
         lambda url, delimiter: ["http://x/0/0/1/"] if delimiter else ["http://x/0/0/1/1"],
     )
+    monkeypatch.setattr(
+        on,
+        "_sv_geometry",
+        lambda store: {
+            "layers": on.SV_LAYERS,
+            "side": (on.SV_SIDE, on.SV_SIDE),
+            "dtype": np.dtype("u1"),
+            "order": "C",
+            "codec": None,
+        },
+    )
 
     class _Resp:
         def read(self):
@@ -259,3 +281,38 @@ def test_surface_volume_profiles_rejects_sparse_chunks(monkeypatch):
 
     monkeypatch.setattr(urllib.request, "urlopen", lambda url, timeout=0: _Resp())
     assert on.surface_volume_profiles("http://x", chunks=2, seed=0) == []
+
+
+def test_surface_volume_profiles_honours_a_33_layer_store(monkeypatch):
+    """PHerc0172's band is 33 layers, not 109; the geometry must come from .zarray."""
+    import labelscope.onsheet as on
+
+    cube = np.zeros((33, 128, 128), np.uint8)
+    cube[:, :, :] = 30
+    cube[16, :, :] = 200
+    monkeypatch.setattr(
+        on,
+        "_s3_list",
+        lambda url, delimiter: ["http://x/0/0/2/"] if delimiter else ["http://x/0/0/2/9"],
+    )
+    monkeypatch.setattr(
+        on,
+        "_sv_geometry",
+        lambda store: {
+            "layers": 33,
+            "side": (128, 128),
+            "dtype": np.dtype("u1"),
+            "order": "C",
+            "codec": None,
+        },
+    )
+
+    class _Resp:
+        def read(self):
+            return cube.tobytes()
+
+    import urllib.request
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda url, timeout=0: _Resp())
+    found = on.surface_volume_profiles("http://x", chunks=1, seed=0)
+    assert len(found) == 1 and found[0]["range"] == 170.0 and found[0]["peak_offset"] == 0.0

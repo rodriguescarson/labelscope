@@ -117,7 +117,10 @@ def block_profiles(
     return out
 
 
-SV_LAYERS, SV_SIDE = 109, 128
+SV_LAYERS, SV_SIDE = (
+    109,
+    128,
+)  # PHercParis4's geometry; other scrolls differ, so it is read per store
 
 
 def _s3_list(url: str, delimiter: bool):
@@ -136,15 +139,50 @@ def _s3_list(url: str, delimiter: bool):
     return [f"{bucket}/{k}" for k in found if k != prefix]
 
 
-def _sv_profile(key: str, raw: bytes, min_coverage: float):
-    if len(raw) != SV_LAYERS * SV_SIDE * SV_SIDE:
+def _sv_geometry(store: str) -> dict:
+    """Read the band's layer count, chunk shape, dtype and codec from ``0/.zarray``.
+
+    The published stores are not uniform: PHercParis4 and PHerc1667 bands are
+    109 layers, PHerc0500P2 and PHerc0343P are 118, PHerc0172 is 33, and one
+    PHerc1667 store is blosc-compressed.  Assuming one geometry silently
+    rejected every chunk on three scrolls.
+    """
+    import json
+    import urllib.request
+
+    meta = json.loads(
+        urllib.request.urlopen(f"{store.rstrip('/')}/0/.zarray", timeout=60).read()
+    )
+    chunks = [int(c) for c in meta["chunks"]]
+    codec = None
+    if meta.get("compressor"):
+        import numcodecs
+
+        codec = numcodecs.get_codec(meta["compressor"])
+    return {
+        "layers": chunks[0],
+        "side": (chunks[1], chunks[2]),
+        "dtype": np.dtype(meta["dtype"]),
+        "order": meta.get("order", "C"),
+        "codec": codec,
+    }
+
+
+def _sv_profile(key: str, raw: bytes, geom: dict, min_coverage: float):
+    layers, (h, w) = geom["layers"], geom["side"]
+    if geom["codec"] is not None:
+        try:
+            raw = geom["codec"].decode(raw)
+        except Exception:
+            return None
+    if len(raw) != layers * h * w * geom["dtype"].itemsize:
         return None
-    cube = np.frombuffer(raw, dtype=np.uint8).reshape(SV_LAYERS, SV_SIDE, SV_SIDE)
+    cube = np.frombuffer(raw, dtype=geom["dtype"]).reshape(layers, h, w, order=geom["order"])
     footprint = cube.max(axis=0) > 0  # the surface exists where any layer is non-zero
     if footprint.mean() < min_coverage:
         return None
     profile = cube[:, footprint].astype(np.float32).mean(axis=1)
-    mid = SV_LAYERS // 2
+    mid = layers // 2
     return {
         "block": key.rsplit("/", 2)[-2:],
         "n": int(footprint.sum()),
@@ -159,12 +197,14 @@ def surface_volume_profiles(
 ):
     """Layer profiles from a published segment's own ``surface-volumes`` zarr.
 
-    Each chunk is 109 layers x 128 x 128 columns, uint8, uncompressed, with the
-    traced surface at the middle layer, so one 1.8 MB fetch yields a profile
-    averaged over up to 16,384 columns.  The store is sparse -- only chunks the
-    surface covers exist -- so chunks are drawn from a listing.  Returns the
-    same record shape as :func:`block_profiles` so :func:`summarise` and
-    :func:`compare` apply unchanged.
+    Each chunk is the full band depth over a 128x128 column of the surface,
+    uint8, with the traced surface at the middle layer, so one fetch yields a
+    profile averaged over up to 16,384 columns.  Geometry (layer count, chunk
+    shape, codec) is read from the store's ``.zarray`` because it differs
+    between scrolls.  The store is sparse -- only chunks the surface covers
+    exist -- so chunks are drawn from a listing.  Returns the same record shape
+    as :func:`block_profiles` so :func:`summarise` and :func:`compare` apply
+    unchanged.
 
     Listings and fetches run in a thread pool, but candidates are drawn and
     accepted in seed order, so the result does not depend on which request
@@ -173,6 +213,7 @@ def surface_volume_profiles(
     import urllib.request
     from concurrent.futures import ThreadPoolExecutor
 
+    geom = _sv_geometry(store)
     rng = np.random.default_rng(seed)
     columns = _s3_list(f"{store.rstrip('/')}/0/0/", delimiter=True)
     if not columns:
@@ -201,7 +242,7 @@ def surface_volume_profiles(
             if not keys:
                 break
             for key, raw in zip(keys, pool.map(fetch, keys)):
-                rec = _sv_profile(key, raw, min_coverage)
+                rec = _sv_profile(key, raw, geom, min_coverage)
                 if rec is not None:
                     out.append(rec)
                     if len(out) >= chunks:
