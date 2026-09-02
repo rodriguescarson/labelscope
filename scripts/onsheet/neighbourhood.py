@@ -5,6 +5,7 @@ simply featureless, in which case a low profile range says nothing about the
 tracing. Published surfaces covering nearby windings settle it: if they score
 normally, the region carries structure.
 """
+
 import glob
 import json
 import os
@@ -14,7 +15,8 @@ import numpy as np
 
 rows = []
 for f in sorted(glob.glob("/workspace/onsheet_corpus/*.json")):
-    d = json.load(open(f))
+    with open(f) as fh:
+        d = json.load(fh)
     res = d["results"]
     base = next((r for r in res if r.get("baseline") and "error" not in r), None)
     t = next((r for r in res if not r.get("baseline")), None)
@@ -23,8 +25,14 @@ for f in sorted(glob.glob("/workspace/onsheet_corpus/*.json")):
     n = os.path.basename(f)[:-5]
     m = re.search(r"w(\d+)-(\d+)", n)
     w = (int(m.group(1)) + int(m.group(2))) / 2 if m else None
-    rows.append((n, w, t["range_median"] / max(base["range_median"], 1e-9),
-                 t["peak_offset_abs_median"]))
+    rows.append(
+        (
+            n,
+            w,
+            t["range_median"] / max(base["range_median"], 1e-9),
+            t["peak_offset_abs_median"],
+        )
+    )
 
 win = [r for r in rows if r[1] is not None]
 print(f"{len(win)} of {len(rows)} surfaces name a winding range")
@@ -40,10 +48,16 @@ nb = [r for r in band if not (r[2] < 0.4 and r[3] > 40)]
 print()
 if nb:
     fr = [r[2] for r in nb]
-    print(f"neighbours excluding the suspects: n={len(nb)}  "
-          f"median frac {np.median(fr):.2f}  min {min(fr):.2f}")
-    print("VERDICT: region carries structure -> the two suspects differ from their neighbours"
-          if min(fr) > 0.5 else
-          "VERDICT: neighbours also weak -> region may be featureless, claim NOT supported")
+    print(
+        f"neighbours excluding the suspects: n={len(nb)}  "
+        f"median frac {np.median(fr):.2f}  min {min(fr):.2f}"
+    )
+    print(
+        "VERDICT: region carries structure -> the two suspects differ from their neighbours"
+        if min(fr) > 0.5
+        else "VERDICT: neighbours also weak -> region may be featureless, claim NOT supported"
+    )
 else:
-    print("VERDICT: no published neighbours in this band -- cannot rule out a featureless region")
+    print(
+        "VERDICT: no published neighbours in this band -- cannot rule out a featureless region"
+    )

@@ -1630,14 +1630,14 @@ def main(argv=None) -> int:
         "two surfaces measured in the same volume -- ideally adjacent windings "
         "of one tracing run -- is stronger than either against a baseline",
     )
-    onsheet.add_argument(
-        "--remote", action="store_true", help="stream the volume over HTTP"
-    )
+    onsheet.add_argument("--remote", action="store_true", help="stream the volume over HTTP")
     onsheet.add_argument("--cache", help="directory to keep fetched chunks in")
     onsheet.add_argument(
         "--reach", type=float, default=70.0, help="voxels to walk either way along the normal"
     )
-    onsheet.add_argument("--step", type=float, default=1.0, help="sampling step along the normal")
+    onsheet.add_argument(
+        "--step", type=float, default=1.0, help="sampling step along the normal"
+    )
     onsheet.add_argument(
         "--blocks", type=int, default=6, help="how many coherent grid blocks to profile"
     )

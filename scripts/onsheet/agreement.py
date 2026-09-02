@@ -5,11 +5,11 @@ This is the structure of the test Paul asked for -- find real errors, then check
 whether the detector finds those and only those -- run against published data
 instead of grown segments, so it needs no tracing run at all.
 """
+
 import csv
 import glob
 import json
 import os
-import re
 
 import numpy as np
 
@@ -24,7 +24,8 @@ for f in glob.glob("findings/corpus/per_surface/real/PHercParis4__*.csv"):
 # on-sheet results from this session
 on = {}
 for f in glob.glob("findings/onsheet/onsheet_corpus/*.json"):
-    d = json.load(open(f))
+    with open(f) as fh:
+        d = json.load(fh)
     res = d["results"]
     base = next((r for r in res if r.get("baseline") and "error" not in r), None)
     t = next((r for r in res if not r.get("baseline")), None)
@@ -40,12 +41,15 @@ for k, frac in on.items():
         row = sw[cands[0]] if cands else None
     if row is None:
         continue
-    joined.append({
-        "name": k, "frac": frac,
-        "usable": row["resolution_adequate"] == "True" and row["dip_degenerate"] != "True",
-        "n_seams": int(float(row["n_seams"])),
-        "max_z": float(row["max_z"]) if row["max_z"] else 0.0,
-    })
+    joined.append(
+        {
+            "name": k,
+            "frac": frac,
+            "usable": row["resolution_adequate"] == "True" and row["dip_degenerate"] != "True",
+            "n_seams": int(float(row["n_seams"])),
+            "max_z": float(row["max_z"]) if row["max_z"] else 0.0,
+        }
+    )
 
 print(f"joined {len(joined)} of {len(on)} on-sheet results to sheetswitch output")
 use = [r for r in joined if r["usable"]]
@@ -63,13 +67,17 @@ if offsheet:
     fl = sum(1 for r in offsheet if r["n_seams"] > 0)
     print(f"OFF SHEET surfaces that sheetswitch flags: {fl} of {len(offsheet)}")
 else:
-    print("no OFF SHEET surface clears the sheetswitch gates -- "
-          "the detector cannot see the one error we independently found")
+    print(
+        "no OFF SHEET surface clears the sheetswitch gates -- "
+        "the detector cannot see the one error we independently found"
+    )
 if onsheet:
     fp = sum(1 for r in onsheet if r["n_seams"] > 0)
-    print(f"ON SHEET surfaces sheetswitch also flags:  {fp} of {len(onsheet)} "
-          f"({100*fp/len(onsheet):.0f}%)")
+    print(
+        f"ON SHEET surfaces sheetswitch also flags:  {fp} of {len(onsheet)} "
+        f"({100 * fp / len(onsheet):.0f}%)"
+    )
     z = [r["max_z"] for r in onsheet]
     print(f"max_z on ON SHEET surfaces: median {np.median(z):.2f}, max {max(z):.2f}")
 if offsheet:
-    print(f"max_z on OFF SHEET surfaces: {[round(r['max_z'],2) for r in offsheet]}")
+    print(f"max_z on OFF SHEET surfaces: {[round(r['max_z'], 2) for r in offsheet]}")
