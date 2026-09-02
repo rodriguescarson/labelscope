@@ -40,7 +40,8 @@ class ChunkedVolume:
         compressor: Optional[dict] = None,
         cache_dir: Optional[str] = None,
         session=None,
-        max_cached: int = 4096,
+        max_cached: Optional[int] = None,
+        max_cache_bytes: int = 1 << 30,
     ):
         self.base_url = base_url.rstrip("/")
         self.shape = tuple(int(s) for s in shape)
@@ -62,7 +63,18 @@ class ChunkedVolume:
             if cache_dir
             else None
         )
-        self.max_cached = max_cached
+        # Decoded chunks are held in RAM up to a byte budget, not a count: a
+        # 256^3 chunk is 16 MB at uint8 and the old fixed cap of 4096 chunks
+        # was 64 GB, which only went unnoticed because the corpus passes ran on
+        # a 500 GB box.  On the 4 GB machine this tool is meant to run on it
+        # was five OOM kills in one session.  ``cache_dir`` is the second tier
+        # and is unaffected by this budget.
+        chunk_bytes = int(np.prod(self.chunks)) * self.dtype.itemsize
+        self.max_cached = (
+            max_cached
+            if max_cached is not None
+            else max(8, max_cache_bytes // max(chunk_bytes, 1))
+        )
         self._blocks: Dict[Tuple[int, int, int], np.ndarray] = {}
         self._missing = set()
         self.bytes_fetched = 0

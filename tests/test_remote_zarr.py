@@ -381,3 +381,21 @@ def test_eviction_survives_concurrent_prefetch():
         t.join()
     assert not errors, errors
     assert len(vol._blocks) <= 16
+
+
+def test_ram_cache_is_budgeted_in_bytes_not_chunks():
+    """A 256^3 uint8 chunk is 16 MB; the default budget must hold tens of them, not thousands."""
+    from labelscope.remote_zarr import ChunkedVolume
+
+    vol = ChunkedVolume(
+        "http://example.invalid/store", (1024, 1024, 1024), (256, 256, 256), "|u1"
+    )
+    assert 32 <= vol.max_cached <= 128
+    small = ChunkedVolume(
+        "http://example.invalid/store", (64, 64, 64), (8, 8, 8), "|u1", max_cache_bytes=1 << 20
+    )
+    assert small.max_cached == (1 << 20) // 512
+    pinned = ChunkedVolume(
+        "http://example.invalid/store", (64, 64, 64), (8, 8, 8), "|u1", max_cached=3
+    )
+    assert pinned.max_cached == 3
