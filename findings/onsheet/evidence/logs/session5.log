@@ -1,0 +1,16 @@
+[09:13:30] svol n=200 seed=0 series 20260623
+[09:15:24]    ok
+[09:15:24] svol n=200 seed=0 series 20260701
+[09:17:19]    ok
+[09:17:19] svol n=200 seed=1 series 20260623
+[09:19:09]    ok
+[09:19:09] svol n=200 seed=1 series 20260701
+[09:21:06]    ok
+[09:21:06] cross-sections
+[09:22:40]    XSEC FAILED 20260623171400-w126-127 exit 137 
+[09:24:25]    XSEC FAILED 20260623171929-w128-129 exit 137 
+[09:25:01]    XSEC FAILED 20260701183150-w126-127 exit 137 
+[09:25:49]    XSEC FAILED 20260701183151-w128-129 exit 137 
+[09:25:49] the 248 MB surface (W4)
+[09:25:57]    ok  cgroup peak 3919 MB
+[09:25:57] SESSION5 DONE
