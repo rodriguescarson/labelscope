@@ -1,0 +1,112 @@
+[
+ {
+  "segment": "20260623170833-w124-125",
+  "kind": "ink",
+  "source_key": "PHercParis4/segments/20260623170833-w124-125/ink-detection/downsampled/PHercParis4-20260623170833-2.4um-0.22m-78keV-volume-20260411134726-20260417190342-new_canon_autoresearch_recipe-tile256-stride128-ds8.jpg",
+  "original_px": [
+   17400,
+   6330
+  ],
+  "thumb": "20260623170833-w124-125__ink.jpg"
+ },
+ {
+  "segment": "20260623170833-w124-125",
+  "kind": "alpha",
+  "source_key": "PHercParis4/segments/20260623170833-w124-125/surface-renders/downsampled/PHercParis4-20260623170833-2.4um-0.22m-78keV-volume-20260411134726-alpha-overlay-combined-ds8.jpg",
+  "original_px": [
+   17400,
+   6330
+  ],
+  "thumb": "20260623170833-w124-125__alpha.jpg"
+ },
+ {
+  "segment": "20260623171400-w126-127",
+  "kind": "ink",
+  "source_key": "PHercParis4/segments/20260623171400-w126-127/ink-detection/downsampled/PHercParis4-20260623171400-2.4um-0.22m-78keV-volume-20260411134726-20260417190342-new_canon_autoresearch_recipe-tile256-stride128-ds8.jpg",
+  "original_px": [
+   19110,
+   7890
+  ],
+  "thumb": "20260623171400-w126-127__ink.jpg"
+ },
+ {
+  "segment": "20260623171400-w126-127",
+  "kind": "alpha",
+  "source_key": "PHercParis4/segments/20260623171400-w126-127/surface-renders/downsampled/PHercParis4-20260623171400-2.4um-0.22m-78keV-volume-20260411134726-alpha-overlay-combined-ds8.jpg",
+  "original_px": [
+   19110,
+   7890
+  ],
+  "thumb": "20260623171400-w126-127__alpha.jpg"
+ },
+ {
+  "segment": "20260623171929-w128-129",
+  "kind": "ink",
+  "source_key": "PHercParis4/segments/20260623171929-w128-129/ink-detection/downsampled/PHercParis4-20260623171929-2.4um-0.22m-78keV-volume-20260411134726-20260417190342-new_canon_autoresearch_recipe-tile256-stride128-ds8.jpg",
+  "original_px": [
+   19470,
+   8820
+  ],
+  "thumb": "20260623171929-w128-129__ink.jpg"
+ },
+ {
+  "segment": "20260623171929-w128-129",
+  "kind": "alpha",
+  "source_key": "PHercParis4/segments/20260623171929-w128-129/surface-renders/downsampled/PHercParis4-20260623171929-2.4um-0.22m-78keV-volume-20260411134726-alpha-overlay-combined-ds8.jpg",
+  "original_px": [
+   19470,
+   8820
+  ],
+  "thumb": "20260623171929-w128-129__alpha.jpg"
+ },
+ {
+  "segment": "20260701183149-w124-125",
+  "kind": "ink",
+  "source_key": "PHercParis4/segments/20260701183149-w124-125/ink-detection/downsampled/PHercParis4-20260701183149-2.4um-0.22m-78keV-volume-20260411134726-20260417190342-new_canon_autoresearch_recipe-tile256-stride128-ds8.jpg",
+  "original_px": [
+   17920,
+   10490
+  ],
+  "thumb": "20260701183149-w124-125__ink.jpg"
+ },
+ {
+  "segment": "20260701183149-w124-125",
+  "kind": "alpha",
+  "source_key": "PHercParis4/segments/20260701183149-w124-125/surface-renders/downsampled/PHercParis4-20260701183149-2.4um-0.22m-78keV-volume-20260411134726-alpha-overlay-combined-ds8.jpg",
+  "original_px": [
+   17920,
+   10490
+  ],
+  "thumb": "20260701183149-w124-125__alpha.jpg"
+ },
+ {
+  "segment": "20260701183150-w126-127",
+  "kind": "ink",
+  "source_key": "PHercParis4/segments/20260701183150-w126-127/ink-detection/downsampled/PHercParis4-20260701183150-2.4um-0.22m-78keV-volume-20260411134726-20260417190342-new_canon_autoresearch_recipe-tile256-stride128-ds8.jpg",
+  "original_px": [
+   19360,
+   11760
+  ],
+  "thumb": "20260701183150-w126-127__ink.jpg"
+ },
+ {
+  "segment": "20260701183151-w128-129",
+  "kind": "ink",
+  "source_key": "PHercParis4/segments/20260701183151-w128-129/ink-detection/downsampled/PHercParis4-20260701183151-2.4um-0.22m-78keV-volume-20260411134726-20260417190342-new_canon_autoresearch_recipe-tile256-stride128-ds8.jpg",
+  "original_px": [
+   17790,
+   11180
+  ],
+  "thumb": "20260701183151-w128-129__ink.jpg"
+ },
+ {
+  "segment": "20260701183151-w128-129",
+  "kind": "alpha",
+  "source_key": "PHercParis4/segments/20260701183151-w128-129/surface-renders/downsampled/PHercParis4-20260701183151-2.4um-0.22m-78keV-volume-20260411134726-alpha-overlay-combined-ds8.jpg",
+  "original_px": [
+   17790,
+   11180
+  ],
+  "thumb": "20260701183151-w128-129__alpha.jpg"
+ }
+]

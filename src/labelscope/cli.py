@@ -1281,44 +1281,67 @@ def cmd_onsheet(args: argparse.Namespace) -> int:
     """Is a traced surface sitting on papyrus, or cutting across the windings?"""
     import json
 
-    from .onsheet import compare, measure, verdict
+    from .onsheet import compare, measure, summarise, surface_volume_profiles, verdict
 
-    if args.remote:
-        from .remote_zarr import ChunkedVolume
+    results = []
+    if args.surface_volume:
+        for store in args.surface_volume:
+            seg = (
+                store.split("/segments/", 1)[1].split("/", 1)[0]
+                if "/segments/" in store
+                else store
+            )
+            found = surface_volume_profiles(store, chunks=args.chunks, seed=args.seed)
+            row = summarise(seg, found)
+            row["per_block"] = found
+            row["source"] = "surface-volume"
+            results.append(row)
+    if args.mesh:
+        if not args.volume:
+            raise SystemExit("--mesh needs --volume (the scan the surface was traced on)")
+        if args.remote:
+            from .remote_zarr import ChunkedVolume
 
-        volume = ChunkedVolume.from_store(args.volume, cache_dir=args.cache)
-    else:
-        import tifffile
+            volume = ChunkedVolume.from_store(args.volume, cache_dir=args.cache)
+        else:
+            import tifffile
 
-        volume = tifffile.imread(args.volume)
-
-    paths = list(args.mesh) + ([args.baseline] if args.baseline else [])
-    results = measure(
-        paths,
-        volume,
-        reach=args.reach,
-        step=args.step,
-        blocks=args.blocks,
-        block_size=args.block_size,
-        seed=args.seed,
-    )
-    if args.baseline:
-        results[-1]["baseline"] = True
+            volume = tifffile.imread(args.volume)
+        paths = list(args.mesh) + ([args.baseline] if args.baseline else [])
+        rows = measure(
+            paths,
+            volume,
+            reach=args.reach,
+            step=args.step,
+            blocks=args.blocks,
+            block_size=args.block_size,
+            seed=args.seed,
+        )
+        if args.baseline:
+            rows[-1]["baseline"] = True
+        for row in rows:
+            row["source"] = "scan"
+        results.extend(rows)
 
     base = next((r for r in results if r.get("baseline") and "error" not in r), None)
-    print(f"{'surface':44s} {'blocks':>6s} {'range':>8s} {'|peak|':>7s}  verdict")
-    print("-" * 84)
+    print(
+        f"{'surface':36s} {'n':>4s} {'cols':>8s} {'p10':>6s} {'median':>7s} {'p90':>6s} "
+        f"{'|peak|':>6s}  verdict"
+    )
+    print("-" * 96)
     for row in results:
         if "error" in row:
-            print(f"{row['mesh'][:44]:44s} {'-':>6s} {'-':>8s} {'-':>7s}  {row['error']}")
+            print(
+                f"{row['mesh'][:36]:36s} {'-':>4s} {'-':>8s} {'-':>6s} {'-':>7s} {'-':>6s} {'-':>6s}  {row['error']}"
+            )
             continue
         label = "baseline" if row.get("baseline") else ""
         if base is not None and not row.get("baseline"):
             label, frac = verdict(row["range_median"], base["range_median"])
             label += f" ({frac:.0%} of baseline)"
         print(
-            f"{row['mesh'][:44]:44s} {row['blocks']:6d} {row['range_median']:8.1f} "
-            f"{row['peak_offset_abs_median']:7.1f}  {label}"
+            f"{row['mesh'][:36]:36s} {row['blocks']:4d} {row['columns']:8d} {row['range_p10']:6.1f} "
+            f"{row['range_median']:7.1f} {row['range_p90']:6.1f} {row['peak_offset_abs_median']:6.1f}  {label}"
         )
 
     payload = {"results": results}
@@ -1331,11 +1354,12 @@ def cmd_onsheet(args: argparse.Namespace) -> int:
                 print(
                     f"\n{usable[0]['mesh'][:36]} vs {usable[1]['mesh'][:36]}: "
                     f"medians {stats['median_a']:.1f} vs {stats['median_b']:.1f}, "
-                    f"Mann-Whitney one-sided p = {stats['p_less']:.4g}"
+                    f"Mann-Whitney one-sided p = {stats['p_less']:.4g}  (n = {stats['n_a']} vs {stats['n_b']})"
                 )
                 print(
-                    "  (valid only if both were measured in the same volume; "
-                    "adjacent windings of one tracing run is the strongest form)"
+                    "  valid only if both were measured in the same volume; adjacent windings of "
+                    "one tracing run is the strongest form.  Per-block ranges are broad on real "
+                    "surfaces -- read p10/p90, and do not trust a median from a few dozen samples."
                 )
 
     if args.out:
@@ -1610,11 +1634,22 @@ def main(argv=None) -> int:
         "onsheet",
         help="check whether a traced surface actually sits on papyrus",
     )
+    onsheet.add_argument("--mesh", nargs="+", help="one or more tifxyz directories")
+    onsheet.add_argument("--volume", help="the CT volume the surface was traced on")
     onsheet.add_argument(
-        "--mesh", nargs="+", required=True, help="one or more tifxyz directories"
+        "--surface-volume",
+        nargs="+",
+        metavar="ZARR_URL",
+        help="a published segment's own surface-volumes/*.zarr, read instead of "
+        "(or as well as) the scan.  Dense at one column per voxel and about 300x "
+        "cheaper per column than walking the scan, and it takes this tool's "
+        "sampler out of the measurement entirely",
     )
     onsheet.add_argument(
-        "--volume", required=True, help="the CT volume the surface was traced on"
+        "--chunks",
+        type=int,
+        default=100,
+        help="surface-volume chunks to sample; each is 109 layers over up to 16,384 columns",
     )
     onsheet.add_argument(
         "--baseline",

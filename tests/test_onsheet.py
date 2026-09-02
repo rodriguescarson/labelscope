@@ -193,3 +193,64 @@ def test_lazy_falls_back_when_not_mappable(tmp_path, volume):
     got = read_tifxyz(str(d), lazy=True)
     assert isinstance(got, QuadMesh)
     assert profiles(got, volume)
+
+
+def test_summarise_reports_spread():
+    blocks = [
+        {"range": r, "peak_offset": 0.0, "n": 100} for r in [1, 2, 3, 40, 50, 60, 70, 80]
+    ]
+    s = summarise("bimodal", blocks)
+    assert s["columns"] == 800
+    assert s["range_p10"] < 3 and s["range_p90"] > 60
+    assert s["range_iqr_over_median"] > 1.0  # a broad, two-humped sample must say so
+
+
+def test_surface_volume_profiles_reads_a_chunk(monkeypatch):
+    """One synthetic chunk: bright at the middle layer over the surface footprint."""
+    import labelscope.onsheet as on
+
+    cube = np.zeros((on.SV_LAYERS, on.SV_SIDE, on.SV_SIDE), np.uint8)
+    cube[:, :, :96] = 20  # surface covers 3/4 of the chunk
+    cube[on.SV_LAYERS // 2, :, :96] = 200  # the sheet, at the middle layer
+    raw = cube.tobytes()
+
+    monkeypatch.setattr(
+        on,
+        "_s3_list",
+        lambda url, delimiter: ["http://x/0/0/7/"] if delimiter else ["http://x/0/0/7/3"],
+    )
+
+    class _Resp:
+        def read(self):
+            return raw
+
+    import urllib.request
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda url, timeout=0: _Resp())
+    found = on.surface_volume_profiles("http://x", chunks=3, seed=0)
+    assert len(found) == 3
+    assert found[0]["n"] == 128 * 96
+    assert found[0]["range"] == 180.0
+    assert found[0]["peak_offset"] == 0.0
+    assert found[0]["block"] == ["7", "3"]
+
+
+def test_surface_volume_profiles_rejects_sparse_chunks(monkeypatch):
+    import labelscope.onsheet as on
+
+    cube = np.zeros((on.SV_LAYERS, on.SV_SIDE, on.SV_SIDE), np.uint8)
+    cube[:, :, :16] = 50  # only 1/8 of the chunk carries surface
+    monkeypatch.setattr(
+        on,
+        "_s3_list",
+        lambda url, delimiter: ["http://x/0/0/1/"] if delimiter else ["http://x/0/0/1/1"],
+    )
+
+    class _Resp:
+        def read(self):
+            return cube.tobytes()
+
+    import urllib.request
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda url, timeout=0: _Resp())
+    assert on.surface_volume_profiles("http://x", chunks=2, seed=0) == []
