@@ -12,8 +12,8 @@ degenerate. Across the 253 published surfaces in seven scrolls:
 
 | | surfaces |
 |---|---|
-| published | 253 |
-| **clear both gates** | **114 (45%)** |
+| published (corrected count) | 258 |
+| **clear both gates** | **114 (44% of 258)** |
 | fail the resolution gate | 137 |
 | degenerate null | 16 |
 
@@ -21,12 +21,12 @@ The on-sheet check samples the scan along the surface normal. It needs no
 winding spacing and, in its rank form, no baseline surface either, so nothing in
 the method excludes a surface the way these gates do.
 
-**What has actually been run: 95 of the 253** — all 81 published PHercParis4
-surfaces plus the 14 of PHerc0139/20250108 and PHerc0172/20250926. Every one
-returned a score, including the 40 PHercParis4 surfaces the sheet-switch gates
-reject. The remaining 158 are expected to score for the same reason, but that is
-an inference from the method, not a measurement, and it is not claimed as a
-result until the pass is run.
+**The full pass has now been run: 257 of 258** published surfaces across all
+seven scrolls, against the sheet-switch detector's 114 (`full-population.md`).
+The single exception is one 248 MB-per-axis surface that OOM-killed the reader,
+which is a reader memory limit rather than a gate. Note the denominator: the
+corpus is 258 surfaces, not the 253 the August entry reported — that correction
+is in `full-population.md` too.
 
 ## The one verified error falls in the half the detector cannot see
 
@@ -64,11 +64,11 @@ the other by default.
 
 ## What follows
 
-The on-sheet check is the more broadly applicable of the two: on the 81
-PHercParis4 surfaces where both were run it scored all 81 against the detector's
-41, it caught a real defect the detector's gates hid, and its rank form needs no
-known-good reference surface. Whether that 2x coverage holds across the whole
-corpus is the obvious next measurement. The sheet-switch detector
+The on-sheet check is the more broadly applicable of the two: across the whole
+published corpus it scores **257 of 258** where the detector can assess **114**,
+it caught a real defect the detector's gates hid, and its rank form needs no
+known-good reference surface. The 2x coverage gap seen on PHercParis4 holds
+corpus-wide. The sheet-switch detector
 remains unproven on real errors — the validation that would settle it still
 needs traced surfaces with known sheet crossings, which this work has not yet
 produced.
