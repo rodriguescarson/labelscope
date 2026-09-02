@@ -1,5 +1,11 @@
 # Result: the terminal-patch test
 
+> **Superseded in part by `w128-129-evidence.md` (2 Sep).** The w128-129
+> comparison below used 24 blocks and is unstable at that sample size; the
+> replicated 200-chunk measurement on the team's own surface volumes, and the
+> cross-sections showing *why* (the fused outermost wrap, not a step between
+> sheets), are in that document. The terminal-patch rank test itself stands.
+
 Pre-registered in `terminal-patch-preregistration.md`, committed as `8d6faad`
 **before** these numbers existed. The inclusion rule, the statistic, and what
 each outcome would mean were all fixed in advance.

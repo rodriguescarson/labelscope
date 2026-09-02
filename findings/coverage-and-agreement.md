@@ -30,9 +30,10 @@ is in `full-population.md` too.
 
 ## The one verified error falls in the half the detector cannot see
 
-The two published PHercParis4 surfaces covering windings 128-129 do not sit on
-papyrus where their neighbours do (`terminal-patch-result.md`; Mann-Whitney
-p=0.0031 and p=0.0043 against their own adjacent winding, pooled p=0.00004).
+The two published PHercParis4 surfaces covering windings 128-129 run mostly
+through the scroll's fused outer crust and produce no text under the team's own
+ink model (`w128-129-evidence.md`; on their surface volumes, 200 chunks, p from
+3e-9 to 0.02 against the adjacent winding across two seeds).
 
 Their sheet-switch rows:
 
