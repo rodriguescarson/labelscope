@@ -88,3 +88,11 @@ recorded before the mechanism is written into any text.
 Sealed 2 Sep 2026 before any label was made. The page shows 255 renders; the
 three segments with no published ink render and the one with no surface
 volume are excluded and counted, as above.
+
+**Deviation, recorded before labelling:** the renders are shown at 900 px
+wide, not the ~2000 px written above, because the page had to be split into
+two sub-16 MB sets to be delivered. Lines of letterforms remain visible at
+900 px on a known-text render; this is noted so the label quality can be
+judged against it. The predictor population is 256 of 258 (two segments have
+no surface volume published for their scan), of which 255 also have an ink
+render.

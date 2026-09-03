@@ -5,7 +5,8 @@ Written and committed before any label existed, so the statistics cannot be
 chosen after seeing the outcome.  Everything computed here is fixed in
 findings/ink-blind-preregistration.md.
 
-    python scripts/onsheet/blind_analysis.py --labels labels.csv --key drafts/ink-labeler-key.json \\
+    python scripts/onsheet/blind_analysis.py --labels drafts/ink-labels-a.csv drafts/ink-labels-b.csv \\
+        --key drafts/ink-labeler-key.json \\
         --predictors findings/onsheet/onsheet_sv/ --out findings/ink-blind-result.json
 """
 
@@ -38,7 +39,12 @@ def auc(scores, positives):
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--labels", required=True, help="code,label CSV from the labeller")
+    ap.add_argument(
+        "--labels",
+        nargs="+",
+        required=True,
+        help="code,label CSV(s) from the labeller; sets A and B",
+    )
     ap.add_argument("--key", required=True)
     ap.add_argument(
         "--predictors", required=True, help="dir of labelscope onsheet --surface-volume JSONs"
@@ -49,10 +55,11 @@ def main(argv=None) -> int:
     with open(args.key) as fh:
         key = json.load(fh)
     labels = {}
-    with open(args.labels) as fh:
-        for row in csv.DictReader(fh):
-            if row.get("label"):
-                labels[row["code"].strip()] = row["label"].strip()
+    for path in args.labels:
+        with open(path) as fh:
+            for row in csv.DictReader(fh):
+                if row.get("label"):
+                    labels[row["code"].strip()] = row["label"].strip()
 
     pred = {}
     for f in glob.glob(os.path.join(args.predictors, "*.json")):
