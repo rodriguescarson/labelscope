@@ -41,11 +41,20 @@ scrolls, on a 2-vCPU CPU pod at $0.06/h (the check never touches a GPU).
 | PHercParis4 | 81 | 48.0 | 12.2 |
 | **total** | **257 of 258** | | |
 
-**Coverage: 257 of 258 against the sheet-switch detector's 114.** The one
-surface not scored is `PHerc1667/20260612121456-w011…merged_v4_flatboi_straightened_v4`,
-whose `x/y/z` grids are 248 MB each. The tifxyz reader loads the full grid, so it
-was OOM-killed (exit 137) in a 4 GB container. That is a memory limit of the
-reader, not a property of the data — worth fixing by reading the grid in bands.
+**Coverage: 258 of 258 against the sheet-switch detector's 114.** The last
+surface, `PHerc1667/20260612121456-w011…merged_v4_flatboi_straightened_v4`,
+has `x/y/z` grids of 248 MB each and OOM-killed the original reader (exit 137)
+in a 4 GB container. `read_tifxyz(lazy=...)` now memory-maps the TIFFs and pages
+in only the blocks touched; that surface scores 63.7 (healthy) in the same
+container (`onsheet/evidence/big_248mb_surface.json`).
+
+**A second, denser measurement covers 256 of 258:** 100 chunks of each
+segment's own `surface-volumes` zarr (`onsheet/onsheet_sv/`). The two not
+covered have no surface volume published for the scan the manifest names — a
+coarser one exists and is not a substitute. Three scrolls store the band at a
+different depth (33 or 118 layers, not 109) and one PHerc1667 store is
+blosc-compressed with dot-separated chunk keys; the reader takes all of that
+from each store's `.zarray` now, after first silently rejecting 102 segments.
 
 ## A limit on how these numbers may be read
 

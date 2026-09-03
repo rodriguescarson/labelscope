@@ -232,6 +232,8 @@ def test_surface_volume_profiles_reads_a_chunk(monkeypatch):
             "dtype": np.dtype("u1"),
             "order": "C",
             "codec": None,
+            "separator": "/",
+            "n_rows": 1,
         },
     )
 
@@ -270,6 +272,8 @@ def test_surface_volume_profiles_rejects_sparse_chunks(monkeypatch):
             "dtype": np.dtype("u1"),
             "order": "C",
             "codec": None,
+            "separator": "/",
+            "n_rows": 1,
         },
     )
 
@@ -304,6 +308,8 @@ def test_surface_volume_profiles_honours_a_33_layer_store(monkeypatch):
             "dtype": np.dtype("u1"),
             "order": "C",
             "codec": None,
+            "separator": "/",
+            "n_rows": 1,
         },
     )
 
@@ -316,3 +322,38 @@ def test_surface_volume_profiles_honours_a_33_layer_store(monkeypatch):
     monkeypatch.setattr(urllib.request, "urlopen", lambda url, timeout=0: _Resp())
     found = on.surface_volume_profiles("http://x", chunks=1, seed=0)
     assert len(found) == 1 and found[0]["range"] == 170.0 and found[0]["peak_offset"] == 0.0
+
+
+def test_surface_volume_profiles_handles_dot_separated_keys(monkeypatch):
+    """PHerc1667's blosc store writes keys as 0/0.row.col, not 0/0/row/col."""
+    import labelscope.onsheet as on
+
+    cube = np.full((109, 128, 128), 20, np.uint8)
+    cube[54] = 220
+    listed = {"http://x/0/0.3.": ["http://x/0/0.3.7", "http://x/0/0.3.8", "http://x/0/0.3.9"]}
+    monkeypatch.setattr(on, "_s3_list", lambda url, delimiter: listed.get(url, []))
+    monkeypatch.setattr(
+        on,
+        "_sv_geometry",
+        lambda store: {
+            "layers": 109,
+            "side": (128, 128),
+            "dtype": np.dtype("u1"),
+            "order": "C",
+            "codec": None,
+            "separator": ".",
+            "n_rows": 4,
+        },
+    )
+
+    class _Resp:
+        def read(self):
+            return cube.tobytes()
+
+    import urllib.request
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda url, timeout=0: _Resp())
+    found = on.surface_volume_profiles("http://x", chunks=3, seed=0)
+    assert len(found) == 3
+    assert found[0]["range"] == 200.0
+    assert all(f["block"][0] == "3" for f in found)

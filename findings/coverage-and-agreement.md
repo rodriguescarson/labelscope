@@ -21,10 +21,9 @@ The on-sheet check samples the scan along the surface normal. It needs no
 winding spacing and, in its rank form, no baseline surface either, so nothing in
 the method excludes a surface the way these gates do.
 
-**The full pass has now been run: 257 of 258** published surfaces across all
-seven scrolls, against the sheet-switch detector's 114 (`full-population.md`).
-The single exception is one 248 MB-per-axis surface that OOM-killed the reader,
-which is a reader memory limit rather than a gate. Note the denominator: the
+**The full pass has now been run: 258 of 258** published surfaces across all
+seven scrolls on the raw scan, and 256 of 258 on the team's own surface
+volumes, against the sheet-switch detector's 114 (`full-population.md`). Note the denominator: the
 corpus is 258 surfaces, not the 253 the August entry reported — that correction
 is in `full-population.md` too.
 
@@ -66,7 +65,7 @@ the other by default.
 ## What follows
 
 The on-sheet check is the more broadly applicable of the two: across the whole
-published corpus it scores **257 of 258** where the detector can assess **114**,
+published corpus it scores **258 of 258** where the detector can assess **114**,
 it caught a real defect the detector's gates hid, and its rank form needs no
 known-good reference surface. The 2x coverage gap seen on PHercParis4 holds
 corpus-wide. The sheet-switch detector

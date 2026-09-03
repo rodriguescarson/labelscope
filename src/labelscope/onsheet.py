@@ -154,6 +154,7 @@ def _sv_geometry(store: str) -> dict:
         urllib.request.urlopen(f"{store.rstrip('/')}/0/.zarray", timeout=60).read()
     )
     chunks = [int(c) for c in meta["chunks"]]
+    shape = [int(c) for c in meta["shape"]]
     codec = None
     if meta.get("compressor"):
         import numcodecs
@@ -165,6 +166,10 @@ def _sv_geometry(store: str) -> dict:
         "dtype": np.dtype(meta["dtype"]),
         "order": meta.get("order", "C"),
         "codec": codec,
+        # zarr v2 stores write chunk keys either nested (0/0/12/34) or flat with a
+        # dot (0/0.12.34); PHerc1667's blosc store is the flat kind.
+        "separator": meta.get("dimension_separator", "/"),
+        "n_rows": -(-shape[1] // chunks[1]),
     }
 
 
@@ -183,8 +188,10 @@ def _sv_profile(key: str, raw: bytes, geom: dict, min_coverage: float):
         return None
     profile = cube[:, footprint].astype(np.float32).mean(axis=1)
     mid = layers // 2
+    leaf = key.rsplit("/", 1)[-1]
+    block = leaf.split(".")[1:] if "." in leaf else key.rsplit("/", 2)[-2:]
     return {
-        "block": key.rsplit("/", 2)[-2:],
+        "block": block,
         "n": int(footprint.sum()),
         "range": float(profile.max() - profile.min()),
         "at_zero": float(profile[mid]),
@@ -215,7 +222,12 @@ def surface_volume_profiles(
 
     geom = _sv_geometry(store)
     rng = np.random.default_rng(seed)
-    columns = _s3_list(f"{store.rstrip('/')}/0/0/", delimiter=True)
+    base = store.rstrip("/")
+    if geom["separator"] == ".":
+        # a "column" is one chunk row: every key under 0/0.<row>. -- listed lazily
+        columns = [f"{base}/0/0.{r}." for r in range(geom["n_rows"])]
+    else:
+        columns = _s3_list(f"{base}/0/0/", delimiter=True)
     if not columns:
         return []
 
@@ -227,11 +239,18 @@ def surface_volume_profiles(
 
     out = []
     seen = set()
+    empty_passes = 0
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        while len(out) < chunks:
+        while len(out) < chunks and empty_passes < 3:
             want = min(2 * (chunks - len(out)) + 8, 4 * chunks)
             cols = [columns[int(i)] for i in rng.integers(len(columns), size=want)]
             listed = list(pool.map(lambda c: _s3_list(c, delimiter=False), cols))
+            listed = [
+                [k for k in ks if k.rsplit("/", 1)[-1].count(".") == 2]
+                if geom["separator"] == "."
+                else ks
+                for ks in listed
+            ]
             keys = []
             for ks in listed:
                 if ks:
@@ -240,7 +259,9 @@ def surface_volume_profiles(
                         seen.add(k)
                         keys.append(k)
             if not keys:
-                break
+                empty_passes += 1  # a sparse store can hand back a pass of nothing new
+                continue
+            empty_passes = 0
             for key, raw in zip(keys, pool.map(fetch, keys)):
                 rec = _sv_profile(key, raw, geom, min_coverage)
                 if rec is not None:
