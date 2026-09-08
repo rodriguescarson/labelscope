@@ -41,7 +41,7 @@ class ChunkedVolume:
         cache_dir: Optional[str] = None,
         session=None,
         max_cached: Optional[int] = None,
-        max_cache_bytes: int = 1 << 30,
+        max_cache_bytes: Optional[int] = None,
     ):
         self.base_url = base_url.rstrip("/")
         self.shape = tuple(int(s) for s in shape)
@@ -69,6 +69,10 @@ class ChunkedVolume:
         # a 500 GB box.  On the 4 GB machine this tool is meant to run on it
         # was five OOM kills in one session.  ``cache_dir`` is the second tier
         # and is unaffected by this budget.
+        # A corpus pass often runs several readers at once on a small box, so
+        # the budget is settable per process without a CLI flag.
+        if max_cache_bytes is None:
+            max_cache_bytes = int(os.environ.get("LABELSCOPE_CACHE_BYTES", 1 << 30))
         chunk_bytes = int(np.prod(self.chunks)) * self.dtype.itemsize
         self.max_cached = (
             max_cached

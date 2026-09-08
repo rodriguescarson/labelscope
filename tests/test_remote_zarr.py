@@ -399,3 +399,12 @@ def test_ram_cache_is_budgeted_in_bytes_not_chunks():
         "http://example.invalid/store", (64, 64, 64), (8, 8, 8), "|u1", max_cached=3
     )
     assert pinned.max_cached == 3
+
+
+def test_cache_budget_can_be_set_by_environment(monkeypatch):
+    """Several readers on one small box need to share RAM without a CLI flag."""
+    from labelscope.remote_zarr import ChunkedVolume
+
+    monkeypatch.setenv("LABELSCOPE_CACHE_BYTES", str(4 << 20))
+    vol = ChunkedVolume("http://example.invalid/s", (512, 512, 512), (64, 64, 64), "|u1")
+    assert vol.max_cached == (4 << 20) // (64 * 64 * 64)
