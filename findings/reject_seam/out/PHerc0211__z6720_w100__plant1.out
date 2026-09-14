@@ -1,0 +1,8 @@
+checking 1 surfaces
+/usr/local/lib/python3.12/dist-packages/labelscope/mesh.py:214: RuntimeWarning: Mean of empty slice
+  means = np.nanmean(dip, axis=along)
+/usr/local/lib/python3.12/dist-packages/labelscope/mesh.py:346: RuntimeWarning: Mean of empty slice
+  means = np.nanmean(dip[axis], axis=along)
+  1/1 z6720_w100: max z 7.5, 0 seam(s)
+wrote out/PHerc0211__z6720_w100__plant1.json/sheetswitch.csv, sheetswitch_summary.json
+1 surfaces checked, 0 carry a seam at z >= 5.0
