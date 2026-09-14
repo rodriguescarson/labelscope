@@ -63,8 +63,25 @@ falling from 83% at w020 to 33% at w100. Our score does not follow it:
 | w100 | 64 | **33.8** | 2/8 |
 
 w100 scores **highest** while being the least usable. Whatever the score
-responds to at w100, it is not sheet quality — most likely the denser, higher
-contrast material near the scroll core.
+responds to at w100, it is not sheet quality.
+
+**Correction, 14 Sep 2026 (from pscamillo, in the Discord thread):** I first
+wrote here that w100 sits near the scroll core. It is the opposite. Mean radius
+from the axis grows from w020 to w100 in all 71 z windows across the eight
+scrolls, about 400 voxels out at w020 and 1900 at w100, so **w100 is the outer
+wrap**, and that is where his approve rate drops to 33%. That makes the high
+score there worse for this measure, not better: the number is the dynamic
+range of the scan along the surface normal, and at the outermost wrap that
+walk crosses the crust and leaves the object, so the range is large with no
+sheet under the surface at all. It is the w128-129 trap on PHercParis4 in
+reverse (there the crust was fused and flat; here the crust-to-air edge is
+sharp). A re-run with the walk clipped at the scan mask would test that
+explanation; it has not been run.
+
+He also notes that the 72 are 41 `aprova` plus 31 `reprova` with the 12
+`parcial` dropped (so the 0.70 is on the clean split), and that his verdicts
+are one person, one pass, not blind, so part of the gap may be his noise
+rather than this measure's.
 
 ## It is not a sampling-window artifact
 
